@@ -1,0 +1,9 @@
+node_modules/
+db/data.db
+uploads/
+*.xlsx
+*.xls
+.env
+*.db
+.DS_Store
+Thumbs.db
