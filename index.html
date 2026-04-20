@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>短视频数据看板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    .tab-active { border-bottom: 3px solid #6366f1; color: #6366f1; font-weight: 600; }
+    .card { background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 20px; }
+    .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .progress-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f8fafc; font-weight: 600; font-size: 13px; color: #64748b; text-align: left; padding: 12px 16px; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+    tr:hover td { background: #f8fafc; }
+    .upload-zone { border: 2px dashed #cbd5e1; border-radius: 16px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .upload-zone:hover { border-color: #6366f1; background: #eef2ff; }
+    .upload-zone.dragover { border-color: #6366f1; background: #eef2ff; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 50; display: flex; align-items: center; justify-content: center; }
+    .modal { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .btn { padding: 8px 20px; border-radius: 8px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+    .btn-primary { background: #6366f1; color: white; }
+    .btn-primary:hover { background: #4f46e5; }
+    .btn-secondary { background: #f1f5f9; color: #475569; }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .loading-spinner { border: 3px solid #e5e7eb; border-top-color: #6366f1; border-radius: 50%; width: 32px; height: 32px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- 顶部导航 -->
+  <header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <h1 class="text-lg font-bold text-gray-800">短视频数据看板</h1>
+      </div>
+
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- 品牌选择 -->
+        <select id="brandSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="onBrandChange()">
+        </select>
+
+        <!-- 周选择 -->
+        <select id="weekSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="onWeekChange()">
+        </select>
+
+        <!-- 操作按钮 -->
+        <button class="btn btn-secondary text-sm" onclick="showUploadModal()">📤 上传数据</button>
+        <button class="btn btn-secondary text-sm" onclick="showTargetModal()">🎯 目标设置</button>
+        <button class="btn btn-primary text-sm" onclick="exportReport()">📥 导出报表</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab 导航 -->
+  <nav class="bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex gap-6" id="tabNav">
+        <button class="tab-btn tab-active py-3 text-sm" data-tab="overview" onclick="switchTab('overview')">📊 周度总览</button>
+        <button class="tab-btn py-3 text-sm text-gray-500 hover:text-gray-700" data-tab="source" onclick="switchTab('source')">🔍 源头分析</button>
+        <button class="tab-btn py-3 text-sm text-gray-500 hover:text-gray-700" data-tab="runner" onclick="switchTab('runner')">🏆 季度跑量</button>
+        <button class="tab-btn py-3 text-sm text-gray-500 hover:text-gray-700" data-tab="format" onclick="switchTab('format')">📈 形式监控</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- 加载中 -->
+    <div id="loading" class="flex items-center justify-center py-20">
+      <div class="loading-spinner"></div>
+      <span class="ml-3 text-gray-500">加载中...</span>
+    </div>
+
+    <!-- 无数据 -->
+    <div id="noData" class="hidden text-center py-20">
+      <div class="text-6xl mb-4">📭</div>
+      <h3 class="text-lg font-medium text-gray-700 mb-2">暂无数据</h3>
+      <p class="text-gray-500 mb-4">请先上传 Excel 数据源</p>
+      <button class="btn btn-primary" onclick="showUploadModal()">📤 上传数据</button>
+    </div>
+
+    <!-- Tab 内容 -->
+    <div id="tabContent" class="hidden">
+
+      <!-- 周度总览 -->
+      <div id="tab-overview" class="tab-panel fade-in">
+        <!-- KPI 卡片 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">短视频总 GMV</div>
+            <div class="text-2xl font-bold text-gray-800" id="kpi-video-gmv">-</div>
+            <div class="text-xs text-gray-400 mt-1"><span id="kpi-video-count">0</span> 条视频</div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">短视频 GMV 占比</div>
+            <div class="text-2xl font-bold text-indigo-600" id="kpi-gmv-ratio">-</div>
+            <div class="text-xs text-gray-400 mt-1">目标: <span id="kpi-target-ratio">-</span></div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">当周新视频 GMV</div>
+            <div class="text-2xl font-bold text-emerald-600" id="kpi-new-gmv">-</div>
+            <div class="text-xs text-gray-400 mt-1">贡献率: <span id="kpi-new-ratio">-</span></div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">目标达成率</div>
+            <div class="text-2xl font-bold" id="kpi-completion">-</div>
+            <div class="progress-bar mt-2"><div class="progress-fill bg-indigo-500" id="kpi-progress" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- 额外指标行 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">直播间 GMV</div>
+            <div class="text-xl font-bold text-gray-800" id="kpi-live-gmv">-</div>
+            <div class="text-xs text-gray-400 mt-1"><span id="kpi-live-count">0</span> 场直播</div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">有效视频数</div>
+            <div class="text-xl font-bold text-amber-600" id="kpi-effective">-</div>
+            <div class="text-xs text-gray-400 mt-1">GMV≥1000 且上线≥5天</div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">当周新上传</div>
+            <div class="text-xl font-bold text-blue-600" id="kpi-new-count">-</div>
+            <div class="text-xs text-gray-400 mt-1">条新视频</div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-sm text-gray-500 mb-1">目标 GMV</div>
+            <div class="text-xl font-bold text-gray-600" id="kpi-target-gmv">-</div>
+            <div class="text-xs text-gray-400 mt-1">根据直播间GMV×目标占比</div>
+          </div>
+        </div>
+
+        <!-- 周趋势图 -->
+        <div class="card mb-6">
+          <h3 class="font-semibold text-gray-700 mb-4">📈 近 8 周趋势</h3>
+          <div id="trendChart" style="height: 320px;"></div>
+        </div>
+      </div>
+
+      <!-- 源头分析 -->
+      <div id="tab-source" class="tab-panel hidden fade-in">
+        <div class="card mb-6">
+          <h3 class="font-semibold text-gray-700 mb-4">🔍 制作源头分析</h3>
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>源头</th>
+                  <th>视频数</th>
+                  <th>总 GMV</th>
+                  <th>平均 GMV</th>
+                  <th>GMV 占比</th>
+                  <th>有效视频数</th>
+                  <th>目标制作数</th>
+                  <th>实际制作数</th>
+                </tr>
+              </thead>
+              <tbody id="sourceTable">
+                <tr><td colspan="8" class="text-center text-gray-400 py-8">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- 源头占比图 -->
+        <div class="card">
+          <h3 class="font-semibold text-gray-700 mb-4">📊 GMV 占比分布</h3>
+          <div id="sourcePieChart" style="height: 320px;"></div>
+        </div>
+      </div>
+
+      <!-- 季度跑量 -->
+      <div id="tab-runner" class="tab-panel hidden fade-in">
+        <div class="flex items-center gap-4 mb-6">
+          <select id="quarterSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="loadRunner()">
+            <option value="2026-Q1">2026-Q1</option>
+            <option value="2026-Q2" selected>2026-Q2</option>
+            <option value="2025-Q4">2025-Q4</option>
+            <option value="2025-Q3">2025-Q3</option>
+          </select>
+          <h3 class="font-semibold text-gray-700">🏆 跑量视频统计</h3>
+          <span class="text-xs text-gray-400">单条累计 GMV 统计</span>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- 内部(含ITO) -->
+          <div class="card">
+            <h4 class="font-medium text-gray-700 mb-4">🏢 内部 (含 ITO)</h4>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="text-center p-4 bg-indigo-50 rounded-xl">
+                <div class="text-3xl font-bold text-indigo-600" id="runner-internal-50k">-</div>
+                <div class="text-sm text-gray-500 mt-1">≥ 5万 条数</div>
+              </div>
+              <div class="text-center p-4 bg-emerald-50 rounded-xl">
+                <div class="text-3xl font-bold text-emerald-600" id="runner-internal-10k">-</div>
+                <div class="text-sm text-gray-500 mt-1">≥ 1万 条数</div>
+              </div>
+            </div>
+            <div class="text-sm text-gray-400">总计: <span id="runner-internal-total">0</span> 条视频</div>
+          </div>
+          <!-- 外部 -->
+          <div class="card">
+            <h4 class="font-medium text-gray-700 mb-4">🌐 外部</h4>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="text-center p-4 bg-purple-50 rounded-xl">
+                <div class="text-3xl font-bold text-purple-600" id="runner-external-50k">-</div>
+                <div class="text-sm text-gray-500 mt-1">≥ 5万 条数</div>
+              </div>
+              <div class="text-center p-4 bg-orange-50 rounded-xl">
+                <div class="text-3xl font-bold text-orange-600" id="runner-external-10k">-</div>
+                <div class="text-sm text-gray-500 mt-1">≥ 1万 条数</div>
+              </div>
+            </div>
+            <div class="text-sm text-gray-400">总计: <span id="runner-external-total">0</span> 条视频</div>
+          </div>
+        </div>
+        <!-- 跑量柱状图 -->
+        <div class="card">
+          <h3 class="font-semibold text-gray-700 mb-4">📊 跑量对比</h3>
+          <div id="runnerBarChart" style="height: 320px;"></div>
+        </div>
+      </div>
+
+      <!-- 形式监控 -->
+      <div id="tab-format" class="tab-panel hidden fade-in">
+        <div class="card mb-6">
+          <h3 class="font-semibold text-gray-700 mb-4">📈 视频形式效果对比</h3>
+          <div class="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>视频形式</th>
+                  <th>数量</th>
+                  <th>总 GMV</th>
+                  <th>展现次数</th>
+                  <th>消耗</th>
+                  <th>ROI</th>
+                  <th>点击率</th>
+                  <th>转化率</th>
+                </tr>
+              </thead>
+              <tbody id="formatTable">
+                <tr><td colspan="8" class="text-center text-gray-400 py-8">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="card">
+            <h3 class="font-semibold text-gray-700 mb-4">🍩 GMV 分布</h3>
+            <div id="formatPieChart" style="height: 300px;"></div>
+          </div>
+          <div class="card">
+            <h3 class="font-semibold text-gray-700 mb-4">🎯 效率雷达图</h3>
+            <div id="formatRadarChart" style="height: 300px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 上传模态框 -->
+  <div id="uploadModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('uploadModal')">
+    <div class="modal">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">📤 上传数据</h3>
+        <button onclick="closeModal('uploadModal')" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">选择品牌</label>
+        <select id="uploadBrand" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></select>
+      </div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="text-4xl mb-3">📁</div>
+        <p class="text-gray-600 mb-1">点击或拖拽 Excel 文件到此处</p>
+        <p class="text-xs text-gray-400">支持 .xlsx / .xls 格式，最大 50MB</p>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileSelect(this)">
+      </div>
+      <div id="uploadStatus" class="mt-4 hidden">
+        <div class="flex items-center gap-2 text-sm">
+          <div class="loading-spinner" style="width:16px;height:16px;border-width:2px"></div>
+          <span class="text-gray-600">正在导入...</span>
+        </div>
+      </div>
+      <div id="uploadResult" class="mt-4 hidden"></div>
+    </div>
+  </div>
+
+  <!-- 目标设置模态框 -->
+  <div id="targetModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('targetModal')">
+    <div class="modal" style="max-width:600px">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">🎯 目标设置</h3>
+        <button onclick="closeModal('targetModal')" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+      </div>
+      <p class="text-sm text-gray-500 mb-4">当前周: <strong id="targetWeekLabel">-</strong></p>
+      <!-- 整体目标 -->
+      <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">整体目标</h4>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">短视频GMV占直播间GMV目标占比</label>
+            <input type="number" step="0.01" id="tgt-overall-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.15">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">当周新视频GMV目标贡献率</label>
+            <input type="number" step="0.01" id="tgt-overall-new-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.30">
+          </div>
+        </div>
+      </div>
+      <!-- 内部目标 -->
+      <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">内部目标 (含 ITO)</h4>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">目标制作数量</label>
+            <input type="number" id="tgt-internal-count" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 50">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">目标GMV占比(所有短视频)</label>
+            <input type="number" step="0.01" id="tgt-internal-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.40">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">目标单条平均GMV</label>
+            <input type="number" step="0.01" id="tgt-internal-avg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 5000">
+          </div>
+        </div>
+        <div class="mt-2">
+          <label class="block text-xs text-gray-500 mb-1">实际制作数量（手动填写）</label>
+          <input type="number" id="tgt-internal-actual" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 45">
+        </div>
+      </div>
+      <!-- 外部目标 -->
+      <div class="mb-6">
+        <h4 class="font-semibold text-gray-700 mb-3">外部目标</h4>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">目标制作数量</label>
+            <input type="number" id="tgt-external-count" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 100">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">目标GMV占比(所有短视频)</label>
+            <input type="number" step="0.01" id="tgt-external-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.60">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">目标单条平均GMV</label>
+            <input type="number" step="0.01" id="tgt-external-avg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 3000">
+          </div>
+        </div>
+        <div class="mt-2">
+          <label class="block text-xs text-gray-500 mb-1">实际制作数量（手动填写）</label>
+          <input type="number" id="tgt-external-actual" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 90">
+        </div>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button class="btn btn-secondary" onclick="closeModal('targetModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveTargets()">💾 保存目标</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 通知 -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-gray-800 text-white px-4 py-3 rounded-xl shadow-lg text-sm hidden z-50"></div>
+
+  <script>
+    // ═══════════════════════════════════════
+    // 全局状态
+    // ═══════════════════════════════════════
+    let currentBrand = 'modeng';
+    let currentWeek = '';
+    let currentTab = 'overview';
+    let brands = [];
+    let availableWeeks = [];
+
+    // ═══════════════════════════════════════
+    // 初始化
+    // ═══════════════════════════════════════
+    async function init() {
+      try {
+        // 加载品牌列表
+        const brandsRes = await fetch('/api/dashboard/brands');
+        brands = await brandsRes.json();
+
+        // 填充品牌选择器
+        const selectors = ['brandSelect', 'uploadBrand'];
+        for (const id of selectors) {
+          const el = document.getElementById(id);
+          el.innerHTML = brands.map(b => `<option value="${b.key}">${b.name}</option>`).join('');
+        }
+
+        // 加载可用周列表
+        const weeksRes = await fetch(`/api/dashboard/weeks?brand=${currentBrand}`);
+        const weeksData = await weeksRes.json();
+        availableWeeks = weeksData.weeks || [];
+
+        // 填充周选择器
+        const weekEl = document.getElementById('weekSelect');
+        if (availableWeeks.length > 0) {
+          currentWeek = availableWeeks[0];
+          weekEl.innerHTML = availableWeeks.map(w => `<option value="${w}">${w}</option>`).join('');
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('tabContent').classList.remove('hidden');
+          loadCurrentTab();
+        } else {
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('noData').classList.remove('hidden');
+        }
+
+        // 初始化图表
+        initCharts();
+      } catch (err) {
+        showToast('初始化失败: ' + err.message, 'error');
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // 事件处理
+    // ═══════════════════════════════════════
+    function onBrandChange() {
+      currentBrand = document.getElementById('brandSelect').value;
+      refreshWeeks();
+    }
+
+    function onWeekChange() {
+      currentWeek = document.getElementById('weekSelect').value;
+      loadCurrentTab();
+    }
+
+    async function refreshWeeks() {
+      const res = await fetch(`/api/dashboard/weeks?brand=${currentBrand}`);
+      const data = await res.json();
+      availableWeeks = data.weeks || [];
+
+      const weekEl = document.getElementById('weekSelect');
+      if (availableWeeks.length > 0) {
+        currentWeek = availableWeeks[0];
+        weekEl.innerHTML = availableWeeks.map(w => `<option value="${w}">${w}</option>`).join('');
+        document.getElementById('noData').classList.add('hidden');
+        document.getElementById('tabContent').classList.remove('hidden');
+        loadCurrentTab();
+      } else {
+        weekEl.innerHTML = '<option>暂无数据</option>';
+        document.getElementById('tabContent').classList.add('hidden');
+        document.getElementById('noData').classList.remove('hidden');
+      }
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('tab-active');
+        b.classList.add('text-gray-500');
+      });
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
+      document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
+
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+      loadCurrentTab();
+    }
+
+    function loadCurrentTab() {
+      switch (currentTab) {
+        case 'overview': loadOverview(); break;
+        case 'source': loadSource(); break;
+        case 'runner': loadRunner(); break;
+        case 'format': loadFormat(); break;
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // 数据加载
+    // ═══════════════════════════════════════
+
+    // 工具函数
+    function fmt(n, decimals = 0) {
+      if (n === null || n === undefined || isNaN(n)) return '-';
+      if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+      return n.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function fmtPercent(n) {
+      if (n === null || n === undefined || isNaN(n)) return '-';
+      return (n * 100).toFixed(1) + '%';
+    }
+
+    // 周度总览
+    async function loadOverview() {
+      const res = await fetch(`/api/dashboard/overview?brand=${currentBrand}&week=${currentWeek}`);
+      const d = await res.json();
+
+      document.getElementById('kpi-video-gmv').textContent = fmt(d.video.total_gmv);
+      document.getElementById('kpi-video-count').textContent = d.video.total_count;
+      document.getElementById('kpi-gmv-ratio').textContent = fmtPercent(d.target.gmv_ratio);
+      document.getElementById('kpi-target-ratio').textContent = fmtPercent(d.target.target_gmv_ratio);
+      document.getElementById('kpi-new-gmv').textContent = fmt(d.video.new_gmv);
+      document.getElementById('kpi-new-ratio').textContent = fmtPercent(d.target.new_video_gmv_ratio);
+      document.getElementById('kpi-new-count').textContent = d.video.new_count;
+
+      const rate = d.target.completion_rate || 0;
+      const el = document.getElementById('kpi-completion');
+      el.textContent = rate.toFixed(1) + '%';
+      el.className = `text-2xl font-bold ${rate >= 100 ? 'text-emerald-600' : rate >= 70 ? 'text-amber-600' : 'text-red-500'}`;
+      document.getElementById('kpi-progress').style.width = Math.min(rate, 100) + '%';
+      document.getElementById('kpi-progress').className = `progress-fill ${rate >= 100 ? 'bg-emerald-500' : rate >= 70 ? 'bg-amber-500' : 'bg-red-400'}`;
+
+      document.getElementById('kpi-live-gmv').textContent = fmt(d.livestream.total_gmv);
+      document.getElementById('kpi-live-count').textContent = d.livestream.live_count;
+      document.getElementById('kpi-effective').textContent = d.video.effective_count;
+      document.getElementById('kpi-target-gmv').textContent = fmt(d.target.target_gmv);
+
+      // 加载趋势
+      loadTrend();
+    }
+
+    // 周趋势
+    async function loadTrend() {
+      const res = await fetch(`/api/dashboard/trend?brand=${currentBrand}&weeks=8`);
+      const trend = await res.json();
+      updateTrendChart(trend);
+    }
+
+    // 源头分析
+    async function loadSource() {
+      const res = await fetch(`/api/dashboard/source?brand=${currentBrand}&week=${currentWeek}`);
+      const d = await res.json();
+
+      const tbody = document.getElementById('sourceTable');
+      const allSources = [...d.groups, ...d.others];
+
+      tbody.innerHTML = allSources.map(s => `
+        <tr>
+          <td><span class="badge ${s.source === 'internal' ? 'bg-indigo-100 text-indigo-700' : s.source === 'external' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}">${s.name}</span></td>
+          <td>${s.video_count}</td>
+          <td>${fmt(s.total_gmv)}</td>
+          <td>${fmt(s.avg_gmv)}</td>
+          <td>${fmtPercent(s.gmv_ratio)}</td>
+          <td>-</td>
+          <td>${s.target?.target_video_count || '-'}</td>
+          <td>${s.target?.actual_video_count || '-'}</td>
+        </tr>
+      `).join('');
+
+      updateSourcePieChart(allSources);
+    }
+
+    // 季度跑量
+    async function loadRunner() {
+      const quarter = document.getElementById('quarterSelect').value;
+      const res = await fetch(`/api/dashboard/runner?brand=${currentBrand}&quarter=${quarter}`);
+      const d = await res.json();
+
+      document.getElementById('runner-internal-50k').textContent = d.internal.count_g50k;
+      document.getElementById('runner-internal-10k').textContent = d.internal.count_g10k;
+      document.getElementById('runner-internal-total').textContent = d.internal.total_count;
+      document.getElementById('runner-external-50k').textContent = d.external.count_g50k;
+      document.getElementById('runner-external-10k').textContent = d.external.count_g10k;
+      document.getElementById('runner-external-total').textContent = d.external.total_count;
+
+      updateRunnerBarChart(d);
+    }
+
+    // 形式监控
+    async function loadFormat() {
+      const res = await fetch(`/api/dashboard/format?brand=${currentBrand}&week=${currentWeek}`);
+      const d = await res.json();
+
+      const tbody = document.getElementById('formatTable');
+      tbody.innerHTML = d.formats.map(f => `
+        <tr>
+          <td><span class="badge bg-blue-100 text-blue-700">${f.video_format}</span></td>
+          <td>${f.video_count}</td>
+          <td>${fmt(f.total_gmv)}</td>
+          <td>${fmt(f.total_impressions)}</td>
+          <td>${fmt(f.total_cost)}</td>
+          <td>${f.avg_roi ? f.avg_roi.toFixed(2) : '-'}</td>
+          <td>${fmtPercent(f.avg_ctr)}</td>
+          <td>${fmtPercent(f.avg_cvr)}</td>
+        </tr>
+      `).join('');
+
+      updateFormatCharts(d.formats);
+    }
+
+    // ═══════════════════════════════════════
+    // 图表
+    // ═══════════════════════════════════════
+    let trendChart, sourcePieChart, runnerBarChart, formatPieChart, formatRadarChart;
+
+    function initCharts() {
+      trendChart = echarts.init(document.getElementById('trendChart'));
+      sourcePieChart = echarts.init(document.getElementById('sourcePieChart'));
+      runnerBarChart = echarts.init(document.getElementById('runnerBarChart'));
+      formatPieChart = echarts.init(document.getElementById('formatPieChart'));
+      formatRadarChart = echarts.init(document.getElementById('formatRadarChart'));
+
+      window.addEventListener('resize', () => {
+        trendChart?.resize();
+        sourcePieChart?.resize();
+        runnerBarChart?.resize();
+        formatPieChart?.resize();
+        formatRadarChart?.resize();
+      });
+    }
+
+    function updateTrendChart(data) {
+      trendChart.setOption({
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['短视频GMV', '直播间GMV', '占比'], bottom: 0 },
+        grid: { top: 20, right: 60, bottom: 40 },
+        xAxis: { type: 'category', data: data.map(d => d.week) },
+        yAxis: [
+          { type: 'value', name: 'GMV' },
+          { type: 'value', name: '占比', max: 1, axisLabel: { formatter: v => (v * 100) + '%' } },
+        ],
+        series: [
+          { name: '短视频GMV', type: 'bar', data: data.map(d => d.video_gmv), itemStyle: { color: '#6366f1' } },
+          { name: '直播间GMV', type: 'bar', data: data.map(d => d.live_gmv), itemStyle: { color: '#a5b4fc' } },
+          { name: '占比', type: 'line', yAxisIndex: 1, data: data.map(d => d.gmv_ratio), smooth: true, lineStyle: { color: '#f59e0b' }, itemStyle: { color: '#f59e0b' } },
+        ],
+      });
+    }
+
+    function updateSourcePieChart(sources) {
+      sourcePieChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        series: [{
+          type: 'pie',
+          radius: ['40%', '70%'],
+          data: sources.filter(s => s.total_gmv > 0).map(s => ({
+            name: s.name, value: Math.round(s.total_gmv)
+          })),
+          label: { formatter: '{b}\n{d}%' },
+        }],
+      });
+    }
+
+    function updateRunnerBarChart(data) {
+      runnerBarChart.setOption({
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['≥5万', '≥1万'], bottom: 0 },
+        grid: { top: 20, right: 20, bottom: 40 },
+        xAxis: { type: 'category', data: [data.internal.name, data.external.name, '合计'] },
+        yAxis: { type: 'value', name: '视频数量' },
+        series: [
+          { name: '≥5万', type: 'bar', data: [data.internal.count_g50k, data.external.count_g50k, data.total.count_g50k], itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] } },
+          { name: '≥1万', type: 'bar', data: [data.internal.count_g10k, data.external.count_g10k, data.total.count_g10k], itemStyle: { color: '#a5b4fc', borderRadius: [4, 4, 0, 0] } },
+        ],
+      });
+    }
+
+    function updateFormatCharts(formats) {
+      const colors = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4'];
+      const validFormats = formats.filter(f => f.total_gmv > 0);
+
+      formatPieChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        series: [{
+          type: 'pie', radius: '65%',
+          data: validFormats.map((f, i) => ({
+            name: f.video_format, value: Math.round(f.total_gmv),
+            itemStyle: { color: colors[i % colors.length] }
+          })),
+        }],
+      });
+
+      if (validFormats.length >= 2) {
+        formatRadarChart.setOption({
+          tooltip: {},
+          radar: {
+            indicator: validFormats.map(f => ({ name: f.video_format, max: 10 })),
+          },
+          series: [{
+            type: 'radar',
+            data: validFormats.map((f, i) => ({
+              name: f.video_format,
+              value: [
+                Math.min(f.total_gmv / 50000, 10),
+                Math.min((f.avg_roi || 0) * 5, 10),
+                Math.min((f.avg_ctr || 0) * 100, 10),
+                Math.min((f.avg_cvr || 0) * 100, 10),
+                Math.min(f.total_cost / 10000, 10),
+                Math.min(f.video_count / 10, 10),
+              ],
+              lineStyle: { color: colors[i % colors.length] },
+              areaStyle: { color: colors[i % colors.length] + '20' },
+            })),
+          }],
+        });
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // 上传
+    // ═══════════════════════════════════════
+    function showUploadModal() {
+      document.getElementById('uploadModal').classList.remove('hidden');
+      document.getElementById('uploadResult').classList.add('hidden');
+      document.getElementById('uploadStatus').classList.add('hidden');
+    }
+
+    function showTargetModal() {
+      document.getElementById('targetModal').classList.remove('hidden');
+      document.getElementById('targetWeekLabel').textContent = currentWeek || '-';
+      // 加载现有目标
+      loadExistingTargets();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // 拖拽上传
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+    });
+
+    function handleFileSelect(input) {
+      if (input.files.length) uploadFile(input.files[0]);
+    }
+
+    async function uploadFile(file) {
+      if (!file.name.match(/\.xlsx?$/i)) {
+        showToast('请选择 Excel 文件', 'error');
+        return;
+      }
+
+      const brand = document.getElementById('uploadBrand').value;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('brand', brand);
+
+      document.getElementById('uploadStatus').classList.remove('hidden');
+      document.getElementById('uploadResult').classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/upload/video', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('uploadResult').innerHTML = `
+            <div class="bg-emerald-50 rounded-lg p-4">
+              <p class="text-emerald-700 font-medium">✅ 导入成功</p>
+              <p class="text-sm text-emerald-600 mt-1">品牌: ${data.brand} | Sheet: ${data.sheet} | 导入: ${data.imported} 条</p>
+            </div>`;
+          showToast('数据导入成功！');
+          refreshWeeks();
+        } else {
+          throw new Error(data.error || '未知错误');
+        }
+      } catch (err) {
+        document.getElementById('uploadResult').innerHTML = `
+          <div class="bg-red-50 rounded-lg p-4">
+            <p class="text-red-700 font-medium">❌ 导入失败</p>
+            <p class="text-sm text-red-600 mt-1">${err.message}</p>
+          </div>`;
+      } finally {
+        document.getElementById('uploadStatus').classList.add('hidden');
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // 目标管理
+    // ═══════════════════════════════════════
+    async function loadExistingTargets() {
+      if (!currentWeek) return;
+      try {
+        const res = await fetch(`/api/target?brand=${currentBrand}&week=${currentWeek}`);
+        const targets = await res.json();
+
+        for (const t of targets) {
+          const prefix = t.dimension === 'overall' ? 'overall' : t.dimension === 'internal' ? 'internal' : 'external';
+          if (t.dimension === 'overall') {
+            document.getElementById('tgt-overall-ratio').value = t.target_gmv_ratio_all || '';
+            document.getElementById('tgt-overall-new-ratio').value = t.target_gmv_ratio_new || '';
+          } else {
+            const el = (id, val) => { const e = document.getElementById(id); if (val && e) e.value = val; };
+            el(`tgt-${prefix}-count`, t.target_video_count);
+            el(`tgt-${prefix}-ratio`, t.target_gmv_ratio_all);
+            el(`tgt-${prefix}-avg`, t.target_avg_gmv);
+            el(`tgt-${prefix}-actual`, t.actual_video_count);
+          }
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    async function saveTargets() {
+      const targets = [
+        {
+          brand: currentBrand, week: currentWeek, dimension: 'overall',
+          target_gmv_ratio_all: parseFloat(document.getElementById('tgt-overall-ratio').value) || 0,
+          target_gmv_ratio_new: parseFloat(document.getElementById('tgt-overall-new-ratio').value) || 0,
+        },
+        {
+          brand: currentBrand, week: currentWeek, dimension: 'internal',
+          target_video_count: parseInt(document.getElementById('tgt-internal-count').value) || 0,
+          target_gmv_ratio_all: parseFloat(document.getElementById('tgt-internal-ratio').value) || 0,
+          target_avg_gmv: parseFloat(document.getElementById('tgt-internal-avg').value) || 0,
+          actual_video_count: parseInt(document.getElementById('tgt-internal-actual').value) || 0,
+        },
+        {
+          brand: currentBrand, week: currentWeek, dimension: 'external',
+          target_video_count: parseInt(document.getElementById('tgt-external-count').value) || 0,
+          target_gmv_ratio_all: parseFloat(document.getElementById('tgt-external-ratio').value) || 0,
+          target_avg_gmv: parseFloat(document.getElementById('tgt-external-avg').value) || 0,
+          actual_video_count: parseInt(document.getElementById('tgt-external-actual').value) || 0,
+        },
+      ];
+
+      try {
+        const res = await fetch('/api/target/batch', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targets }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('目标保存成功！');
+          closeModal('targetModal');
+          loadCurrentTab();
+        } else {
+          showToast('保存失败: ' + (data.error || ''), 'error');
+        }
+      } catch (err) {
+        showToast('保存失败: ' + err.message, 'error');
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // 导出
+    // ═══════════════════════════════════════
+    function exportReport() {
+      if (!currentWeek) {
+        showToast('请先选择数据周', 'error');
+        return;
+      }
+      // 触发 Excel 下载
+      const url = `/api/export/report?brand=${currentBrand}&week=${currentWeek}`;
+      window.open(url, '_blank');
+      showToast('正在导出报表...');
+    }
+
+    // ═══════════════════════════════════════
+    // Toast
+    // ═══════════════════════════════════════
+    function showToast(msg, type = 'success') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = `fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm z-50 text-white ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+
+    // ═══════════════════════════════════════
+    // 启动
+    // ═══════════════════════════════════════
+    init();
+  </script>
+</body>
+</html>
