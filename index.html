@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>短视频数据看板</title>
+  <title>短视频数据看板 — Demo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <style>
@@ -20,23 +20,21 @@
     th { background: #f8fafc; font-weight: 600; font-size: 13px; color: #64748b; text-align: left; padding: 12px 16px; border-bottom: 2px solid #e2e8f0; }
     td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
     tr:hover td { background: #f8fafc; }
-    .upload-zone { border: 2px dashed #cbd5e1; border-radius: 16px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
-    .upload-zone:hover { border-color: #6366f1; background: #eef2ff; }
-    .upload-zone.dragover { border-color: #6366f1; background: #eef2ff; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 50; display: flex; align-items: center; justify-content: center; }
-    .modal { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
     .btn { padding: 8px 20px; border-radius: 8px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.15s; }
     .btn-primary { background: #6366f1; color: white; }
     .btn-primary:hover { background: #4f46e5; }
-    .btn-secondary { background: #f1f5f9; color: #475569; }
-    .btn-secondary:hover { background: #e2e8f0; }
     .fade-in { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .loading-spinner { border: 3px solid #e5e7eb; border-top-color: #6366f1; border-radius: 50%; width: 32px; height: 32px; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .demo-banner { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; text-align: center; padding: 10px; font-size: 13px; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
+
+  <!-- Demo 提示 -->
+  <div class="demo-banner">
+    📊 这是静态 Demo 页面 — 数据为模拟展示。完整版需要 Node.js 后端服务运行。
+    <a href="https://github.com/Mightymojoy/Content-short-video" target="_blank" class="underline ml-2">查看源码 →</a>
+  </div>
 
   <!-- 顶部导航 -->
   <header class="bg-white shadow-sm sticky top-0 z-40">
@@ -46,21 +44,20 @@
           <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         </div>
         <h1 class="text-lg font-bold text-gray-800">短视频数据看板</h1>
+        <span class="badge bg-indigo-100 text-indigo-700">Demo</span>
       </div>
 
       <div class="flex items-center gap-3 flex-wrap">
-        <!-- 品牌选择 -->
         <select id="brandSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="onBrandChange()">
+          <option value="modeng">摩登新贵女</option>
+          <option value="qingshu">轻熟质享客</option>
+          <option value="yunduan">云端商务家</option>
         </select>
-
-        <!-- 周选择 -->
         <select id="weekSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="onWeekChange()">
+          <option value="2026-W16">2026-W16</option>
+          <option value="2026-W15">2026-W15</option>
+          <option value="2026-W14">2026-W14</option>
         </select>
-
-        <!-- 操作按钮 -->
-        <button class="btn btn-secondary text-sm" onclick="showUploadModal()">📤 上传数据</button>
-        <button class="btn btn-secondary text-sm" onclick="showTargetModal()">🎯 目标设置</button>
-        <button class="btn btn-primary text-sm" onclick="exportReport()">📥 导出报表</button>
       </div>
     </div>
   </header>
@@ -79,27 +76,10 @@
 
   <!-- 主内容区 -->
   <main class="max-w-7xl mx-auto px-4 py-6">
-
-    <!-- 加载中 -->
-    <div id="loading" class="flex items-center justify-center py-20">
-      <div class="loading-spinner"></div>
-      <span class="ml-3 text-gray-500">加载中...</span>
-    </div>
-
-    <!-- 无数据 -->
-    <div id="noData" class="hidden text-center py-20">
-      <div class="text-6xl mb-4">📭</div>
-      <h3 class="text-lg font-medium text-gray-700 mb-2">暂无数据</h3>
-      <p class="text-gray-500 mb-4">请先上传 Excel 数据源</p>
-      <button class="btn btn-primary" onclick="showUploadModal()">📤 上传数据</button>
-    </div>
-
-    <!-- Tab 内容 -->
-    <div id="tabContent" class="hidden">
+    <div id="tabContent" class="fade-in">
 
       <!-- 周度总览 -->
       <div id="tab-overview" class="tab-panel fade-in">
-        <!-- KPI 卡片 -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div class="card stat-card">
             <div class="text-sm text-gray-500 mb-1">短视频总 GMV</div>
@@ -123,7 +103,6 @@
           </div>
         </div>
 
-        <!-- 额外指标行 -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div class="card stat-card">
             <div class="text-sm text-gray-500 mb-1">直播间 GMV</div>
@@ -147,7 +126,6 @@
           </div>
         </div>
 
-        <!-- 周趋势图 -->
         <div class="card mb-6">
           <h3 class="font-semibold text-gray-700 mb-4">📈 近 8 周趋势</h3>
           <div id="trendChart" style="height: 320px;"></div>
@@ -172,13 +150,10 @@
                   <th>实际制作数</th>
                 </tr>
               </thead>
-              <tbody id="sourceTable">
-                <tr><td colspan="8" class="text-center text-gray-400 py-8">加载中...</td></tr>
-              </tbody>
+              <tbody id="sourceTable"></tbody>
             </table>
           </div>
         </div>
-        <!-- 源头占比图 -->
         <div class="card">
           <h3 class="font-semibold text-gray-700 mb-4">📊 GMV 占比分布</h3>
           <div id="sourcePieChart" style="height: 320px;"></div>
@@ -192,13 +167,11 @@
             <option value="2026-Q1">2026-Q1</option>
             <option value="2026-Q2" selected>2026-Q2</option>
             <option value="2025-Q4">2025-Q4</option>
-            <option value="2025-Q3">2025-Q3</option>
           </select>
           <h3 class="font-semibold text-gray-700">🏆 跑量视频统计</h3>
           <span class="text-xs text-gray-400">单条累计 GMV 统计</span>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <!-- 内部(含ITO) -->
           <div class="card">
             <h4 class="font-medium text-gray-700 mb-4">🏢 内部 (含 ITO)</h4>
             <div class="grid grid-cols-2 gap-4 mb-4">
@@ -213,7 +186,6 @@
             </div>
             <div class="text-sm text-gray-400">总计: <span id="runner-internal-total">0</span> 条视频</div>
           </div>
-          <!-- 外部 -->
           <div class="card">
             <h4 class="font-medium text-gray-700 mb-4">🌐 外部</h4>
             <div class="grid grid-cols-2 gap-4 mb-4">
@@ -229,7 +201,6 @@
             <div class="text-sm text-gray-400">总计: <span id="runner-external-total">0</span> 条视频</div>
           </div>
         </div>
-        <!-- 跑量柱状图 -->
         <div class="card">
           <h3 class="font-semibold text-gray-700 mb-4">📊 跑量对比</h3>
           <div id="runnerBarChart" style="height: 320px;"></div>
@@ -254,9 +225,7 @@
                   <th>转化率</th>
                 </tr>
               </thead>
-              <tbody id="formatTable">
-                <tr><td colspan="8" class="text-center text-gray-400 py-8">加载中...</td></tr>
-              </tbody>
+              <tbody id="formatTable"></tbody>
             </table>
           </div>
         </div>
@@ -274,204 +243,230 @@
     </div>
   </main>
 
-  <!-- 上传模态框 -->
-  <div id="uploadModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('uploadModal')">
-    <div class="modal">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">📤 上传数据</h3>
-        <button onclick="closeModal('uploadModal')" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
-      </div>
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">选择品牌</label>
-        <select id="uploadBrand" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></select>
-      </div>
-      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-        <div class="text-4xl mb-3">📁</div>
-        <p class="text-gray-600 mb-1">点击或拖拽 Excel 文件到此处</p>
-        <p class="text-xs text-gray-400">支持 .xlsx / .xls 格式，最大 50MB</p>
-        <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" onchange="handleFileSelect(this)">
-      </div>
-      <div id="uploadStatus" class="mt-4 hidden">
-        <div class="flex items-center gap-2 text-sm">
-          <div class="loading-spinner" style="width:16px;height:16px;border-width:2px"></div>
-          <span class="text-gray-600">正在导入...</span>
-        </div>
-      </div>
-      <div id="uploadResult" class="mt-4 hidden"></div>
-    </div>
-  </div>
-
-  <!-- 目标设置模态框 -->
-  <div id="targetModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('targetModal')">
-    <div class="modal" style="max-width:600px">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold">🎯 目标设置</h3>
-        <button onclick="closeModal('targetModal')" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
-      </div>
-      <p class="text-sm text-gray-500 mb-4">当前周: <strong id="targetWeekLabel">-</strong></p>
-      <!-- 整体目标 -->
-      <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">整体目标</h4>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">短视频GMV占直播间GMV目标占比</label>
-            <input type="number" step="0.01" id="tgt-overall-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.15">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">当周新视频GMV目标贡献率</label>
-            <input type="number" step="0.01" id="tgt-overall-new-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.30">
-          </div>
-        </div>
-      </div>
-      <!-- 内部目标 -->
-      <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">内部目标 (含 ITO)</h4>
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">目标制作数量</label>
-            <input type="number" id="tgt-internal-count" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 50">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">目标GMV占比(所有短视频)</label>
-            <input type="number" step="0.01" id="tgt-internal-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.40">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">目标单条平均GMV</label>
-            <input type="number" step="0.01" id="tgt-internal-avg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 5000">
-          </div>
-        </div>
-        <div class="mt-2">
-          <label class="block text-xs text-gray-500 mb-1">实际制作数量（手动填写）</label>
-          <input type="number" id="tgt-internal-actual" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 45">
-        </div>
-      </div>
-      <!-- 外部目标 -->
-      <div class="mb-6">
-        <h4 class="font-semibold text-gray-700 mb-3">外部目标</h4>
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">目标制作数量</label>
-            <input type="number" id="tgt-external-count" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 100">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">目标GMV占比(所有短视频)</label>
-            <input type="number" step="0.01" id="tgt-external-ratio" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 0.60">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">目标单条平均GMV</label>
-            <input type="number" step="0.01" id="tgt-external-avg" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 3000">
-          </div>
-        </div>
-        <div class="mt-2">
-          <label class="block text-xs text-gray-500 mb-1">实际制作数量（手动填写）</label>
-          <input type="number" id="tgt-external-actual" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="如 90">
-        </div>
-      </div>
-      <div class="flex justify-end gap-3">
-        <button class="btn btn-secondary" onclick="closeModal('targetModal')">取消</button>
-        <button class="btn btn-primary" onclick="saveTargets()">💾 保存目标</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast 通知 -->
-  <div id="toast" class="fixed bottom-6 right-6 bg-gray-800 text-white px-4 py-3 rounded-xl shadow-lg text-sm hidden z-50"></div>
+  <!-- 底部 -->
+  <footer class="text-center py-6 text-sm text-gray-400">
+    短视频数据看板系统 &copy; 2026 · 
+    <a href="https://github.com/Mightymojoy/Content-short-video" class="text-indigo-500 hover:underline">GitHub</a>
+  </footer>
 
   <script>
+    // ═══════════════════════════════════════
+    // Demo 模拟数据
+    // ═══════════════════════════════════════
+    const DEMO_DATA = {
+      brands: {
+        modeng: {
+          name: '摩登新贵女',
+          weeks: {
+            '2026-W16': {
+              overview: {
+                video: { total_count: 187, total_gmv: 523680, new_count: 42, new_gmv: 86200, effective_count: 63 },
+                livestream: { live_count: 5, total_gmv: 4280000 },
+                target: { gmv_ratio: 0.122, target_gmv_ratio: 0.15, target_gmv: 642000, new_video_gmv_ratio: 0.165, completion_rate: 81.6 }
+              },
+              source: {
+                groups: [
+                  { source: 'internal', name: '内部(含ITO)', video_count: 68, total_gmv: 312500, avg_gmv: 4596, gmv_ratio: 0.597, target: { target_video_count: 60, actual_video_count: 52 }, effective_count: 28 },
+                  { source: 'external', name: '外部', video_count: 105, total_gmv: 195180, avg_gmv: 1859, gmv_ratio: 0.373, target: { target_video_count: 120, actual_video_count: 105 }, effective_count: 31 },
+                ],
+                others: [
+                  { source: 'aigc', name: 'AIGC', video_count: 8, total_gmv: 12000, gmv_ratio: 0.023 },
+                  { source: 'other', name: '其他', video_count: 6, total_gmv: 4000, gmv_ratio: 0.008 },
+                ]
+              },
+              format: {
+                formats: [
+                  { video_format: 'KOL', video_count: 72, total_gmv: 268000, total_impressions: 3820000, total_cost: 95000, avg_roi: 2.82, avg_ctr: 0.0245, avg_cvr: 0.0182 },
+                  { video_format: '直播切片', video_count: 48, total_gmv: 128000, total_impressions: 2150000, total_cost: 42000, avg_roi: 3.05, avg_ctr: 0.0312, avg_cvr: 0.0215 },
+                  { video_format: '原生', video_count: 52, total_gmv: 98680, total_impressions: 1860000, total_cost: 38000, avg_roi: 2.60, avg_ctr: 0.0198, avg_cvr: 0.0147 },
+                  { video_format: '复刻', video_count: 10, total_gmv: 22000, total_impressions: 520000, total_cost: 12000, avg_roi: 1.83, avg_ctr: 0.0156, avg_cvr: 0.0103 },
+                  { video_format: '明星', video_count: 5, total_gmv: 7000, total_impressions: 380000, total_cost: 8000, avg_roi: 0.88, avg_ctr: 0.0189, avg_cvr: 0.0086 },
+                ]
+              }
+            },
+            '2026-W15': {
+              overview: {
+                video: { total_count: 165, total_gmv: 478200, new_count: 38, new_gmv: 72000, effective_count: 55 },
+                livestream: { live_count: 4, total_gmv: 3950000 },
+                target: { gmv_ratio: 0.121, target_gmv_ratio: 0.15, target_gmv: 592500, new_video_gmv_ratio: 0.151, completion_rate: 80.7 }
+              },
+              source: {
+                groups: [
+                  { source: 'internal', name: '内部(含ITO)', video_count: 58, total_gmv: 285000, avg_gmv: 4914, gmv_ratio: 0.596, target: { target_video_count: 55, actual_video_count: 48 }, effective_count: 24 },
+                  { source: 'external', name: '外部', video_count: 95, total_gmv: 172500, avg_gmv: 1816, gmv_ratio: 0.361, target: { target_video_count: 110, actual_video_count: 95 }, effective_count: 27 },
+                ],
+                others: [
+                  { source: 'aigc', name: 'AIGC', video_count: 7, total_gmv: 14200, gmv_ratio: 0.030 },
+                  { source: 'other', name: '其他', video_count: 5, total_gmv: 6500, gmv_ratio: 0.014 },
+                ]
+              },
+              format: {
+                formats: [
+                  { video_format: 'KOL', video_count: 65, total_gmv: 245000, total_impressions: 3500000, total_cost: 88000, avg_roi: 2.78, avg_ctr: 0.0238, avg_cvr: 0.0175 },
+                  { video_format: '直播切片', video_count: 42, total_gmv: 115000, total_impressions: 1980000, total_cost: 38000, avg_roi: 3.03, avg_ctr: 0.0305, avg_cvr: 0.0208 },
+                  { video_format: '原生', video_count: 45, total_gmv: 95000, total_impressions: 1720000, total_cost: 35000, avg_roi: 2.71, avg_ctr: 0.0192, avg_cvr: 0.0141 },
+                  { video_format: '复刻', video_count: 8, total_gmv: 18000, total_impressions: 480000, total_cost: 10500, avg_roi: 1.71, avg_ctr: 0.0148, avg_cvr: 0.0097 },
+                  { video_format: '明星', video_count: 5, total_gmv: 5200, total_impressions: 350000, total_cost: 7000, avg_roi: 0.74, avg_ctr: 0.0175, avg_cvr: 0.0078 },
+                ]
+              }
+            },
+            '2026-W14': {
+              overview: {
+                video: { total_count: 152, total_gmv: 412500, new_count: 35, new_gmv: 65800, effective_count: 48 },
+                livestream: { live_count: 4, total_gmv: 3680000 },
+                target: { gmv_ratio: 0.112, target_gmv_ratio: 0.15, target_gmv: 552000, new_video_gmv_ratio: 0.160, completion_rate: 74.7 }
+              },
+              source: {
+                groups: [
+                  { source: 'internal', name: '内部(含ITO)', video_count: 52, total_gmv: 248000, avg_gmv: 4769, gmv_ratio: 0.601, target: { target_video_count: 50, actual_video_count: 44 }, effective_count: 21 },
+                  { source: 'external', name: '外部', video_count: 88, total_gmv: 142500, avg_gmv: 1619, gmv_ratio: 0.345, target: { target_video_count: 100, actual_video_count: 88 }, effective_count: 23 },
+                ],
+                others: [
+                  { source: 'aigc', name: 'AIGC', video_count: 7, total_gmv: 15000, gmv_ratio: 0.036 },
+                  { source: 'other', name: '其他', video_count: 5, total_gmv: 7000, gmv_ratio: 0.017 },
+                ]
+              },
+              format: {
+                formats: [
+                  { video_format: 'KOL', video_count: 58, total_gmv: 218000, total_impressions: 3200000, total_cost: 82000, avg_roi: 2.66, avg_ctr: 0.0225, avg_cvr: 0.0168 },
+                  { video_format: '直播切片', video_count: 38, total_gmv: 98000, total_impressions: 1780000, total_cost: 35000, avg_roi: 2.80, avg_ctr: 0.0292, avg_cvr: 0.0195 },
+                  { video_format: '原生', video_count: 42, total_gmv: 78000, total_impressions: 1580000, total_cost: 32000, avg_roi: 2.44, avg_ctr: 0.0182, avg_cvr: 0.0132 },
+                  { video_format: '复刻', video_count: 9, total_gmv: 15500, total_impressions: 420000, total_cost: 9800, avg_roi: 1.58, avg_ctr: 0.0139, avg_cvr: 0.0091 },
+                  { video_format: '明星', video_count: 5, total_gmv: 3000, total_impressions: 320000, total_cost: 6500, avg_roi: 0.46, avg_ctr: 0.0162, avg_cvr: 0.0068 },
+                ]
+              }
+            }
+          },
+          runner: {
+            '2026-Q2': { internal: { count_g50k: 8, count_g10k: 22, total_count: 142 }, external: { count_g50k: 3, count_g10k: 15, total_count: 258 }, total: { count_g50k: 11, count_g10k: 37, total_count: 400 } },
+            '2026-Q1': { internal: { count_g50k: 12, count_g10k: 35, total_count: 380 }, external: { count_g50k: 5, count_g10k: 28, total_count: 620 }, total: { count_g50k: 17, count_g10k: 63, total_count: 1000 } },
+            '2025-Q4': { internal: { count_g50k: 10, count_g10k: 30, total_count: 350 }, external: { count_g50k: 4, count_g10k: 22, total_count: 580 }, total: { count_g50k: 14, count_g10k: 52, total_count: 930 } },
+          }
+        },
+        qingshu: {
+          name: '轻熟质享客',
+          weeks: {
+            '2026-W16': {
+              overview: { video: { total_count: 95, total_gmv: 234500, new_count: 22, new_gmv: 42000, effective_count: 32 }, livestream: { live_count: 3, total_gmv: 2180000 }, target: { gmv_ratio: 0.108, target_gmv_ratio: 0.12, target_gmv: 261600, new_video_gmv_ratio: 0.179, completion_rate: 89.6 } },
+              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 35, total_gmv: 145000, avg_gmv: 4143, gmv_ratio: 0.618, target: { target_video_count: 30, actual_video_count: 28 }, effective_count: 15 }, { source: 'external', name: '外部', video_count: 52, total_gmv: 75500, avg_gmv: 1452, gmv_ratio: 0.322, target: { target_video_count: 65, actual_video_count: 52 }, effective_count: 14 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 5, total_gmv: 9000, gmv_ratio: 0.038 }, { source: 'other', name: '其他', video_count: 3, total_gmv: 5000, gmv_ratio: 0.021 }] },
+              format: { formats: [{ video_format: 'KOL', video_count: 38, total_gmv: 125000, total_impressions: 1800000, total_cost: 52000, avg_roi: 2.40, avg_ctr: 0.0218, avg_cvr: 0.0156 }, { video_format: '直播切片', video_count: 25, total_gmv: 58000, total_impressions: 1250000, total_cost: 25000, avg_roi: 2.32, avg_ctr: 0.0275, avg_cvr: 0.0188 }, { video_format: '原生', video_count: 25, total_gmv: 38500, total_impressions: 980000, total_cost: 22000, avg_roi: 1.75, avg_ctr: 0.0172, avg_cvr: 0.0121 }, { video_format: '复刻', video_count: 5, total_gmv: 10500, total_impressions: 280000, total_cost: 7000, avg_roi: 1.50, avg_ctr: 0.0135, avg_cvr: 0.0089 }, { video_format: '明星', video_count: 2, total_gmv: 2500, total_impressions: 180000, total_cost: 4000, avg_roi: 0.63, avg_ctr: 0.0152, avg_cvr: 0.0065 }] }
+            },
+            '2026-W15': {
+              overview: { video: { total_count: 82, total_gmv: 198000, new_count: 18, new_gmv: 35000, effective_count: 26 }, livestream: { live_count: 3, total_gmv: 2050000 }, target: { gmv_ratio: 0.097, target_gmv_ratio: 0.12, target_gmv: 246000, new_video_gmv_ratio: 0.177, completion_rate: 80.5 } },
+              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 30, total_gmv: 122000, avg_gmv: 4067, gmv_ratio: 0.616, target: { target_video_count: 28, actual_video_count: 25 }, effective_count: 12 }, { source: 'external', name: '外部', video_count: 44, total_gmv: 62000, avg_gmv: 1409, gmv_ratio: 0.313, target: { target_video_count: 55, actual_video_count: 44 }, effective_count: 11 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 5, total_gmv: 10000, gmv_ratio: 0.051 }, { source: 'other', name: '其他', video_count: 3, total_gmv: 4000, gmv_ratio: 0.020 }] },
+              format: { formats: [{ video_format: 'KOL', video_count: 32, total_gmv: 108000, total_impressions: 1580000, total_cost: 46000, avg_roi: 2.35, avg_ctr: 0.0205, avg_cvr: 0.0148 }, { video_format: '直播切片', video_count: 22, total_gmv: 48000, total_impressions: 1100000, total_cost: 22000, avg_roi: 2.18, avg_ctr: 0.0262, avg_cvr: 0.0175 }, { video_format: '原生', video_count: 21, total_gmv: 32000, total_impressions: 850000, total_cost: 18000, avg_roi: 1.78, avg_ctr: 0.0165, avg_cvr: 0.0112 }, { video_format: '复刻', video_count: 4, total_gmv: 8000, total_impressions: 240000, total_cost: 6000, avg_roi: 1.33, avg_ctr: 0.0125, avg_cvr: 0.0082 }, { video_format: '明星', video_count: 3, total_gmv: 2000, total_impressions: 190000, total_cost: 4500, avg_roi: 0.44, avg_ctr: 0.0142, avg_cvr: 0.0058 }] }
+            },
+            '2026-W14': {
+              overview: { video: { total_count: 78, total_gmv: 185000, new_count: 16, new_gmv: 31000, effective_count: 24 }, livestream: { live_count: 3, total_gmv: 1920000 }, target: { gmv_ratio: 0.096, target_gmv_ratio: 0.12, target_gmv: 230400, new_video_gmv_ratio: 0.168, completion_rate: 80.3 } },
+              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 28, total_gmv: 115000, avg_gmv: 4107, gmv_ratio: 0.622, target: { target_video_count: 25, actual_video_count: 22 }, effective_count: 11 }, { source: 'external', name: '外部', video_count: 42, total_gmv: 55000, avg_gmv: 1310, gmv_ratio: 0.297, target: { target_video_count: 50, actual_video_count: 42 }, effective_count: 10 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 5, total_gmv: 11000, gmv_ratio: 0.059 }, { source: 'other', name: '其他', video_count: 3, total_gmv: 4000, gmv_ratio: 0.022 }] },
+              format: { formats: [{ video_format: 'KOL', video_count: 30, total_gmv: 98000, total_impressions: 1420000, total_cost: 42000, avg_roi: 2.33, avg_ctr: 0.0198, avg_cvr: 0.0142 }, { video_format: '直播切片', video_count: 20, total_gmv: 44000, total_impressions: 1000000, total_cost: 20000, avg_roi: 2.20, avg_ctr: 0.0252, avg_cvr: 0.0168 }, { video_format: '原生', video_count: 22, total_gmv: 31000, total_impressions: 800000, total_cost: 17000, avg_roi: 1.82, avg_ctr: 0.0158, avg_cvr: 0.0105 }, { video_format: '复刻', video_count: 3, total_gmv: 9000, total_impressions: 220000, total_cost: 5500, avg_roi: 1.64, avg_ctr: 0.0118, avg_cvr: 0.0078 }, { video_format: '明星', video_count: 3, total_gmv: 3000, total_impressions: 180000, total_cost: 4200, avg_roi: 0.71, avg_ctr: 0.0138, avg_cvr: 0.0062 }] }
+            }
+          },
+          runner: {
+            '2026-Q2': { internal: { count_g50k: 4, count_g10k: 12, total_count: 75 }, external: { count_g50k: 1, count_g10k: 8, total_count: 140 }, total: { count_g50k: 5, count_g10k: 20, total_count: 215 } },
+            '2026-Q1': { internal: { count_g50k: 6, count_g10k: 18, total_count: 200 }, external: { count_g50k: 2, count_g10k: 14, total_count: 350 }, total: { count_g50k: 8, count_g10k: 32, total_count: 550 } },
+            '2025-Q4': { internal: { count_g50k: 5, count_g10k: 15, total_count: 180 }, external: { count_g50k: 2, count_g10k: 11, total_count: 320 }, total: { count_g50k: 7, count_g10k: 26, total_count: 500 } },
+          }
+        },
+        yunduan: {
+          name: '云端商务家',
+          weeks: {
+            '2026-W16': {
+              overview: { video: { total_count: 62, total_gmv: 156800, new_count: 15, new_gmv: 28000, effective_count: 20 }, livestream: { live_count: 2, total_gmv: 1520000 }, target: { gmv_ratio: 0.103, target_gmv_ratio: 0.10, target_gmv: 152000, new_video_gmv_ratio: 0.179, completion_rate: 103.2 } },
+              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 22, total_gmv: 98000, avg_gmv: 4455, gmv_ratio: 0.625, target: { target_video_count: 20, actual_video_count: 18 }, effective_count: 10 }, { source: 'external', name: '外部', video_count: 34, total_gmv: 46800, avg_gmv: 1376, gmv_ratio: 0.298, target: { target_video_count: 40, actual_video_count: 34 }, effective_count: 8 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 4, total_gmv: 8500, gmv_ratio: 0.054 }, { source: 'other', name: '其他', video_count: 2, total_gmv: 3500, gmv_ratio: 0.022 }] },
+              format: { formats: [{ video_format: 'KOL', video_count: 25, total_gmv: 82000, total_impressions: 1250000, total_cost: 38000, avg_roi: 2.16, avg_ctr: 0.0205, avg_cvr: 0.0142 }, { video_format: '直播切片', video_count: 16, total_gmv: 38000, total_impressions: 850000, total_cost: 18000, avg_roi: 2.11, avg_ctr: 0.0248, avg_cvr: 0.0165 }, { video_format: '原生', video_count: 15, total_gmv: 28000, total_impressions: 650000, total_cost: 15000, avg_roi: 1.87, avg_ctr: 0.0165, avg_cvr: 0.0112 }, { video_format: '复刻', video_count: 4, total_gmv: 6500, total_impressions: 200000, total_cost: 5200, avg_roi: 1.25, avg_ctr: 0.0122, avg_cvr: 0.0078 }, { video_format: '明星', video_count: 2, total_gmv: 2300, total_impressions: 150000, total_cost: 3500, avg_roi: 0.66, avg_ctr: 0.0142, avg_cvr: 0.0058 }] }
+            },
+            '2026-W15': {
+              overview: { video: { total_count: 55, total_gmv: 138000, new_count: 12, new_gmv: 22000, effective_count: 17 }, livestream: { live_count: 2, total_gmv: 1420000 }, target: { gmv_ratio: 0.097, target_gmv_ratio: 0.10, target_gmv: 142000, new_video_gmv_ratio: 0.159, completion_rate: 97.2 } },
+              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 20, total_gmv: 86000, avg_gmv: 4300, gmv_ratio: 0.623, target: { target_video_count: 18, actual_video_count: 16 }, effective_count: 9 }, { source: 'external', name: '外部', video_count: 30, total_gmv: 40500, avg_gmv: 1350, gmv_ratio: 0.293, target: { target_video_count: 35, actual_video_count: 30 }, effective_count: 6 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 3, total_gmv: 8000, gmv_ratio: 0.058 }, { source: 'other', name: '其他', video_count: 2, total_gmv: 3500, gmv_ratio: 0.025 }] },
+              format: { formats: [{ video_format: 'KOL', video_count: 22, total_gmv: 72000, total_impressions: 1100000, total_cost: 34000, avg_roi: 2.12, avg_ctr: 0.0192, avg_cvr: 0.0135 }, { video_format: '直播切片', video_count: 14, total_gmv: 34000, total_impressions: 750000, total_cost: 16000, avg_roi: 2.13, avg_ctr: 0.0235, avg_cvr: 0.0158 }, { video_format: '原生', video_count: 14, total_gmv: 25000, total_impressions: 580000, total_cost: 13500, avg_roi: 1.85, avg_ctr: 0.0155, avg_cvr: 0.0105 }, { video_format: '复刻', video_count: 3, total_gmv: 5500, total_impressions: 170000, total_cost: 4800, avg_roi: 1.15, avg_ctr: 0.0112, avg_cvr: 0.0072 }, { video_format: '明星', video_count: 2, total_gmv: 1500, total_impressions: 130000, total_cost: 3200, avg_roi: 0.47, avg_ctr: 0.0132, avg_cvr: 0.0052 }] }
+            },
+            '2026-W14': {
+              overview: { video: { total_count: 50, total_gmv: 125000, new_count: 10, new_gmv: 18000, effective_count: 15 }, livestream: { live_count: 2, total_gmv: 1350000 }, target: { gmv_ratio: 0.093, target_gmv_ratio: 0.10, target_gmv: 135000, new_video_gmv_ratio: 0.144, completion_rate: 92.6 } },
+              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 18, total_gmv: 78000, avg_gmv: 4333, gmv_ratio: 0.624, target: { target_video_count: 16, actual_video_count: 14 }, effective_count: 8 }, { source: 'external', name: '外部', video_count: 27, total_gmv: 36500, avg_gmv: 1352, gmv_ratio: 0.292, target: { target_video_count: 30, actual_video_count: 27 }, effective_count: 5 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 3, total_gmv: 7500, gmv_ratio: 0.060 }, { source: 'other', name: '其他', video_count: 2, total_gmv: 3000, gmv_ratio: 0.024 }] },
+              format: { formats: [{ video_format: 'KOL', video_count: 20, total_gmv: 65000, total_impressions: 980000, total_cost: 30000, avg_roi: 2.17, avg_ctr: 0.0185, avg_cvr: 0.0128 }, { video_format: '直播切片', video_count: 12, total_gmv: 30000, total_impressions: 680000, total_cost: 14000, avg_roi: 2.14, avg_ctr: 0.0228, avg_cvr: 0.0152 }, { video_format: '原生', video_count: 13, total_gmv: 22000, total_impressions: 520000, total_cost: 12000, avg_roi: 1.83, avg_ctr: 0.0148, avg_cvr: 0.0098 }, { video_format: '复刻', video_count: 3, total_gmv: 5500, total_impressions: 160000, total_cost: 4500, avg_roi: 1.22, avg_ctr: 0.0108, avg_cvr: 0.0068 }, { video_format: '明星', video_count: 2, total_gmv: 2500, total_impressions: 120000, total_cost: 3000, avg_roi: 0.83, avg_ctr: 0.0125, avg_cvr: 0.0055 }] }
+            }
+          },
+          runner: {
+            '2026-Q2': { internal: { count_g50k: 3, count_g10k: 8, total_count: 48 }, external: { count_g50k: 1, count_g10k: 5, total_count: 95 }, total: { count_g50k: 4, count_g10k: 13, total_count: 143 } },
+            '2026-Q1': { internal: { count_g50k: 4, count_g10k: 12, total_count: 130 }, external: { count_g50k: 1, count_g10k: 8, total_count: 230 }, total: { count_g50k: 5, count_g10k: 20, total_count: 360 } },
+            '2025-Q4': { internal: { count_g50k: 3, count_g10k: 10, total_count: 115 }, external: { count_g50k: 1, count_g10k: 7, total_count: 210 }, total: { count_g50k: 4, count_g10k: 17, total_count: 325 } },
+          }
+        }
+      }
+    };
+
+    // 趋势模拟数据
+    const DEMO_TREND = {
+      modeng: [
+        { week: '2026-W09', video_gmv: 325000, live_gmv: 3200000, gmv_ratio: 0.102 },
+        { week: '2026-W10', video_gmv: 348000, live_gmv: 3350000, gmv_ratio: 0.104 },
+        { week: '2026-W11', video_gmv: 385000, live_gmv: 3500000, gmv_ratio: 0.110 },
+        { week: '2026-W12', video_gmv: 402000, live_gmv: 3600000, gmv_ratio: 0.112 },
+        { week: '2026-W13', video_gmv: 398000, live_gmv: 3720000, gmv_ratio: 0.107 },
+        { week: '2026-W14', video_gmv: 412500, live_gmv: 3680000, gmv_ratio: 0.112 },
+        { week: '2026-W15', video_gmv: 478200, live_gmv: 3950000, gmv_ratio: 0.121 },
+        { week: '2026-W16', video_gmv: 523680, live_gmv: 4280000, gmv_ratio: 0.122 },
+      ],
+      qingshu: [
+        { week: '2026-W09', video_gmv: 142000, live_gmv: 1650000, gmv_ratio: 0.086 },
+        { week: '2026-W10', video_gmv: 158000, live_gmv: 1720000, gmv_ratio: 0.092 },
+        { week: '2026-W11', video_gmv: 175000, live_gmv: 1800000, gmv_ratio: 0.097 },
+        { week: '2026-W12', video_gmv: 182000, live_gmv: 1850000, gmv_ratio: 0.098 },
+        { week: '2026-W13', video_gmv: 178000, live_gmv: 1900000, gmv_ratio: 0.094 },
+        { week: '2026-W14', video_gmv: 185000, live_gmv: 1920000, gmv_ratio: 0.096 },
+        { week: '2026-W15', video_gmv: 198000, live_gmv: 2050000, gmv_ratio: 0.097 },
+        { week: '2026-W16', video_gmv: 234500, live_gmv: 2180000, gmv_ratio: 0.108 },
+      ],
+      yunduan: [
+        { week: '2026-W09', video_gmv: 98000, live_gmv: 1150000, gmv_ratio: 0.085 },
+        { week: '2026-W10', video_gmv: 105000, live_gmv: 1200000, gmv_ratio: 0.088 },
+        { week: '2026-W11', video_gmv: 118000, live_gmv: 1280000, gmv_ratio: 0.092 },
+        { week: '2026-W12', video_gmv: 122000, live_gmv: 1300000, gmv_ratio: 0.094 },
+        { week: '2026-W13', video_gmv: 120000, live_gmv: 1320000, gmv_ratio: 0.091 },
+        { week: '2026-W14', video_gmv: 125000, live_gmv: 1350000, gmv_ratio: 0.093 },
+        { week: '2026-W15', video_gmv: 138000, live_gmv: 1420000, gmv_ratio: 0.097 },
+        { week: '2026-W16', video_gmv: 156800, live_gmv: 1520000, gmv_ratio: 0.103 },
+      ]
+    };
+
     // ═══════════════════════════════════════
     // 全局状态
     // ═══════════════════════════════════════
     let currentBrand = 'modeng';
-    let currentWeek = '';
+    let currentWeek = '2026-W16';
     let currentTab = 'overview';
-    let brands = [];
-    let availableWeeks = [];
+
+    function getBrandData() { return DEMO_DATA.brands[currentBrand]; }
+    function getWeekData() { return getBrandData()?.weeks?.[currentWeek]; }
 
     // ═══════════════════════════════════════
-    // 初始化
+    // 工具函数
     // ═══════════════════════════════════════
-    async function init() {
-      try {
-        // 加载品牌列表
-        const brandsRes = await fetch('/api/dashboard/brands');
-        brands = await brandsRes.json();
+    function fmt(n, decimals = 0) {
+      if (n === null || n === undefined || isNaN(n)) return '-';
+      if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+      return n.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
 
-        // 填充品牌选择器
-        const selectors = ['brandSelect', 'uploadBrand'];
-        for (const id of selectors) {
-          const el = document.getElementById(id);
-          el.innerHTML = brands.map(b => `<option value="${b.key}">${b.name}</option>`).join('');
-        }
-
-        // 加载可用周列表
-        const weeksRes = await fetch(`/api/dashboard/weeks?brand=${currentBrand}`);
-        const weeksData = await weeksRes.json();
-        availableWeeks = weeksData.weeks || [];
-
-        // 填充周选择器
-        const weekEl = document.getElementById('weekSelect');
-        if (availableWeeks.length > 0) {
-          currentWeek = availableWeeks[0];
-          weekEl.innerHTML = availableWeeks.map(w => `<option value="${w}">${w}</option>`).join('');
-          document.getElementById('loading').classList.add('hidden');
-          document.getElementById('tabContent').classList.remove('hidden');
-          loadCurrentTab();
-        } else {
-          document.getElementById('loading').classList.add('hidden');
-          document.getElementById('noData').classList.remove('hidden');
-        }
-
-        // 初始化图表
-        initCharts();
-      } catch (err) {
-        showToast('初始化失败: ' + err.message, 'error');
-      }
+    function fmtPercent(n) {
+      if (n === null || n === undefined || isNaN(n)) return '-';
+      return (n * 100).toFixed(1) + '%';
     }
 
     // ═══════════════════════════════════════
-    // 事件处理
+    // 事件
     // ═══════════════════════════════════════
-    function onBrandChange() {
-      currentBrand = document.getElementById('brandSelect').value;
-      refreshWeeks();
-    }
-
-    function onWeekChange() {
-      currentWeek = document.getElementById('weekSelect').value;
-      loadCurrentTab();
-    }
-
-    async function refreshWeeks() {
-      const res = await fetch(`/api/dashboard/weeks?brand=${currentBrand}`);
-      const data = await res.json();
-      availableWeeks = data.weeks || [];
-
-      const weekEl = document.getElementById('weekSelect');
-      if (availableWeeks.length > 0) {
-        currentWeek = availableWeeks[0];
-        weekEl.innerHTML = availableWeeks.map(w => `<option value="${w}">${w}</option>`).join('');
-        document.getElementById('noData').classList.add('hidden');
-        document.getElementById('tabContent').classList.remove('hidden');
-        loadCurrentTab();
-      } else {
-        weekEl.innerHTML = '<option>暂无数据</option>';
-        document.getElementById('tabContent').classList.add('hidden');
-        document.getElementById('noData').classList.remove('hidden');
-      }
-    }
+    function onBrandChange() { currentBrand = document.getElementById('brandSelect').value; loadCurrentTab(); }
+    function onWeekChange() { currentWeek = document.getElementById('weekSelect').value; loadCurrentTab(); }
 
     function switchTab(tab) {
       currentTab = tab;
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('tab-active');
-        b.classList.add('text-gray-500');
-      });
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-gray-500'); });
       document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
       document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
-
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
-
       loadCurrentTab();
     }
 
@@ -485,25 +480,11 @@
     }
 
     // ═══════════════════════════════════════
-    // 数据加载
-    // ═══════════════════════════════════════
-
-    // 工具函数
-    function fmt(n, decimals = 0) {
-      if (n === null || n === undefined || isNaN(n)) return '-';
-      if (n >= 10000) return (n / 10000).toFixed(1) + '万';
-      return n.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    function fmtPercent(n) {
-      if (n === null || n === undefined || isNaN(n)) return '-';
-      return (n * 100).toFixed(1) + '%';
-    }
-
     // 周度总览
-    async function loadOverview() {
-      const res = await fetch(`/api/dashboard/overview?brand=${currentBrand}&week=${currentWeek}`);
-      const d = await res.json();
+    // ═══════════════════════════════════════
+    function loadOverview() {
+      const d = getWeekData()?.overview;
+      if (!d) return;
 
       document.getElementById('kpi-video-gmv').textContent = fmt(d.video.total_gmv);
       document.getElementById('kpi-video-count').textContent = d.video.total_count;
@@ -525,25 +506,23 @@
       document.getElementById('kpi-effective').textContent = d.video.effective_count;
       document.getElementById('kpi-target-gmv').textContent = fmt(d.target.target_gmv);
 
-      // 加载趋势
       loadTrend();
     }
 
-    // 周趋势
-    async function loadTrend() {
-      const res = await fetch(`/api/dashboard/trend?brand=${currentBrand}&weeks=8`);
-      const trend = await res.json();
+    function loadTrend() {
+      const trend = DEMO_TREND[currentBrand] || [];
       updateTrendChart(trend);
     }
 
+    // ═══════════════════════════════════════
     // 源头分析
-    async function loadSource() {
-      const res = await fetch(`/api/dashboard/source?brand=${currentBrand}&week=${currentWeek}`);
-      const d = await res.json();
+    // ═══════════════════════════════════════
+    function loadSource() {
+      const d = getWeekData()?.source;
+      if (!d) return;
 
-      const tbody = document.getElementById('sourceTable');
       const allSources = [...d.groups, ...d.others];
-
+      const tbody = document.getElementById('sourceTable');
       tbody.innerHTML = allSources.map(s => `
         <tr>
           <td><span class="badge ${s.source === 'internal' ? 'bg-indigo-100 text-indigo-700' : s.source === 'external' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}">${s.name}</span></td>
@@ -551,7 +530,7 @@
           <td>${fmt(s.total_gmv)}</td>
           <td>${fmt(s.avg_gmv)}</td>
           <td>${fmtPercent(s.gmv_ratio)}</td>
-          <td>-</td>
+          <td>${s.effective_count || '-'}</td>
           <td>${s.target?.target_video_count || '-'}</td>
           <td>${s.target?.actual_video_count || '-'}</td>
         </tr>
@@ -560,11 +539,13 @@
       updateSourcePieChart(allSources);
     }
 
+    // ═══════════════════════════════════════
     // 季度跑量
-    async function loadRunner() {
+    // ═══════════════════════════════════════
+    function loadRunner() {
       const quarter = document.getElementById('quarterSelect').value;
-      const res = await fetch(`/api/dashboard/runner?brand=${currentBrand}&quarter=${quarter}`);
-      const d = await res.json();
+      const d = getBrandData()?.runner?.[quarter];
+      if (!d) return;
 
       document.getElementById('runner-internal-50k').textContent = d.internal.count_g50k;
       document.getElementById('runner-internal-10k').textContent = d.internal.count_g10k;
@@ -573,13 +554,15 @@
       document.getElementById('runner-external-10k').textContent = d.external.count_g10k;
       document.getElementById('runner-external-total').textContent = d.external.total_count;
 
-      updateRunnerBarChart(d);
+      updateRunnerBarChart({ internal: { ...d.internal, name: '内部(含ITO)' }, external: { ...d.external, name: '外部' }, total: d.total });
     }
 
+    // ═══════════════════════════════════════
     // 形式监控
-    async function loadFormat() {
-      const res = await fetch(`/api/dashboard/format?brand=${currentBrand}&week=${currentWeek}`);
-      const d = await res.json();
+    // ═══════════════════════════════════════
+    function loadFormat() {
+      const d = getWeekData()?.format;
+      if (!d) return;
 
       const tbody = document.getElementById('formatTable');
       tbody.innerHTML = d.formats.map(f => `
@@ -627,7 +610,7 @@
         xAxis: { type: 'category', data: data.map(d => d.week) },
         yAxis: [
           { type: 'value', name: 'GMV' },
-          { type: 'value', name: '占比', max: 1, axisLabel: { formatter: v => (v * 100) + '%' } },
+          { type: 'value', name: '占比', max: 0.2, axisLabel: { formatter: v => (v * 100) + '%' } },
         ],
         series: [
           { name: '短视频GMV', type: 'bar', data: data.map(d => d.video_gmv), itemStyle: { color: '#6366f1' } },
@@ -641,11 +624,8 @@
       sourcePieChart.setOption({
         tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
         series: [{
-          type: 'pie',
-          radius: ['40%', '70%'],
-          data: sources.filter(s => s.total_gmv > 0).map(s => ({
-            name: s.name, value: Math.round(s.total_gmv)
-          })),
+          type: 'pie', radius: ['40%', '70%'],
+          data: sources.filter(s => s.total_gmv > 0).map(s => ({ name: s.name, value: Math.round(s.total_gmv) })),
           label: { formatter: '{b}\n{d}%' },
         }],
       });
@@ -656,7 +636,7 @@
         tooltip: { trigger: 'axis' },
         legend: { data: ['≥5万', '≥1万'], bottom: 0 },
         grid: { top: 20, right: 20, bottom: 40 },
-        xAxis: { type: 'category', data: [data.internal.name, data.external.name, '合计'] },
+        xAxis: { type: 'category', data: ['内部(含ITO)', '外部', '合计'] },
         yAxis: { type: 'value', name: '视频数量' },
         series: [
           { name: '≥5万', type: 'bar', data: [data.internal.count_g50k, data.external.count_g50k, data.total.count_g50k], itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] } },
@@ -673,19 +653,14 @@
         tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
         series: [{
           type: 'pie', radius: '65%',
-          data: validFormats.map((f, i) => ({
-            name: f.video_format, value: Math.round(f.total_gmv),
-            itemStyle: { color: colors[i % colors.length] }
-          })),
+          data: validFormats.map((f, i) => ({ name: f.video_format, value: Math.round(f.total_gmv), itemStyle: { color: colors[i % colors.length] } })),
         }],
       });
 
       if (validFormats.length >= 2) {
         formatRadarChart.setOption({
           tooltip: {},
-          radar: {
-            indicator: validFormats.map(f => ({ name: f.video_format, max: 10 })),
-          },
+          radar: { indicator: validFormats.map(f => ({ name: f.video_format, max: 10 })) },
           series: [{
             type: 'radar',
             data: validFormats.map((f, i) => ({
@@ -707,175 +682,10 @@
     }
 
     // ═══════════════════════════════════════
-    // 上传
-    // ═══════════════════════════════════════
-    function showUploadModal() {
-      document.getElementById('uploadModal').classList.remove('hidden');
-      document.getElementById('uploadResult').classList.add('hidden');
-      document.getElementById('uploadStatus').classList.add('hidden');
-    }
-
-    function showTargetModal() {
-      document.getElementById('targetModal').classList.remove('hidden');
-      document.getElementById('targetWeekLabel').textContent = currentWeek || '-';
-      // 加载现有目标
-      loadExistingTargets();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
-    // 拖拽上传
-    const uploadZone = document.getElementById('uploadZone');
-    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
-    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-    uploadZone.addEventListener('drop', e => {
-      e.preventDefault();
-      uploadZone.classList.remove('dragover');
-      if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
-    });
-
-    function handleFileSelect(input) {
-      if (input.files.length) uploadFile(input.files[0]);
-    }
-
-    async function uploadFile(file) {
-      if (!file.name.match(/\.xlsx?$/i)) {
-        showToast('请选择 Excel 文件', 'error');
-        return;
-      }
-
-      const brand = document.getElementById('uploadBrand').value;
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('brand', brand);
-
-      document.getElementById('uploadStatus').classList.remove('hidden');
-      document.getElementById('uploadResult').classList.add('hidden');
-
-      try {
-        const res = await fetch('/api/upload/video', { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (data.success) {
-          document.getElementById('uploadResult').innerHTML = `
-            <div class="bg-emerald-50 rounded-lg p-4">
-              <p class="text-emerald-700 font-medium">✅ 导入成功</p>
-              <p class="text-sm text-emerald-600 mt-1">品牌: ${data.brand} | Sheet: ${data.sheet} | 导入: ${data.imported} 条</p>
-            </div>`;
-          showToast('数据导入成功！');
-          refreshWeeks();
-        } else {
-          throw new Error(data.error || '未知错误');
-        }
-      } catch (err) {
-        document.getElementById('uploadResult').innerHTML = `
-          <div class="bg-red-50 rounded-lg p-4">
-            <p class="text-red-700 font-medium">❌ 导入失败</p>
-            <p class="text-sm text-red-600 mt-1">${err.message}</p>
-          </div>`;
-      } finally {
-        document.getElementById('uploadStatus').classList.add('hidden');
-      }
-    }
-
-    // ═══════════════════════════════════════
-    // 目标管理
-    // ═══════════════════════════════════════
-    async function loadExistingTargets() {
-      if (!currentWeek) return;
-      try {
-        const res = await fetch(`/api/target?brand=${currentBrand}&week=${currentWeek}`);
-        const targets = await res.json();
-
-        for (const t of targets) {
-          const prefix = t.dimension === 'overall' ? 'overall' : t.dimension === 'internal' ? 'internal' : 'external';
-          if (t.dimension === 'overall') {
-            document.getElementById('tgt-overall-ratio').value = t.target_gmv_ratio_all || '';
-            document.getElementById('tgt-overall-new-ratio').value = t.target_gmv_ratio_new || '';
-          } else {
-            const el = (id, val) => { const e = document.getElementById(id); if (val && e) e.value = val; };
-            el(`tgt-${prefix}-count`, t.target_video_count);
-            el(`tgt-${prefix}-ratio`, t.target_gmv_ratio_all);
-            el(`tgt-${prefix}-avg`, t.target_avg_gmv);
-            el(`tgt-${prefix}-actual`, t.actual_video_count);
-          }
-        }
-      } catch (e) { /* ignore */ }
-    }
-
-    async function saveTargets() {
-      const targets = [
-        {
-          brand: currentBrand, week: currentWeek, dimension: 'overall',
-          target_gmv_ratio_all: parseFloat(document.getElementById('tgt-overall-ratio').value) || 0,
-          target_gmv_ratio_new: parseFloat(document.getElementById('tgt-overall-new-ratio').value) || 0,
-        },
-        {
-          brand: currentBrand, week: currentWeek, dimension: 'internal',
-          target_video_count: parseInt(document.getElementById('tgt-internal-count').value) || 0,
-          target_gmv_ratio_all: parseFloat(document.getElementById('tgt-internal-ratio').value) || 0,
-          target_avg_gmv: parseFloat(document.getElementById('tgt-internal-avg').value) || 0,
-          actual_video_count: parseInt(document.getElementById('tgt-internal-actual').value) || 0,
-        },
-        {
-          brand: currentBrand, week: currentWeek, dimension: 'external',
-          target_video_count: parseInt(document.getElementById('tgt-external-count').value) || 0,
-          target_gmv_ratio_all: parseFloat(document.getElementById('tgt-external-ratio').value) || 0,
-          target_avg_gmv: parseFloat(document.getElementById('tgt-external-avg').value) || 0,
-          actual_video_count: parseInt(document.getElementById('tgt-external-actual').value) || 0,
-        },
-      ];
-
-      try {
-        const res = await fetch('/api/target/batch', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ targets }),
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast('目标保存成功！');
-          closeModal('targetModal');
-          loadCurrentTab();
-        } else {
-          showToast('保存失败: ' + (data.error || ''), 'error');
-        }
-      } catch (err) {
-        showToast('保存失败: ' + err.message, 'error');
-      }
-    }
-
-    // ═══════════════════════════════════════
-    // 导出
-    // ═══════════════════════════════════════
-    function exportReport() {
-      if (!currentWeek) {
-        showToast('请先选择数据周', 'error');
-        return;
-      }
-      // 触发 Excel 下载
-      const url = `/api/export/report?brand=${currentBrand}&week=${currentWeek}`;
-      window.open(url, '_blank');
-      showToast('正在导出报表...');
-    }
-
-    // ═══════════════════════════════════════
-    // Toast
-    // ═══════════════════════════════════════
-    function showToast(msg, type = 'success') {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = `fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm z-50 text-white ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`;
-      el.classList.remove('hidden');
-      setTimeout(() => el.classList.add('hidden'), 3000);
-    }
-
-    // ═══════════════════════════════════════
     // 启动
     // ═══════════════════════════════════════
-    init();
+    initCharts();
+    loadOverview();
   </script>
 </body>
 </html>
