@@ -364,424 +364,488 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// DEMO DATA (v2 — with new dimensions)
+// REAL DATA (v4 — from Excel, 2026 W09-W16)
+// Generated: 2026-04-24
+// Source: 内容短视频-数据报表.xlsx > 新-短视频-数据源 (1482 records)
 // ═══════════════════════════════════════════════════════════════
 const DEMO = {
   brands: {
-    modeng: {
-      name: '摩登新贵女',
+    modeng: { name: '摩登新贵女',
       weeks: {
-        '2026-W16': {
-          overview: {
-            video: { total_count: 187, total_gmv: 523680, new_count: 42, effective_count: 63 },
-            livestream: { live_count: 5, total_gmv: 4280000 },
-            month_video: { gmv: 386000, pct_of_all: 0.737, internal_pct: 0.597, external_pct: 0.403, internal_gmv: 230542, external_gmv: 155458 },
-            production: { month_target: 120, month_actual_cum: 95 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 60, upload_count: 68, effective_count: 28, avg_gmv: 4596, total_gmv: 312500, roi: 2.85, cost: 109649, impressions: 5820000, cvr: 0.0192, ctr: 0.0248 },
-            { name: '外部', target_count: 120, upload_count: 105, effective_count: 31, avg_gmv: 1859, total_gmv: 195180, roi: 1.82, cost: 107245, impressions: 4150000, cvr: 0.0138, ctr: 0.0192 },
-            { name: 'AIGC', target_count: 10, upload_count: 8, effective_count: 1, avg_gmv: 1500, total_gmv: 12000, roi: 1.20, cost: 10000, impressions: 680000, cvr: 0.0085, ctr: 0.0142 },
-            { name: '其他', target_count: 0, upload_count: 6, effective_count: 0, avg_gmv: 667, total_gmv: 4000, roi: 0.67, cost: 5971, impressions: 350000, cvr: 0.0052, ctr: 0.0118 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 28, gmv: 53800, roi: 2.70, cost: 19926, impressions: 1010000, cvr: 0.0156, ctr: 0.0205 },
-            { l1: '原生', l2: '种草', count: 12, gmv: 22500, roi: 2.45, cost: 9184, impressions: 430000, cvr: 0.0138, ctr: 0.0188 },
-            { l1: '原生', l2: '纯展示', count: 8, gmv: 14800, roi: 2.32, cost: 6379, impressions: 280000, cvr: 0.0122, ctr: 0.0172 },
-            { l1: '原生', l2: '混搭', count: 4, gmv: 7580, roi: 2.15, cost: 3526, impressions: 140000, cvr: 0.0105, ctr: 0.0155 },
-            { l1: 'KOL', l2: '种草', count: 72, gmv: 268000, roi: 2.82, cost: 95000, impressions: 3820000, cvr: 0.0182, ctr: 0.0245 },
-            { l1: 'KOL', l2: '机制', count: 15, gmv: 48000, roi: 2.65, cost: 18113, impressions: 820000, cvr: 0.0168, ctr: 0.0228 },
-            { l1: 'KOL', l2: '纯展示', count: 10, gmv: 28000, roi: 2.48, cost: 11290, impressions: 580000, cvr: 0.0145, ctr: 0.0210 },
-            { l1: 'KOL', l2: '混搭', count: 5, gmv: 12000, roi: 2.20, cost: 5455, impressions: 320000, cvr: 0.0128, ctr: 0.0195 },
-            { l1: '直播切片', l2: '纯展示', count: 48, gmv: 128000, roi: 3.05, cost: 41967, impressions: 2150000, cvr: 0.0215, ctr: 0.0312 },
-            { l1: '直播切片', l2: '机制', count: 8, gmv: 18500, roi: 2.88, cost: 6424, impressions: 380000, cvr: 0.0195, ctr: 0.0285 },
-            { l1: '直播切片', l2: '种草', count: 5, gmv: 10200, roi: 2.72, cost: 3750, impressions: 220000, cvr: 0.0178, ctr: 0.0265 },
-            { l1: '直播切片', l2: '混搭', count: 3, gmv: 5800, roi: 2.55, cost: 2275, impressions: 150000, cvr: 0.0162, ctr: 0.0248 },
-            { l1: '复刻', l2: '混搭', count: 10, gmv: 22000, roi: 1.83, cost: 12022, impressions: 520000, cvr: 0.0103, ctr: 0.0156 },
-            { l1: '复刻', l2: '机制', count: 4, gmv: 7500, roi: 1.68, cost: 4464, impressions: 180000, cvr: 0.0092, ctr: 0.0142 },
-            { l1: '复刻', l2: '种草', count: 3, gmv: 5200, roi: 1.55, cost: 3355, impressions: 140000, cvr: 0.0082, ctr: 0.0128 },
-            { l1: '复刻', l2: '纯展示', count: 2, gmv: 3100, roi: 1.42, cost: 2183, impressions: 95000, cvr: 0.0072, ctr: 0.0115 },
-            { l1: '明星', l2: '种草', count: 3, gmv: 4500, roi: 0.92, cost: 4891, impressions: 235000, cvr: 0.0088, ctr: 0.0192 },
-            { l1: '明星', l2: '机制', count: 1, gmv: 1500, roi: 0.82, cost: 1829, impressions: 85000, cvr: 0.0080, ctr: 0.0185 },
-            { l1: '明星', l2: '纯展示', count: 1, gmv: 1000, roi: 0.78, cost: 1282, impressions: 60000, cvr: 0.0073, ctr: 0.0178 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-达人A行李箱测评', gmv: 86000, roi: 3.42 },
-            { type: 'KOL', belong: '外部', name: 'KOL-达人B差旅开箱', gmv: 72000, roi: 3.15 },
-            { type: '直播切片', belong: '内部', name: '直播切片-W16热卖款', gmv: 58000, roi: 3.80 },
-            { type: '原生', belong: '内部', name: '原生-功能展示机甲款', gmv: 32000, roi: 2.95 },
-            { type: 'KOL', belong: '内部', name: 'ITO-品牌自播KOL', gmv: 28000, roi: 2.60 },
-            { type: '直播切片', belong: '内部', name: '直播切片-经典热销', gmv: 25000, roi: 2.85 },
-          ]
-        },
-        '2026-W15': {
-          overview: {
-            video: { total_count: 165, total_gmv: 478200, new_count: 38, effective_count: 55 },
-            livestream: { live_count: 4, total_gmv: 3950000 },
-            month_video: { gmv: 348000, pct_of_all: 0.728, internal_pct: 0.596, external_pct: 0.404, internal_gmv: 207408, external_gmv: 140592 },
-            production: { month_target: 120, month_actual_cum: 53 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 55, upload_count: 58, effective_count: 24, avg_gmv: 4914, total_gmv: 285000, roi: 2.92, cost: 97603, impressions: 5200000, cvr: 0.0188, ctr: 0.0255 },
-            { name: '外部', target_count: 110, upload_count: 95, effective_count: 27, avg_gmv: 1816, total_gmv: 172500, roi: 1.75, cost: 98571, impressions: 3850000, cvr: 0.0132, ctr: 0.0185 },
-            { name: 'AIGC', target_count: 8, upload_count: 7, effective_count: 1, avg_gmv: 2029, total_gmv: 14200, roi: 1.35, cost: 10519, impressions: 620000, cvr: 0.0092, ctr: 0.0135 },
-            { name: '其他', target_count: 0, upload_count: 5, effective_count: 0, avg_gmv: 1300, total_gmv: 6500, roi: 0.72, cost: 9028, impressions: 320000, cvr: 0.0061, ctr: 0.0108 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 23, gmv: 48500, roi: 2.65, cost: 18302, impressions: 880000, cvr: 0.0145, ctr: 0.0192 },
-            { l1: '原生', l2: '种草', count: 10, gmv: 20500, roi: 2.42, cost: 8471, impressions: 385000, cvr: 0.0132, ctr: 0.0178 },
-            { l1: '原生', l2: '纯展示', count: 7, gmv: 13800, roi: 2.28, cost: 6053, impressions: 255000, cvr: 0.0118, ctr: 0.0165 },
-            { l1: '原生', l2: '混搭', count: 5, gmv: 12200, roi: 2.12, cost: 5755, impressions: 200000, cvr: 0.0102, ctr: 0.0148 },
-            { l1: 'KOL', l2: '种草', count: 65, gmv: 245000, roi: 2.78, cost: 88129, impressions: 3500000, cvr: 0.0175, ctr: 0.0238 },
-            { l1: 'KOL', l2: '机制', count: 13, gmv: 44000, roi: 2.58, cost: 17054, impressions: 740000, cvr: 0.0162, ctr: 0.0222 },
-            { l1: 'KOL', l2: '纯展示', count: 8, gmv: 25000, roi: 2.40, cost: 10417, impressions: 530000, cvr: 0.0142, ctr: 0.0205 },
-            { l1: 'KOL', l2: '混搭', count: 4, gmv: 10000, roi: 2.15, cost: 4651, impressions: 285000, cvr: 0.0125, ctr: 0.0188 },
-            { l1: '直播切片', l2: '纯展示', count: 42, gmv: 115000, roi: 3.03, cost: 37954, impressions: 1980000, cvr: 0.0208, ctr: 0.0305 },
-            { l1: '直播切片', l2: '机制', count: 7, gmv: 16500, roi: 2.85, cost: 5789, impressions: 345000, cvr: 0.0188, ctr: 0.0278 },
-            { l1: '直播切片', l2: '种草', count: 4, gmv: 9200, roi: 2.68, cost: 3433, impressions: 198000, cvr: 0.0170, ctr: 0.0258 },
-            { l1: '直播切片', l2: '混搭', count: 3, gmv: 5300, roi: 2.50, cost: 2120, impressions: 138000, cvr: 0.0155, ctr: 0.0240 },
-            { l1: '复刻', l2: '混搭', count: 8, gmv: 18000, roi: 1.71, cost: 10526, impressions: 480000, cvr: 0.0097, ctr: 0.0148 },
-            { l1: '复刻', l2: '机制', count: 3, gmv: 6500, roi: 1.58, cost: 4114, impressions: 165000, cvr: 0.0088, ctr: 0.0135 },
-            { l1: '复刻', l2: '种草', count: 2, gmv: 4200, roi: 1.45, cost: 2897, impressions: 125000, cvr: 0.0078, ctr: 0.0122 },
-            { l1: '复刻', l2: '纯展示', count: 1, gmv: 2000, roi: 1.32, cost: 1515, impressions: 80000, cvr: 0.0068, ctr: 0.0110 },
-            { l1: '明星', l2: '种草', count: 3, gmv: 3500, roi: 0.78, cost: 4487, impressions: 218000, cvr: 0.0080, ctr: 0.0178 },
-            { l1: '明星', l2: '机制', count: 1, gmv: 1000, roi: 0.65, cost: 1538, impressions: 80000, cvr: 0.0072, ctr: 0.0170 },
-            { l1: '明星', l2: '纯展示', count: 1, gmv: 700, roi: 0.55, cost: 1273, impressions: 52000, cvr: 0.0062, ctr: 0.0162 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-达人A测评', gmv: 78000, roi: 3.20 },
-            { type: '直播切片', belong: '内部', name: '直播切片-热销回顾', gmv: 52000, roi: 3.50 },
-            { type: 'KOL', belong: '外部', name: 'KOL-达人B开箱', gmv: 65000, roi: 2.98 },
-            { type: '原生', belong: '内部', name: '原生-功能展示', gmv: 28000, roi: 2.72 },
-            { type: '复刻', belong: '外部', name: '复刻-混搭爆款', gmv: 15000, roi: 1.90 },
-          ]
-        },
-        '2026-W14': {
-          overview: {
-            video: { total_count: 152, total_gmv: 412500, new_count: 35, effective_count: 48 },
-            livestream: { live_count: 4, total_gmv: 3680000 },
-            month_video: { gmv: 295000, pct_of_all: 0.715, internal_pct: 0.601, external_pct: 0.399, internal_gmv: 177295, external_gmv: 117705 },
-            production: { month_target: 120, month_actual_cum: 15 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 50, upload_count: 52, effective_count: 21, avg_gmv: 4769, total_gmv: 248000, roi: 2.88, cost: 86111, impressions: 4650000, cvr: 0.0182, ctr: 0.0242 },
-            { name: '外部', target_count: 100, upload_count: 88, effective_count: 23, avg_gmv: 1619, total_gmv: 142500, roi: 1.68, cost: 84821, impressions: 3450000, cvr: 0.0125, ctr: 0.0178 },
-            { name: 'AIGC', target_count: 8, upload_count: 7, effective_count: 1, avg_gmv: 2143, total_gmv: 15000, roi: 1.30, cost: 11538, impressions: 580000, cvr: 0.0088, ctr: 0.0128 },
-            { name: '其他', target_count: 0, upload_count: 5, effective_count: 0, avg_gmv: 1400, total_gmv: 7000, roi: 0.65, cost: 10769, impressions: 280000, cvr: 0.0055, ctr: 0.0102 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 22, gmv: 40500, roi: 2.48, cost: 16331, impressions: 780000, cvr: 0.0138, ctr: 0.0182 },
-            { l1: '原生', l2: '种草', count: 9, gmv: 16800, roi: 2.28, cost: 7368, impressions: 325000, cvr: 0.0125, ctr: 0.0168 },
-            { l1: '原生', l2: '纯展示', count: 6, gmv: 10500, roi: 2.12, cost: 4953, impressions: 220000, cvr: 0.0110, ctr: 0.0152 },
-            { l1: '原生', l2: '混搭', count: 5, gmv: 10200, roi: 1.98, cost: 5152, impressions: 255000, cvr: 0.0098, ctr: 0.0138 },
-            { l1: 'KOL', l2: '种草', count: 58, gmv: 218000, roi: 2.66, cost: 81955, impressions: 3200000, cvr: 0.0168, ctr: 0.0225 },
-            { l1: 'KOL', l2: '机制', count: 12, gmv: 40000, roi: 2.48, cost: 16129, impressions: 698000, cvr: 0.0155, ctr: 0.0210 },
-            { l1: 'KOL', l2: '纯展示', count: 7, gmv: 22000, roi: 2.32, cost: 9483, impressions: 498000, cvr: 0.0135, ctr: 0.0195 },
-            { l1: 'KOL', l2: '混搭', count: 3, gmv: 8500, roi: 2.05, cost: 4146, impressions: 268000, cvr: 0.0118, ctr: 0.0178 },
-            { l1: '直播切片', l2: '纯展示', count: 38, gmv: 98000, roi: 2.80, cost: 35000, impressions: 1780000, cvr: 0.0195, ctr: 0.0292 },
-            { l1: '直播切片', l2: '机制', count: 6, gmv: 14500, roi: 2.62, cost: 5534, impressions: 310000, cvr: 0.0178, ctr: 0.0265 },
-            { l1: '直播切片', l2: '种草', count: 4, gmv: 8800, roi: 2.45, cost: 3592, impressions: 188000, cvr: 0.0162, ctr: 0.0248 },
-            { l1: '直播切片', l2: '混搭', count: 2, gmv: 4200, roi: 2.28, cost: 1842, impressions: 125000, cvr: 0.0148, ctr: 0.0232 },
-            { l1: '复刻', l2: '混搭', count: 9, gmv: 15500, roi: 1.58, cost: 9810, impressions: 420000, cvr: 0.0091, ctr: 0.0139 },
-            { l1: '复刻', l2: '机制', count: 3, gmv: 5200, roi: 1.45, cost: 3586, impressions: 145000, cvr: 0.0082, ctr: 0.0126 },
-            { l1: '复刻', l2: '种草', count: 2, gmv: 3200, roi: 1.32, cost: 2424, impressions: 110000, cvr: 0.0072, ctr: 0.0114 },
-            { l1: '复刻', l2: '纯展示', count: 1, gmv: 1600, roi: 1.20, cost: 1333, impressions: 72000, cvr: 0.0062, ctr: 0.0102 },
-            { l1: '明星', l2: '种草', count: 3, gmv: 2200, roi: 0.52, cost: 4231, impressions: 198000, cvr: 0.0072, ctr: 0.0165 },
-            { l1: '明星', l2: '机制', count: 1, gmv: 500, roi: 0.38, cost: 1316, impressions: 72000, cvr: 0.0062, ctr: 0.0158 },
-            { l1: '明星', l2: '纯展示', count: 1, gmv: 300, roi: 0.30, cost: 1000, impressions: 50000, cvr: 0.0055, ctr: 0.0150 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-达人C评测', gmv: 68000, roi: 3.05 },
-            { type: '直播切片', belong: '内部', name: '直播切片-经典款', gmv: 45000, roi: 3.20 },
-            { type: '原生', belong: '内部', name: '原生-机制类', gmv: 25000, roi: 2.55 },
-          ]
-        }
+    '2026-W09': {
+      overview: {
+        video: { total_count: 58, total_gmv: 199858.0, new_count: 58, effective_count: 27 },
+        livestream: { live_count: 24, total_gmv: 436022.0 },
+        month_video: { gmv: 199858.0, pct_of_all: 0.72, internal_pct: 0.1873, external_pct: 0.7466, internal_gmv: 37426.0, external_gmv: 149205.0 },
+        production: { month_target: 120, month_actual_cum: 58 }
+      },
+      source: [
+        { name: '外部', target_count: 22, upload_count: 22, effective_count: 11, avg_gmv: 13564.09, total_gmv: 149205.0, roi: 5.99, cost: 24056.18, impressions: 122417, cvr: 0.0185, ctr: 0.0427 },
+        { name: '内部(含ITO)', target_count: 35, upload_count: 35, effective_count: 15, avg_gmv: 2495.07, total_gmv: 37426.0, roi: 23.17, cost: 5174.94, impressions: 34801, cvr: 0.0409, ctr: 0.0621 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 13227.0, total_gmv: 13227.0, roi: 4.68, cost: 2827.61, impressions: 12538, cvr: 0.0138, ctr: 0.0518 },
+      ],
+      format: [
+        { l1: '原生', l2: '机制', count: 5, gmv: 14044.0, roi: 5.28, cost: 2694.88, impressions: 14764, cvr: 0.0152, ctr: 0.0475 },
+        { l1: '原生', l2: '种草', count: 6, gmv: 20295.0, roi: 19.3, cost: 3126.15, impressions: 18419, cvr: 0.0389, ctr: 0.0617 },
+        { l1: 'KOL', l2: '种草', count: 32, gmv: 155479.0, roi: 15.99, cost: 23890.89, impressions: 125982, cvr: 0.0306, ctr: 0.0534 },
+        { l1: '直播切片', l2: '纯展示', count: 9, gmv: 10040.0, roi: 11.72, cost: 2220.28, impressions: 9866, cvr: 0.0288, ctr: 0.07 },
+        { l1: '复刻', l2: '混搭', count: 6, gmv: 0.0, roi: 0, cost: 126.53, impressions: 725, cvr: 0, ctr: 0.0384 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 45284.0, roi: 9.65 },
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 36594.0, roi: 6.82 },
+        { type: '原生-机制', belong: '外部', name: '20260128-P2-基石绿-自制+切片混剪03-ZY.mp4', gmv: 14044.0, roi: 5.28 },
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 13227.0, roi: 4.68 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 12056.0, roi: 7.26 },
+      ]
+    },
+    '2026-W10': {
+      overview: {
+        video: { total_count: 50, total_gmv: 237767.0, new_count: 50, effective_count: 22 },
+        livestream: { live_count: 29, total_gmv: 543236.36 },
+        month_video: { gmv: 237767.0, pct_of_all: 0.72, internal_pct: 0.0837, external_pct: 0.853, internal_gmv: 19896.0, external_gmv: 202805.0 },
+        production: { month_target: 120, month_actual_cum: 50 }
+      },
+      source: [
+        { name: '外部', target_count: 24, upload_count: 24, effective_count: 14, avg_gmv: 14486.07, total_gmv: 202805.0, roi: 11.85, cost: 28520.07, impressions: 126857, cvr: 0.0309, ctr: 0.0514 },
+        { name: '内部(含ITO)', target_count: 25, upload_count: 25, effective_count: 7, avg_gmv: 2842.29, total_gmv: 19896.0, roi: 31.26, cost: 3626.38, impressions: 26388, cvr: 0.0779, ctr: 0.0484 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 15066.0, total_gmv: 15066.0, roi: 6.99, cost: 2155.21, impressions: 9091, cvr: 0.0184, ctr: 0.0537 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 50, gmv: 237767.0, roi: 17.81, cost: 34301.66, impressions: 162336, cvr: 0.0453, ctr: 0.0499 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 49879.0, roi: 9.61 },
+        { type: '原生-种草', belong: '外部', name: '20260128-P2-基石绿-自制+切片混剪03-ZY.mp4', gmv: 27742.0, roi: 9.28 },
+        { type: '原生-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 24750.0, roi: 4.1 },
+        { type: '原生-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 20236.0, roi: 7.06 },
+        { type: '原生-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 17062.0, roi: 7.25 },
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 15066.0, roi: 6.99 },
+        { type: '原生-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 13830.0, roi: 8.54 },
+        { type: '原生-种草', belong: '外部', name: '251206-p2梦境粉26寸-kol 剌剌的新家日记-ZY.mp4', gmv: 12020.0, roi: 6.05 },
+        { type: '原生-种草', belong: '外部', name: '251202-p1条纹烟白26寸-主播cc01-ZY.mp4', gmv: 11896.0, roi: 11.93 },
+      ]
+    },
+    '2026-W11': {
+      overview: {
+        video: { total_count: 64, total_gmv: 109460.0, new_count: 64, effective_count: 16 },
+        livestream: { live_count: 35, total_gmv: 300982.0 },
+        month_video: { gmv: 109460.0, pct_of_all: 0.72, internal_pct: 0.0429, external_pct: 0.9297, internal_gmv: 4698.0, external_gmv: 101766.0 },
+        production: { month_target: 120, month_actual_cum: 64 }
+      },
+      source: [
+        { name: '外部', target_count: 31, upload_count: 31, effective_count: 12, avg_gmv: 8480.5, total_gmv: 101766.0, roi: 13.36, cost: 16359.2, impressions: 84699, cvr: 0.0275, ctr: 0.0656 },
+        { name: '内部(含ITO)', target_count: 32, upload_count: 32, effective_count: 3, avg_gmv: 1566.0, total_gmv: 4698.0, roi: 85.86, cost: 1591.37, impressions: 8457, cvr: 0.3679, ctr: 0.0496 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 2996.0, total_gmv: 2996.0, roi: 2.71, cost: 1105.97, impressions: 4406, cvr: 0.009, ctr: 0.0504 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 64, gmv: 109460.0, roi: 26.29, cost: 19056.54, impressions: 97562, cvr: 0.0902, ctr: 0.0574 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 28882.0, roi: 8.74 },
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 20886.0, roi: 6.52 },
+        { type: '原生-种草', belong: '外部', name: '20260128-P2-基石绿-自制+切片混剪03-ZY.mp4', gmv: 12746.0, roi: 6.84 },
+      ]
+    },
+    '2026-W12': {
+      overview: {
+        video: { total_count: 59, total_gmv: 426589.2, new_count: 59, effective_count: 37 },
+        livestream: { live_count: 24, total_gmv: 989791.8 },
+        month_video: { gmv: 426589.2, pct_of_all: 0.72, internal_pct: 0.3668, external_pct: 0.523, internal_gmv: 156468.2, external_gmv: 223114.0 },
+        production: { month_target: 120, month_actual_cum: 59 }
+      },
+      source: [
+        { name: '外部', target_count: 33, upload_count: 33, effective_count: 22, avg_gmv: 10141.55, total_gmv: 223114.0, roi: 11.25, cost: 26992.07, impressions: 171281, cvr: 0.0261, ctr: 0.0952 },
+        { name: '内部(含ITO)', target_count: 25, upload_count: 25, effective_count: 14, avg_gmv: 11176.3, total_gmv: 156468.2, roi: 12.08, cost: 12076.25, impressions: 166691, cvr: 0.0246, ctr: 0.1153 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 47007.0, total_gmv: 47007.0, roi: 8.96, cost: 5248.73, impressions: 20728, cvr: 0.0186, ctr: 0.1324 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 59, gmv: 426589.2, roi: 11.5, cost: 44317.05, impressions: 358700, cvr: 0.0253, ctr: 0.1037 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: '内部(含ITO)', name: 'ITO撤柜专场来了！经典行李箱全场7折起 大家很喜欢的开心果系列多款颜', gmv: 119822.8, roi: 15.89 },
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 47007.0, roi: 8.96 },
+        { type: '原生-种草', belong: '外部', name: '20260128-P2-基石绿-自制+切片混剪03-ZY.mp4', gmv: 39567.8, roi: 11.94 },
+        { type: '原生-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 38219.8, roi: 8.55 },
+        { type: '原生-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 29306.2, roi: 7.42 },
+        { type: '原生-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 23235.8, roi: 8.09 },
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 21594.8, roi: 6.0 },
+        { type: '原生-种草', belong: '外部', name: '20260313_外部_P2trunk_平原灰_直播切片_种草.mp4', gmv: 11523.0, roi: 26.24 },
+        { type: '原生-种草', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 10181.4, roi: 7.88 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260211-内部-P2-数字紫-KOL-好物分享-天云分享一切美', gmv: 10067.2, roi: 9.25 },
+      ]
+    },
+    '2026-W13': {
+      overview: {
+        video: { total_count: 60, total_gmv: 237941.0, new_count: 60, effective_count: 21 },
+        livestream: { live_count: 25, total_gmv: 651275.06 },
+        month_video: { gmv: 237941.0, pct_of_all: 0.72, internal_pct: 0.2666, external_pct: 0.6315, internal_gmv: 63440.0, external_gmv: 150250.0 },
+        production: { month_target: 120, month_actual_cum: 60 }
+      },
+      source: [
+        { name: '外部', target_count: 36, upload_count: 36, effective_count: 14, avg_gmv: 10732.14, total_gmv: 150250.0, roi: 7.43, cost: 23329.84, impressions: 108712, cvr: 0.0224, ctr: 0.0634 },
+        { name: '内部(含ITO)', target_count: 23, upload_count: 23, effective_count: 6, avg_gmv: 10573.33, total_gmv: 63440.0, roi: 13.73, cost: 9265.38, impressions: 95118, cvr: 0.026, ctr: 0.0572 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 24251.0, total_gmv: 24251.0, roi: 6.14, cost: 3950.21, impressions: 14918, cvr: 0.022, ctr: 0.061 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 60, gmv: 237941.0, roi: 9.17, cost: 36545.43, impressions: 218748, cvr: 0.0234, ctr: 0.0611 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 35720.0, roi: 7.63 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260311_内部_P2trunk_数字紫_KOL_纯展示_梦个个', gmv: 27750.0, roi: 5.96 },
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 24251.0, roi: 6.14 },
+        { type: '原生-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 21990.0, roi: 8.64 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: 'ITO直播专场｜开心果2代2026春夏限定色 3月25号早上8点，「I', gmv: 20590.0, roi: 10.4 },
+        { type: '原生-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 19620.0, roi: 5.04 },
+        { type: '原生-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 18000.0, roi: 7.57 },
+        { type: '原生-种草', belong: '外部', name: '251231-p2穹顶蓝30寸-kol 香菜不加辣y-ZY.mp4', gmv: 13234.0, roi: 11.5 },
+        { type: '原生-种草', belong: '外部', name: '20260128-P2-基石绿-自制+切片混剪03-ZY.mp4', gmv: 10330.0, roi: 3.94 },
+      ]
+    },
+    '2026-W14': {
+      overview: {
+        video: { total_count: 68, total_gmv: 177810.0, new_count: 68, effective_count: 21 },
+        livestream: { live_count: 29, total_gmv: 390329.0 },
+        month_video: { gmv: 177810.0, pct_of_all: 0.72, internal_pct: 0.1944, external_pct: 0.6137, internal_gmv: 34562.0, external_gmv: 109118.0 },
+        production: { month_target: 120, month_actual_cum: 68 }
+      },
+      source: [
+        { name: '外部', target_count: 46, upload_count: 46, effective_count: 15, avg_gmv: 7274.53, total_gmv: 109118.0, roi: 24.98, cost: 14565.87, impressions: 70331, cvr: 0.0602, ctr: 0.062 },
+        { name: '内部(含ITO)', target_count: 21, upload_count: 21, effective_count: 5, avg_gmv: 6912.4, total_gmv: 34562.0, roi: 26.13, cost: 7086.7, impressions: 51374, cvr: 0.2393, ctr: 0.0526 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 34130.0, total_gmv: 34130.0, roi: 8.45, cost: 4037.1, impressions: 19068, cvr: 0.0222, ctr: 0.0473 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 68, gmv: 177810.0, roi: 24.47, cost: 25689.67, impressions: 140773, cvr: 0.101, ctr: 0.0587 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 34130.0, roi: 8.45 },
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 24374.0, roi: 7.28 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260327-内部_P2trunk_波子绿_KOL_种草_叶耶耶🌀', gmv: 23358.0, roi: 5.44 },
+        { type: '原生-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 15234.0, roi: 5.55 },
+        { type: '原生-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 13630.0, roi: 9.44 },
+        { type: '原生-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 12440.0, roi: 15.18 },
+        { type: '原生-种草', belong: '外部', name: '251231-p2穹顶蓝30寸-kol 香菜不加辣y-ZY.mp4', gmv: 10740.0, roi: 10.58 },
+      ]
+    },
+    '2026-W15': {
+      overview: {
+        video: { total_count: 76, total_gmv: 241296.0, new_count: 76, effective_count: 20 },
+        livestream: { live_count: 25, total_gmv: 470536.12 },
+        month_video: { gmv: 241296.0, pct_of_all: 0.72, internal_pct: 0.1683, external_pct: 0.6276, internal_gmv: 40608.0, external_gmv: 151436.0 },
+        production: { month_target: 120, month_actual_cum: 76 }
+      },
+      source: [
+        { name: '外部', target_count: 52, upload_count: 52, effective_count: 15, avg_gmv: 10095.73, total_gmv: 151436.0, roi: 23.59, cost: 19969.84, impressions: 82717, cvr: 0.0336, ctr: 0.0529 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 49252.0, total_gmv: 49252.0, roi: 8.41, cost: 5853.25, impressions: 27092, cvr: 0.0195, ctr: 0.0493 },
+        { name: '内部(含ITO)', target_count: 23, upload_count: 23, effective_count: 4, avg_gmv: 10152.0, total_gmv: 40608.0, roi: 18.29, cost: 7695.17, impressions: 50071, cvr: 0.0376, ctr: 0.0605 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 76, gmv: 241296.0, roi: 21.77, cost: 33518.26, impressions: 159880, cvr: 0.0337, ctr: 0.0552 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 49252.0, roi: 8.41 },
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 42546.0, roi: 9.0 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260311_内部_P2trunk_数字紫_KOL_纯展示_梦个个', gmv: 22674.0, roi: 9.49 },
+        { type: '原生-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 17020.0, roi: 8.68 },
+        { type: '原生-种草', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 14378.0, roi: 12.54 },
+        { type: '原生-种草', belong: '外部', name: '251231-p2穹顶蓝30寸-kol 香菜不加辣y-ZY.mp4', gmv: 11230.0, roi: 11.76 },
+        { type: '原生-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 10850.0, roi: 7.57 },
+        { type: '原生-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 10456.0, roi: 9.29 },
+      ]
+    },
+    '2026-W16': {
+      overview: {
+        video: { total_count: 63, total_gmv: 296656.0, new_count: 63, effective_count: 28 },
+        livestream: { live_count: 45, total_gmv: 660041.82 },
+        month_video: { gmv: 296656.0, pct_of_all: 0.72, internal_pct: 0.3003, external_pct: 0.4991, internal_gmv: 89087.0, external_gmv: 148047.0 },
+        production: { month_target: 120, month_actual_cum: 63 }
+      },
+      source: [
+        { name: '外部', target_count: 43, upload_count: 43, effective_count: 16, avg_gmv: 9252.94, total_gmv: 148047.0, roi: 14.32, cost: 25345.17, impressions: 111557, cvr: 0.0616, ctr: 0.057 },
+        { name: '内部(含ITO)', target_count: 19, upload_count: 19, effective_count: 11, avg_gmv: 8098.82, total_gmv: 89087.0, roi: 27.73, cost: 10185.42, impressions: 64535, cvr: 0.0646, ctr: 0.0582 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 59522.0, total_gmv: 59522.0, roi: 7.41, cost: 8029.82, impressions: 34934, cvr: 0.021, ctr: 0.0506 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 63, gmv: 296656.0, roi: 19.34, cost: 43560.41, impressions: 211026, cvr: 0.0613, ctr: 0.0573 },
+      ],
+      runner_detail: [
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 59522.0, roi: 7.41 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260311_内部_P2trunk_数字紫_KOL_纯展示_梦个个', gmv: 31417.0, roi: 8.57 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260327-内部_P2trunk_波子绿_KOL_种草_叶耶耶🌀', gmv: 27750.0, roi: 6.72 },
+        { type: '原生-种草', belong: '外部', name: '251202-p1条纹烟白26寸-主播cc01-ZY.mp4', gmv: 20970.0, roi: 13.79 },
+        { type: '原生-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 19790.0, roi: 3.25 },
+        { type: '原生-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 19500.0, roi: 8.65 },
+        { type: '原生-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 15200.0, roi: 6.46 },
+        { type: '原生-种草', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 14520.0, roi: 10.99 },
+        { type: '原生-种草', belong: '外部', name: '20260128-P2-基石绿-自制+切片混剪03-ZY.mp4', gmv: 13970.0, roi: 5.78 },
+        { type: '原生-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 12540.0, roi: 3.54 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '20260211-内部-P2-数字紫-KOL-好物分享-天云分享一切美', gmv: 11820.0, roi: 9.39 },
+        { type: '原生-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 11630.0, roi: 6.71 },
+      ]
+    },
       },
       runner: {
-        '2026-Q2': { internal: { g50k: 8, g10k: 22, total: 142 }, external: { g50k: 3, g10k: 15, total: 258 } },
-        '2026-Q1': { internal: { g50k: 12, g10k: 35, total: 380 }, external: { g50k: 5, g10k: 28, total: 620 } },
-        '2025-Q4': { internal: { g50k: 10, g10k: 30, total: 350 }, external: { g50k: 4, g10k: 22, total: 580 } },
+        '2026-Q1': { internal: { g50k: 1, g10k: 9, total: 10 }, external: { g50k: 8, g10k: 79, total: 87 } },
+        '2026-Q2': { internal: { g50k: 0, g10k: 5, total: 5 }, external: { g50k: 0, g10k: 19, total: 19 } },
       }
     },
-    qingshu: {
-      name: '轻熟质享客',
+    qingshu: { name: '轻熟质享客',
       weeks: {
-        '2026-W16': {
-          overview: {
-            video: { total_count: 95, total_gmv: 234500, new_count: 22, effective_count: 32 },
-            livestream: { live_count: 3, total_gmv: 2180000 },
-            month_video: { gmv: 172000, pct_of_all: 0.733, internal_pct: 0.618, external_pct: 0.382, internal_gmv: 106296, external_gmv: 65704 },
-            production: { month_target: 80, month_actual_cum: 60 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 30, upload_count: 35, effective_count: 15, avg_gmv: 4143, total_gmv: 145000, roi: 2.62, cost: 55344, impressions: 2980000, cvr: 0.0168, ctr: 0.0225 },
-            { name: '外部', target_count: 65, upload_count: 52, effective_count: 14, avg_gmv: 1452, total_gmv: 75500, roi: 1.58, cost: 47785, impressions: 1920000, cvr: 0.0118, ctr: 0.0175 },
-            { name: 'AIGC', target_count: 5, upload_count: 5, effective_count: 1, avg_gmv: 1800, total_gmv: 9000, roi: 1.15, cost: 7826, impressions: 520000, cvr: 0.0075, ctr: 0.0128 },
-            { name: '其他', target_count: 0, upload_count: 3, effective_count: 0, avg_gmv: 1667, total_gmv: 5000, roi: 0.60, cost: 8333, impressions: 180000, cvr: 0.0048, ctr: 0.0098 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 12, gmv: 19800, roi: 1.80, cost: 11000, impressions: 480000, cvr: 0.0118, ctr: 0.0168 },
-            { l1: '原生', l2: '种草', count: 6, gmv: 9200, roi: 1.65, cost: 5576, impressions: 220000, cvr: 0.0105, ctr: 0.0155 },
-            { l1: '原生', l2: '纯展示', count: 4, gmv: 5800, roi: 1.52, cost: 3816, impressions: 148000, cvr: 0.0092, ctr: 0.0142 },
-            { l1: '原生', l2: '混搭', count: 3, gmv: 3700, roi: 1.40, cost: 2643, impressions: 112000, cvr: 0.0080, ctr: 0.0130 },
-            { l1: 'KOL', l2: '种草', count: 38, gmv: 125000, roi: 2.40, cost: 52083, impressions: 1800000, cvr: 0.0156, ctr: 0.0218 },
-            { l1: 'KOL', l2: '机制', count: 8, gmv: 22000, roi: 2.22, cost: 9910, impressions: 385000, cvr: 0.0142, ctr: 0.0202 },
-            { l1: 'KOL', l2: '纯展示', count: 5, gmv: 12500, roi: 2.05, cost: 6098, impressions: 245000, cvr: 0.0128, ctr: 0.0188 },
-            { l1: 'KOL', l2: '混搭', count: 3, gmv: 6500, roi: 1.88, cost: 3457, impressions: 158000, cvr: 0.0112, ctr: 0.0172 },
-            { l1: '直播切片', l2: '纯展示', count: 25, gmv: 58000, roi: 2.32, cost: 25000, impressions: 1250000, cvr: 0.0188, ctr: 0.0275 },
-            { l1: '直播切片', l2: '机制', count: 4, gmv: 8500, roi: 2.18, cost: 3899, impressions: 215000, cvr: 0.0172, ctr: 0.0252 },
-            { l1: '直播切片', l2: '种草', count: 3, gmv: 5500, roi: 2.05, cost: 2683, impressions: 158000, cvr: 0.0158, ctr: 0.0238 },
-            { l1: '直播切片', l2: '混搭', count: 2, gmv: 3000, roi: 1.92, cost: 1563, impressions: 108000, cvr: 0.0145, ctr: 0.0222 },
-            { l1: '复刻', l2: '混搭', count: 5, gmv: 10500, roi: 1.50, cost: 7000, impressions: 280000, cvr: 0.0089, ctr: 0.0135 },
-            { l1: '复刻', l2: '机制', count: 2, gmv: 3800, roi: 1.38, cost: 2754, impressions: 102000, cvr: 0.0080, ctr: 0.0122 },
-            { l1: '复刻', l2: '种草', count: 1, gmv: 1800, roi: 1.25, cost: 1440, impressions: 68000, cvr: 0.0070, ctr: 0.0110 },
-            { l1: '复刻', l2: '纯展示', count: 1, gmv: 900, roi: 1.12, cost: 804, impressions: 48000, cvr: 0.0060, ctr: 0.0098 },
-            { l1: '明星', l2: '种草', count: 2, gmv: 2000, roi: 0.68, cost: 2941, impressions: 115000, cvr: 0.0068, ctr: 0.0155 },
-            { l1: '明星', l2: '机制', count: 1, gmv: 500, roi: 0.55, cost: 909, impressions: 45000, cvr: 0.0058, ctr: 0.0148 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-轻熟风达人', gmv: 52000, roi: 2.85 },
-            { type: '直播切片', belong: '内部', name: '直播切片-品质款', gmv: 35000, roi: 3.10 },
-            { type: 'KOL', belong: '外部', name: 'KOL-生活方式', gmv: 38000, roi: 2.60 },
-          ]
-        },
-        '2026-W15': {
-          overview: {
-            video: { total_count: 82, total_gmv: 198000, new_count: 18, effective_count: 26 },
-            livestream: { live_count: 3, total_gmv: 2050000 },
-            month_video: { gmv: 148000, pct_of_all: 0.747, internal_pct: 0.616, external_pct: 0.384, internal_gmv: 91168, external_gmv: 56832 },
-            production: { month_target: 80, month_actual_cum: 38 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 28, upload_count: 30, effective_count: 12, avg_gmv: 4067, total_gmv: 122000, roi: 2.55, cost: 47843, impressions: 2620000, cvr: 0.0162, ctr: 0.0218 },
-            { name: '外部', target_count: 55, upload_count: 44, effective_count: 11, avg_gmv: 1409, total_gmv: 62000, roi: 1.52, cost: 40789, impressions: 1680000, cvr: 0.0112, ctr: 0.0168 },
-            { name: 'AIGC', target_count: 5, upload_count: 5, effective_count: 1, avg_gmv: 2000, total_gmv: 10000, roi: 1.10, cost: 9091, impressions: 480000, cvr: 0.0070, ctr: 0.0122 },
-            { name: '其他', target_count: 0, upload_count: 3, effective_count: 0, avg_gmv: 1333, total_gmv: 4000, roi: 0.55, cost: 7273, impressions: 150000, cvr: 0.0042, ctr: 0.0092 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 10, gmv: 16500, roi: 1.72, cost: 9593, impressions: 420000, cvr: 0.0108, ctr: 0.0160 },
-            { l1: '原生', l2: '种草', count: 5, gmv: 7500, roi: 1.58, cost: 4747, impressions: 195000, cvr: 0.0095, ctr: 0.0148 },
-            { l1: '原生', l2: '纯展示', count: 4, gmv: 5200, roi: 1.45, cost: 3586, impressions: 152000, cvr: 0.0082, ctr: 0.0135 },
-            { l1: '原生', l2: '混搭', count: 2, gmv: 2800, roi: 1.32, cost: 2121, impressions: 83000, cvr: 0.0070, ctr: 0.0122 },
-            { l1: 'KOL', l2: '种草', count: 32, gmv: 108000, roi: 2.35, cost: 45957, impressions: 1580000, cvr: 0.0148, ctr: 0.0205 },
-            { l1: 'KOL', l2: '机制', count: 7, gmv: 19500, roi: 2.18, cost: 8945, impressions: 345000, cvr: 0.0135, ctr: 0.0192 },
-            { l1: 'KOL', l2: '纯展示', count: 4, gmv: 10500, roi: 2.02, cost: 5198, impressions: 220000, cvr: 0.0122, ctr: 0.0178 },
-            { l1: 'KOL', l2: '混搭', count: 2, gmv: 4500, roi: 1.80, cost: 2500, impressions: 135000, cvr: 0.0108, ctr: 0.0162 },
-            { l1: '直播切片', l2: '纯展示', count: 22, gmv: 48000, roi: 2.18, cost: 22018, impressions: 1100000, cvr: 0.0175, ctr: 0.0262 },
-            { l1: '直播切片', l2: '机制', count: 4, gmv: 7500, roi: 2.05, cost: 3659, impressions: 198000, cvr: 0.0160, ctr: 0.0240 },
-            { l1: '直播切片', l2: '种草', count: 2, gmv: 3800, roi: 1.92, cost: 1979, impressions: 128000, cvr: 0.0148, ctr: 0.0225 },
-            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1700, roi: 1.78, cost: 955, impressions: 82000, cvr: 0.0135, ctr: 0.0210 },
-            { l1: '复刻', l2: '混搭', count: 4, gmv: 8000, roi: 1.33, cost: 6015, impressions: 240000, cvr: 0.0082, ctr: 0.0125 },
-            { l1: '复刻', l2: '机制', count: 2, gmv: 3200, roi: 1.22, cost: 2623, impressions: 88000, cvr: 0.0072, ctr: 0.0112 },
-            { l1: '复刻', l2: '种草', count: 1, gmv: 1500, roi: 1.10, cost: 1364, impressions: 58000, cvr: 0.0062, ctr: 0.0100 },
-            { l1: '明星', l2: '种草', count: 2, gmv: 1800, roi: 0.50, cost: 3600, impressions: 108000, cvr: 0.0060, ctr: 0.0145 },
-            { l1: '明星', l2: '机制', count: 1, gmv: 200, roi: 0.35, cost: 571, impressions: 42000, cvr: 0.0050, ctr: 0.0138 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-穿搭种草', gmv: 45000, roi: 2.70 },
-            { type: '直播切片', belong: '内部', name: '直播切片-热款', gmv: 30000, roi: 2.90 },
-          ]
-        },
-        '2026-W14': {
-          overview: {
-            video: { total_count: 78, total_gmv: 185000, new_count: 16, effective_count: 24 },
-            livestream: { live_count: 3, total_gmv: 1920000 },
-            month_video: { gmv: 132000, pct_of_all: 0.714, internal_pct: 0.622, external_pct: 0.378, internal_gmv: 82104, external_gmv: 49896 },
-            production: { month_target: 80, month_actual_cum: 20 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 25, upload_count: 28, effective_count: 11, avg_gmv: 4107, total_gmv: 115000, roi: 2.58, cost: 44574, impressions: 2480000, cvr: 0.0158, ctr: 0.0212 },
-            { name: '外部', target_count: 50, upload_count: 42, effective_count: 10, avg_gmv: 1310, total_gmv: 55000, roi: 1.48, cost: 37162, impressions: 1520000, cvr: 0.0105, ctr: 0.0162 },
-            { name: 'AIGC', target_count: 5, upload_count: 5, effective_count: 1, avg_gmv: 2200, total_gmv: 11000, roi: 1.20, cost: 9167, impressions: 450000, cvr: 0.0078, ctr: 0.0125 },
-            { name: '其他', target_count: 0, upload_count: 3, effective_count: 0, avg_gmv: 1333, total_gmv: 4000, roi: 0.58, cost: 6897, impressions: 140000, cvr: 0.0042, ctr: 0.0090 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 10, gmv: 14200, roi: 1.68, cost: 8452, impressions: 380000, cvr: 0.0098, ctr: 0.0148 },
-            { l1: '原生', l2: '种草', count: 5, gmv: 6800, roi: 1.55, cost: 4387, impressions: 175000, cvr: 0.0088, ctr: 0.0135 },
-            { l1: '原生', l2: '纯展示', count: 4, gmv: 5200, roi: 1.42, cost: 3662, impressions: 145000, cvr: 0.0078, ctr: 0.0122 },
-            { l1: '原生', l2: '混搭', count: 3, gmv: 4800, roi: 1.30, cost: 3692, impressions: 100000, cvr: 0.0068, ctr: 0.0110 },
-            { l1: 'KOL', l2: '种草', count: 30, gmv: 98000, roi: 2.33, cost: 42060, impressions: 1420000, cvr: 0.0142, ctr: 0.0198 },
-            { l1: 'KOL', l2: '机制', count: 6, gmv: 17500, roi: 2.15, cost: 8140, impressions: 312000, cvr: 0.0130, ctr: 0.0185 },
-            { l1: 'KOL', l2: '纯展示', count: 4, gmv: 9500, roi: 2.00, cost: 4750, impressions: 200000, cvr: 0.0118, ctr: 0.0172 },
-            { l1: 'KOL', l2: '混搭', count: 2, gmv: 4000, roi: 1.78, cost: 2247, impressions: 128000, cvr: 0.0105, ctr: 0.0158 },
-            { l1: '直播切片', l2: '纯展示', count: 20, gmv: 44000, roi: 2.20, cost: 20000, impressions: 1000000, cvr: 0.0168, ctr: 0.0252 },
-            { l1: '直播切片', l2: '机制', count: 3, gmv: 6000, roi: 2.05, cost: 2927, impressions: 180000, cvr: 0.0152, ctr: 0.0232 },
-            { l1: '直播切片', l2: '种草', count: 2, gmv: 3500, roi: 1.92, cost: 1823, impressions: 118000, cvr: 0.0138, ctr: 0.0215 },
-            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1500, roi: 1.78, cost: 843, impressions: 75000, cvr: 0.0125, ctr: 0.0198 },
-            { l1: '复刻', l2: '混搭', count: 3, gmv: 9000, roi: 1.64, cost: 5488, impressions: 220000, cvr: 0.0078, ctr: 0.0118 },
-            { l1: '复刻', l2: '机制', count: 2, gmv: 4200, roi: 1.50, cost: 2800, impressions: 82000, cvr: 0.0068, ctr: 0.0105 },
-            { l1: '复刻', l2: '种草', count: 1, gmv: 2000, roi: 1.38, cost: 1449, impressions: 55000, cvr: 0.0058, ctr: 0.0095 },
-            { l1: '明星', l2: '种草', count: 2, gmv: 2200, roi: 0.75, cost: 2933, impressions: 112000, cvr: 0.0065, ctr: 0.0140 },
-            { l1: '明星', l2: '机制', count: 1, gmv: 800, roi: 0.62, cost: 1290, impressions: 48000, cvr: 0.0055, ctr: 0.0132 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-品质测评', gmv: 42000, roi: 2.65 },
-            { type: '原生', belong: '内部', name: '原生-轻奢风', gmv: 18000, roi: 2.40 },
-          ]
-        }
+    '2025-W49': {
+      overview: {
+        video: { total_count: 29, total_gmv: 239532.0, new_count: 29, effective_count: 15 },
+        livestream: { live_count: 0, total_gmv: 0.0 },
+        month_video: { gmv: 239532.0, pct_of_all: 0.72, internal_pct: 0.0, external_pct: 1.0, internal_gmv: 0.0, external_gmv: 239532.0 },
+        production: { month_target: 80, month_actual_cum: 29 }
+      },
+      source: [
+        { name: '外部', target_count: 29, upload_count: 29, effective_count: 15, avg_gmv: 15968.8, total_gmv: 239532.0, roi: 10.01, cost: 41693.38, impressions: 191001, cvr: 0.0326, ctr: 0.0401 },
+      ],
+      format: [
+        { l1: 'KOL', l2: '种草', count: 13, gmv: 137744.0, roi: 6.25, cost: 26895.73, impressions: 122379, cvr: 0.0197, ctr: 0.0382 },
+        { l1: '直播切片', l2: '纯展示', count: 16, gmv: 101788.0, roi: 12.52, cost: 14797.65, impressions: 68622, cvr: 0.0411, ctr: 0.042 },
+      ],
+      runner_detail: [
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 44498.0, roi: 5.61 },
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 39290.0, roi: 5.53 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 31410.0, roi: 4.32 },
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 29028.0, roi: 5.0 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251104-GINKGO4赭红26寸-主播Lanney-ZY.mp4', gmv: 20918.0, roi: 8.8 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 18208.0, roi: 9.33 },
+        { type: 'KOL-种草', belong: '外部', name: '250530-p2液态紫30寸-kol 不爱化妆的逸尧麻麻-ZY.mp', gmv: 17518.0, roi: 4.84 },
+      ]
+    },
+    '2025-W50': {
+      overview: {
+        video: { total_count: 45, total_gmv: 243330.0, new_count: 45, effective_count: 28 },
+        livestream: { live_count: 0, total_gmv: 0.0 },
+        month_video: { gmv: 243330.0, pct_of_all: 0.72, internal_pct: 0.0, external_pct: 1.0, internal_gmv: 0.0, external_gmv: 239650.0 },
+        production: { month_target: 80, month_actual_cum: 45 }
+      },
+      source: [
+        { name: '外部', target_count: 43, upload_count: 43, effective_count: 27, avg_gmv: 8875.93, total_gmv: 239650.0, roi: 7.12, cost: 55163.39, impressions: 253695, cvr: 0.0277, ctr: 0.0503 },
+        { name: '其他', target_count: 2, upload_count: 2, effective_count: 1, avg_gmv: 3680.0, total_gmv: 3680.0, roi: 11.49, cost: 635.71, impressions: 2318, cvr: 0.0417, ctr: 0.0353 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 1, gmv: 0.0, roi: 0, cost: 315.44, impressions: 1249, cvr: 0, ctr: 0.0256 },
+        { l1: 'KOL', l2: '种草', count: 19, gmv: 158829.0, roi: 5.97, cost: 41088.05, impressions: 189297, cvr: 0.0191, ctr: 0.0503 },
+        { l1: '直播切片', l2: '纯展示', count: 25, gmv: 84501.0, roi: 8.41, cost: 14395.61, impressions: 65467, cvr: 0.0361, ctr: 0.0501 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 33180.0, roi: 3.77 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 33098.0, roi: 6.56 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 29630.0, roi: 2.96 },
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 22960.0, roi: 2.76 },
+        { type: 'KOL-种草', belong: '外部', name: '250530-p2液态紫30寸-kol 不爱化妆的逸尧麻麻-ZY.mp', gmv: 17410.0, roi: 3.88 },
+        { type: 'KOL-种草', belong: '外部', name: '251130-p2数字紫26寸-kol 梦个个-ZY.mp4', gmv: 16851.0, roi: 7.06 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 15428.0, roi: 5.42 },
+      ]
+    },
+    '2025-W51': {
+      overview: {
+        video: { total_count: 36, total_gmv: 179195.0, new_count: 36, effective_count: 16 },
+        livestream: { live_count: 0, total_gmv: 0.0 },
+        month_video: { gmv: 179195.0, pct_of_all: 0.72, internal_pct: 0.0, external_pct: 1.0, internal_gmv: 0.0, external_gmv: 179195.0 },
+        production: { month_target: 80, month_actual_cum: 36 }
+      },
+      source: [
+        { name: '外部', target_count: 31, upload_count: 31, effective_count: 16, avg_gmv: 11199.69, total_gmv: 179195.0, roi: 11.4, cost: 36673.46, impressions: 146826, cvr: 0.0417, ctr: 0.0469 },
+        { name: '内部(含ITO)', target_count: 5, upload_count: 5, effective_count: 0, avg_gmv: 0, total_gmv: 0.0, roi: 0, cost: 250.72, impressions: 2151, cvr: 0, ctr: 0.0526 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 5, gmv: 0.0, roi: 0, cost: 250.72, impressions: 2151, cvr: 0, ctr: 0.0526 },
+        { l1: 'KOL', l2: '种草', count: 14, gmv: 116745.0, roi: 4.87, cost: 27541.3, impressions: 111838, cvr: 0.0237, ctr: 0.0399 },
+        { l1: '直播切片', l2: '纯展示', count: 17, gmv: 62450.0, roi: 17.92, cost: 9132.16, impressions: 34988, cvr: 0.0597, ctr: 0.0527 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 41873.0, roi: 5.67 },
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 23598.0, roi: 3.65 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251104-GINKGO4赭红26寸-主播Lanney-ZY.mp4', gmv: 21996.0, roi: 8.23 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 17183.0, roi: 7.7 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 14518.0, roi: 4.01 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 12256.0, roi: 2.33 },
+        { type: 'KOL-种草', belong: '外部', name: '251130-p2数字紫26寸-kol 梦个个-ZY.mp4', gmv: 12240.0, roi: 4.7 },
+      ]
+    },
+    '2025-W52': {
+      overview: {
+        video: { total_count: 45, total_gmv: 227522.0, new_count: 45, effective_count: 15 },
+        livestream: { live_count: 0, total_gmv: 0.0 },
+        month_video: { gmv: 227522.0, pct_of_all: 0.72, internal_pct: 0.0087, external_pct: 0.9913, internal_gmv: 1990.0, external_gmv: 225532.0 },
+        production: { month_target: 80, month_actual_cum: 45 }
+      },
+      source: [
+        { name: '外部', target_count: 37, upload_count: 37, effective_count: 14, avg_gmv: 16109.43, total_gmv: 225532.0, roi: 15.89, cost: 44057.53, impressions: 189559, cvr: 0.0516, ctr: 0.0429 },
+        { name: '内部(含ITO)', target_count: 6, upload_count: 6, effective_count: 1, avg_gmv: 1990.0, total_gmv: 1990.0, roi: 9.49, cost: 475.74, impressions: 2180, cvr: 0.0208, ctr: 0.0594 },
+        { name: '其他', target_count: 2, upload_count: 2, effective_count: 0, avg_gmv: 0, total_gmv: 0.0, roi: 0, cost: 89.45, impressions: 597, cvr: 0, ctr: 0.0311 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 8, gmv: 1990.0, roi: 9.49, cost: 565.19, impressions: 2777, cvr: 0.0208, ctr: 0.0523 },
+        { l1: 'KOL', l2: '种草', count: 13, gmv: 152182.0, roi: 5.55, cost: 31832.52, impressions: 143026, cvr: 0.0279, ctr: 0.0419 },
+        { l1: '直播切片', l2: '纯展示', count: 18, gmv: 71660.0, roi: 25.01, cost: 12107.98, impressions: 45875, cvr: 0.0598, ctr: 0.0458 },
+        { l1: '复刻', l2: '混搭', count: 6, gmv: 1690.0, roi: 52.99, cost: 117.03, impressions: 658, cvr: 0.2, ctr: 0.0381 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 44344.0, roi: 5.21 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 37308.0, roi: 4.61 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251104-GINKGO4赭红26寸-主播Lanney-ZY.mp4', gmv: 32420.0, roi: 5.73 },
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 27902.0, roi: 3.15 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 25602.0, roi: 6.28 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 18678.0, roi: 7.29 },
+        { type: 'KOL-种草', belong: '外部', name: '251130-p2数字紫26寸-kol 梦个个-ZY.mp4', gmv: 11920.0, roi: 6.27 },
+      ]
+    },
+    '2026-W01': {
+      overview: {
+        video: { total_count: 41, total_gmv: 179096.0, new_count: 41, effective_count: 12 },
+        livestream: { live_count: 15, total_gmv: 64070.0 },
+        month_video: { gmv: 179096.0, pct_of_all: 0.72, internal_pct: 0.0, external_pct: 0.9589, internal_gmv: 0.0, external_gmv: 171736.0 },
+        production: { month_target: 80, month_actual_cum: 41 }
+      },
+      source: [
+        { name: '外部', target_count: 38, upload_count: 38, effective_count: 11, avg_gmv: 15612.36, total_gmv: 171736.0, roi: 5.96, cost: 35836.7, impressions: 166663, cvr: 0.0167, ctr: 0.0517 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 7360.0, total_gmv: 7360.0, roi: 6.82, cost: 1079.76, impressions: 5152, cvr: 0.0164, ctr: 0.0474 },
+        { name: '内部(含ITO)', target_count: 2, upload_count: 2, effective_count: 0, avg_gmv: 0, total_gmv: 0.0, roi: 0, cost: 152.76, impressions: 911, cvr: 0, ctr: 0.0396 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 3, gmv: 7360.0, roi: 6.82, cost: 1232.52, impressions: 6063, cvr: 0.0164, ctr: 0.0422 },
+        { l1: 'KOL', l2: '种草', count: 20, gmv: 145144.0, roi: 5.58, cost: 28129.07, impressions: 137183, cvr: 0.0178, ctr: 0.0474 },
+        { l1: '直播切片', l2: '纯展示', count: 13, gmv: 26592.0, roi: 6.62, cost: 7665.61, impressions: 29125, cvr: 0.015, ctr: 0.0549 },
+        { l1: '复刻', l2: '混搭', count: 5, gmv: 0.0, roi: 0, cost: 42.02, impressions: 355, cvr: 0, ctr: 0.0668 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 44600.0, roi: 5.36 },
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 36208.0, roi: 4.46 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 30410.0, roi: 10.14 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 25660.0, roi: 5.17 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 14436.0, roi: 4.77 },
+      ]
+    },
+    '2026-W02': {
+      overview: {
+        video: { total_count: 41, total_gmv: 161004.0, new_count: 41, effective_count: 14 },
+        livestream: { live_count: 31, total_gmv: 127172.0 },
+        month_video: { gmv: 161004.0, pct_of_all: 0.72, internal_pct: 0.0, external_pct: 0.9777, internal_gmv: 0.0, external_gmv: 157406.0 },
+        production: { month_target: 80, month_actual_cum: 41 }
+      },
+      source: [
+        { name: '外部', target_count: 38, upload_count: 38, effective_count: 13, avg_gmv: 12108.15, total_gmv: 157406.0, roi: 25.25, cost: 27946.89, impressions: 114840, cvr: 0.0647, ctr: 0.0442 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 3598.0, total_gmv: 3598.0, roi: 2.45, cost: 1470.23, impressions: 6056, cvr: 0.0281, ctr: 0.0528 },
+        { name: '内部(含ITO)', target_count: 2, upload_count: 2, effective_count: 0, avg_gmv: 0, total_gmv: 0.0, roi: 0, cost: 54.61, impressions: 249, cvr: 0, ctr: 0.0211 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 3, gmv: 3598.0, roi: 2.45, cost: 1524.84, impressions: 6305, cvr: 0.0281, ctr: 0.0317 },
+        { l1: 'KOL', l2: '种草', count: 29, gmv: 130924.0, roi: 31.02, cost: 23473.31, impressions: 95481, cvr: 0.0789, ctr: 0.0424 },
+        { l1: '直播切片', l2: '纯展示', count: 9, gmv: 26482.0, roi: 6.04, cost: 4473.58, impressions: 19359, cvr: 0.0174, ctr: 0.0496 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 46082.0, roi: 6.0 },
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 26914.0, roi: 4.56 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 25228.0, roi: 9.56 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 14586.0, roi: 3.63 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 14054.0, roi: 6.41 },
+      ]
+    },
+    '2026-W03': {
+      overview: {
+        video: { total_count: 57, total_gmv: 841513.0, new_count: 57, effective_count: 37 },
+        livestream: { live_count: 27, total_gmv: 754133.36 },
+        month_video: { gmv: 841513.0, pct_of_all: 0.72, internal_pct: 0.0541, external_pct: 0.8768, internal_gmv: 45526.0, external_gmv: 737857.0 },
+        production: { month_target: 80, month_actual_cum: 57 }
+      },
+      source: [
+        { name: '外部', target_count: 44, upload_count: 44, effective_count: 27, avg_gmv: 27328.04, total_gmv: 737857.0, roi: 9.7, cost: 119860.45, impressions: 677740, cvr: 0.0212, ctr: 0.0645 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 58130.0, total_gmv: 58130.0, roi: 8.1, cost: 7179.19, impressions: 25449, cvr: 0.0227, ctr: 0.0553 },
+        { name: '内部(含ITO)', target_count: 12, upload_count: 12, effective_count: 9, avg_gmv: 5058.44, total_gmv: 45526.0, roi: 7.13, cost: 6552.05, impressions: 32076, cvr: 0.0158, ctr: 0.0536 },
+      ],
+      format: [
+        { l1: '原生', l2: '种草', count: 5, gmv: 87436.0, roi: 7.86, cost: 10782.77, impressions: 42512, cvr: 0.0182, ctr: 0.0637 },
+        { l1: '原生', l2: '纯展示', count: 1, gmv: 5970.0, roi: 11.65, cost: 512.58, impressions: 3157, cvr: 0.0217, ctr: 0.0437 },
+        { l1: 'KOL', l2: '种草', count: 30, gmv: 593069.0, roi: 7.75, cost: 102884.19, impressions: 613755, cvr: 0.0175, ctr: 0.0611 },
+        { l1: '直播切片', l2: '纯展示', count: 12, gmv: 108848.0, roi: 7.33, cost: 15416.78, impressions: 59136, cvr: 0.0192, ctr: 0.0612 },
+        { l1: '复刻', l2: '混搭', count: 9, gmv: 46190.0, roi: 12.85, cost: 3995.37, impressions: 16705, cvr: 0.0254, ctr: 0.0665 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 139844.0, roi: 6.19 },
+        { type: 'KOL-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 110121.0, roi: 6.11 },
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 110018.0, roi: 4.45 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 78146.0, roi: 5.95 },
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 58130.0, roi: 8.1 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 46818.0, roi: 7.57 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251202-p1条纹烟白26寸-主播cc01-ZY.mp4', gmv: 45514.0, roi: 7.82 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 36368.0, roi: 4.75 },
+        { type: 'KOL-种草', belong: '外部', name: '251206-p2梦境粉26寸-kol 剌剌的新家日记-ZY.mp4', gmv: 36068.0, roi: 6.12 },
+        { type: 'KOL-种草', belong: '外部', name: '251130-p2数字紫26寸-kol 梦个个-ZY.mp4', gmv: 35628.0, roi: 7.27 },
+        { type: '原生-种草', belong: '内部(含ITO)', name: '1月16日早上9点半，计划外出旅游或者过年回家的姐妹们赶紧来准备你的新', gmv: 21990.0, roi: 9.79 },
+        { type: 'KOL-种草', belong: '外部', name: '251231-p2穹顶蓝30寸-kol 香菜不加辣y-ZY.mp4', gmv: 20888.0, roi: 14.31 },
+      ]
+    },
+    '2026-W04': {
+      overview: {
+        video: { total_count: 62, total_gmv: 264050.0, new_count: 62, effective_count: 27 },
+        livestream: { live_count: 26, total_gmv: 346448.97 },
+        month_video: { gmv: 264050.0, pct_of_all: 0.72, internal_pct: 0.0913, external_pct: 0.7974, internal_gmv: 24096.0, external_gmv: 210561.0 },
+        production: { month_target: 80, month_actual_cum: 62 }
+      },
+      source: [
+        { name: '外部', target_count: 37, upload_count: 37, effective_count: 19, avg_gmv: 11082.16, total_gmv: 210561.0, roi: 9.77, cost: 50022.49, impressions: 232465, cvr: 0.0299, ctr: 0.0467 },
+        { name: 'AIGC', target_count: 1, upload_count: 1, effective_count: 1, avg_gmv: 29393.0, total_gmv: 29393.0, roi: 3.69, cost: 7962.01, impressions: 29328, cvr: 0.0115, ctr: 0.0475 },
+        { name: '内部(含ITO)', target_count: 24, upload_count: 24, effective_count: 7, avg_gmv: 3442.29, total_gmv: 24096.0, roi: 14.62, cost: 3910.29, impressions: 17644, cvr: 0.0445, ctr: 0.0529 },
+      ],
+      format: [
+        { l1: '原生', l2: '机制', count: 3, gmv: 0.0, roi: 0, cost: 74.04, impressions: 322, cvr: 0, ctr: 0.0373 },
+        { l1: '原生', l2: '种草', count: 5, gmv: 33673.0, roi: 5.59, cost: 8921.53, impressions: 33966, cvr: 0.0113, ctr: 0.0803 },
+        { l1: '原生', l2: '纯展示', count: 1, gmv: 3180.0, roi: 15.25, cost: 208.48, impressions: 1281, cvr: 0.0526, ctr: 0.0297 },
+        { l1: 'KOL', l2: '种草', count: 27, gmv: 161719.0, roi: 10.79, cost: 42751.65, impressions: 206290, cvr: 0.0307, ctr: 0.0454 },
+        { l1: '直播切片', l2: '纯展示', count: 17, gmv: 43988.0, roi: 6.3, cost: 7042.58, impressions: 25308, cvr: 0.0403, ctr: 0.0506 },
+        { l1: '复刻', l2: '混搭', count: 9, gmv: 21490.0, roi: 17.58, cost: 2896.51, impressions: 12270, cvr: 0.0407, ctr: 0.0458 },
+      ],
+      runner_detail: [
+        { type: 'KOL-种草', belong: '外部', name: '260105-p2穹顶蓝26寸-kol 小应废材菌（DIY上头版）-Z', gmv: 36840.0, roi: 4.6 },
+        { type: 'KOL-种草', belong: '外部', name: '240402-P2梦境粉30寸-kol_Babeei张张-ZY.MOV', gmv: 35806.0, roi: 5.15 },
+        { type: 'KOL-种草', belong: '外部', name: '250224-p2平原灰30寸-kol 香菜不加辣y-ZY.mp4', gmv: 29678.0, roi: 3.04 },
+        { type: '原生-种草', belong: 'AIGC', name: 'AIGC动态创意素材集合', gmv: 29393.0, roi: 3.69 },
+        { type: '直播切片-纯展示', belong: '外部', name: '251106-GINKGO4赭红26寸-主播Lanney02-ZY.m', gmv: 26290.0, roi: 8.65 },
+        { type: 'KOL-种草', belong: '外部', name: '240526-p2平原灰26寸-kol苏格家-ZY.mp4', gmv: 14226.0, roi: 3.93 },
+        { type: 'KOL-种草', belong: '外部', name: '251130-p2数字紫26寸-kol 梦个个-ZY.mp4', gmv: 11428.0, roi: 5.35 },
+        { type: '复刻-混搭', belong: '内部(含ITO)', name: '20260116_p2_16号年货节专场_混剪01_YYH.mp4', gmv: 11150.0, roi: 6.01 },
+        { type: 'KOL-种草', belong: '外部', name: '241224-p2梦境粉30寸-kol WANGLING_-ZY.mp', gmv: 10888.0, roi: 1.47 },
+      ]
+    },
       },
       runner: {
-        '2026-Q2': { internal: { g50k: 4, g10k: 12, total: 75 }, external: { g50k: 1, g10k: 8, total: 140 } },
-        '2026-Q1': { internal: { g50k: 6, g10k: 18, total: 200 }, external: { g50k: 2, g10k: 14, total: 350 } },
-        '2025-Q4': { internal: { g50k: 5, g10k: 15, total: 180 }, external: { g50k: 2, g10k: 11, total: 320 } },
       }
     },
-    yunduan: {
-      name: '云端商务家',
-      weeks: {
-        '2026-W16': {
-          overview: {
-            video: { total_count: 62, total_gmv: 156800, new_count: 15, effective_count: 20 },
-            livestream: { live_count: 2, total_gmv: 1520000 },
-            month_video: { gmv: 115000, pct_of_all: 0.733, internal_pct: 0.625, external_pct: 0.375, internal_gmv: 71875, external_gmv: 43125 },
-            production: { month_target: 60, month_actual_cum: 42 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 20, upload_count: 22, effective_count: 10, avg_gmv: 4455, total_gmv: 98000, roi: 2.48, cost: 39516, impressions: 2050000, cvr: 0.0155, ctr: 0.0208 },
-            { name: '外部', target_count: 40, upload_count: 34, effective_count: 8, avg_gmv: 1376, total_gmv: 46800, roi: 1.42, cost: 32958, impressions: 1280000, cvr: 0.0105, ctr: 0.0165 },
-            { name: 'AIGC', target_count: 5, upload_count: 4, effective_count: 1, avg_gmv: 2125, total_gmv: 8500, roi: 1.10, cost: 7727, impressions: 380000, cvr: 0.0072, ctr: 0.0125 },
-            { name: '其他', target_count: 0, upload_count: 2, effective_count: 0, avg_gmv: 1750, total_gmv: 3500, roi: 0.55, cost: 6364, impressions: 150000, cvr: 0.0045, ctr: 0.0092 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 7, gmv: 13000, roi: 1.85, cost: 7027, impressions: 320000, cvr: 0.0108, ctr: 0.0160 },
-            { l1: '原生', l2: '种草', count: 4, gmv: 7200, roi: 1.72, cost: 4186, impressions: 148000, cvr: 0.0095, ctr: 0.0148 },
-            { l1: '原生', l2: '纯展示', count: 3, gmv: 4800, roi: 1.60, cost: 3000, impressions: 112000, cvr: 0.0082, ctr: 0.0135 },
-            { l1: '原生', l2: '混搭', count: 2, gmv: 3000, roi: 1.48, cost: 2027, impressions: 70000, cvr: 0.0070, ctr: 0.0122 },
-            { l1: 'KOL', l2: '种草', count: 25, gmv: 82000, roi: 2.16, cost: 37963, impressions: 1250000, cvr: 0.0142, ctr: 0.0205 },
-            { l1: 'KOL', l2: '机制', count: 5, gmv: 15000, roi: 2.00, cost: 7500, impressions: 268000, cvr: 0.0130, ctr: 0.0192 },
-            { l1: 'KOL', l2: '纯展示', count: 3, gmv: 8200, roi: 1.85, cost: 4432, impressions: 172000, cvr: 0.0118, ctr: 0.0178 },
-            { l1: 'KOL', l2: '混搭', count: 2, gmv: 4500, roi: 1.68, cost: 2679, impressions: 112000, cvr: 0.0105, ctr: 0.0162 },
-            { l1: '直播切片', l2: '纯展示', count: 16, gmv: 38000, roi: 2.11, cost: 18009, impressions: 850000, cvr: 0.0165, ctr: 0.0248 },
-            { l1: '直播切片', l2: '机制', count: 3, gmv: 6500, roi: 1.98, cost: 3283, impressions: 158000, cvr: 0.0150, ctr: 0.0228 },
-            { l1: '直播切片', l2: '种草', count: 2, gmv: 3800, roi: 1.85, cost: 2054, impressions: 108000, cvr: 0.0138, ctr: 0.0212 },
-            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1700, roi: 1.72, cost: 988, impressions: 72000, cvr: 0.0125, ctr: 0.0198 },
-            { l1: '复刻', l2: '混搭', count: 4, gmv: 6500, roi: 1.25, cost: 5200, impressions: 200000, cvr: 0.0078, ctr: 0.0122 },
-            { l1: '复刻', l2: '机制', count: 2, gmv: 2800, roi: 1.15, cost: 2435, impressions: 78000, cvr: 0.0068, ctr: 0.0110 },
-            { l1: '复刻', l2: '种草', count: 1, gmv: 1200, roi: 1.05, cost: 1143, impressions: 52000, cvr: 0.0058, ctr: 0.0098 },
-            { l1: '明星', l2: '种草', count: 1, gmv: 1500, roi: 0.70, cost: 2143, impressions: 95000, cvr: 0.0060, ctr: 0.0145 },
-            { l1: '明星', l2: '纯展示', count: 1, gmv: 800, roi: 0.58, cost: 1379, impressions: 55000, cvr: 0.0052, ctr: 0.0138 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-商务达人', gmv: 35000, roi: 2.50 },
-            { type: '直播切片', belong: '内部', name: '直播切片-商务款', gmv: 22000, roi: 2.80 },
-            { type: '原生', belong: '内部', name: '原生-商务场景', gmv: 15000, roi: 2.20 },
-          ]
-        },
-        '2026-W15': {
-          overview: {
-            video: { total_count: 55, total_gmv: 138000, new_count: 12, effective_count: 17 },
-            livestream: { live_count: 2, total_gmv: 1420000 },
-            month_video: { gmv: 101000, pct_of_all: 0.732, internal_pct: 0.623, external_pct: 0.377, internal_gmv: 62923, external_gmv: 38077 },
-            production: { month_target: 60, month_actual_cum: 27 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 18, upload_count: 20, effective_count: 9, avg_gmv: 4300, total_gmv: 86000, roi: 2.45, cost: 35102, impressions: 1880000, cvr: 0.0150, ctr: 0.0202 },
-            { name: '外部', target_count: 35, upload_count: 30, effective_count: 6, avg_gmv: 1350, total_gmv: 40500, roi: 1.38, cost: 29348, impressions: 1120000, cvr: 0.0098, ctr: 0.0158 },
-            { name: 'AIGC', target_count: 3, upload_count: 3, effective_count: 1, avg_gmv: 2667, total_gmv: 8000, roi: 1.05, cost: 7619, impressions: 320000, cvr: 0.0065, ctr: 0.0115 },
-            { name: '其他', target_count: 0, upload_count: 2, effective_count: 0, avg_gmv: 1750, total_gmv: 3500, roi: 0.55, cost: 6364, impressions: 130000, cvr: 0.0045, ctr: 0.0090 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 6, gmv: 11200, roi: 1.78, cost: 6292, impressions: 270000, cvr: 0.0098, ctr: 0.0150 },
-            { l1: '原生', l2: '种草', count: 3, gmv: 5200, roi: 1.65, cost: 3152, impressions: 125000, cvr: 0.0088, ctr: 0.0138 },
-            { l1: '原生', l2: '纯展示', count: 3, gmv: 4800, roi: 1.52, cost: 3158, impressions: 105000, cvr: 0.0078, ctr: 0.0125 },
-            { l1: '原生', l2: '混搭', count: 2, gmv: 3800, roi: 1.40, cost: 2714, impressions: 80000, cvr: 0.0068, ctr: 0.0112 },
-            { l1: 'KOL', l2: '种草', count: 22, gmv: 72000, roi: 2.12, cost: 33962, impressions: 1100000, cvr: 0.0135, ctr: 0.0192 },
-            { l1: 'KOL', l2: '机制', count: 5, gmv: 13500, roi: 1.98, cost: 6818, impressions: 242000, cvr: 0.0122, ctr: 0.0178 },
-            { l1: 'KOL', l2: '纯展示', count: 3, gmv: 7200, roi: 1.82, cost: 3956, impressions: 155000, cvr: 0.0110, ctr: 0.0165 },
-            { l1: 'KOL', l2: '混搭', count: 2, gmv: 3800, roi: 1.65, cost: 2303, impressions: 102000, cvr: 0.0098, ctr: 0.0152 },
-            { l1: '直播切片', l2: '纯展示', count: 14, gmv: 34000, roi: 2.13, cost: 15963, impressions: 750000, cvr: 0.0158, ctr: 0.0235 },
-            { l1: '直播切片', l2: '机制', count: 2, gmv: 4800, roi: 2.00, cost: 2400, impressions: 138000, cvr: 0.0142, ctr: 0.0215 },
-            { l1: '直播切片', l2: '种草', count: 2, gmv: 3200, roi: 1.88, cost: 1702, impressions: 95000, cvr: 0.0130, ctr: 0.0200 },
-            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1000, roi: 1.75, cost: 571, impressions: 62000, cvr: 0.0118, ctr: 0.0185 },
-            { l1: '复刻', l2: '混搭', count: 3, gmv: 5500, roi: 1.15, cost: 4783, impressions: 170000, cvr: 0.0072, ctr: 0.0112 },
-            { l1: '复刻', l2: '机制', count: 1, gmv: 1800, roi: 1.05, cost: 1714, impressions: 62000, cvr: 0.0062, ctr: 0.0100 },
-            { l1: '复刻', l2: '种草', count: 1, gmv: 1200, roi: 0.95, cost: 1263, impressions: 42000, cvr: 0.0052, ctr: 0.0090 },
-            { l1: '明星', l2: '种草', count: 1, gmv: 1000, roi: 0.52, cost: 1923, impressions: 82000, cvr: 0.0055, ctr: 0.0135 },
-            { l1: '明星', l2: '纯展示', count: 1, gmv: 500, roi: 0.40, cost: 1250, impressions: 48000, cvr: 0.0045, ctr: 0.0128 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-差旅场景', gmv: 30000, roi: 2.35 },
-            { type: '直播切片', belong: '内部', name: '直播切片-经典商务', gmv: 20000, roi: 2.60 },
-          ]
-        },
-        '2026-W14': {
-          overview: {
-            video: { total_count: 50, total_gmv: 125000, new_count: 10, effective_count: 15 },
-            livestream: { live_count: 2, total_gmv: 1350000 },
-            month_video: { gmv: 89000, pct_of_all: 0.712, internal_pct: 0.624, external_pct: 0.376, internal_gmv: 55536, external_gmv: 33464 },
-            production: { month_target: 60, month_actual_cum: 15 }
-          },
-          source: [
-            { name: '内部(含ITO)', target_count: 16, upload_count: 18, effective_count: 8, avg_gmv: 4333, total_gmv: 78000, roi: 2.42, cost: 32231, impressions: 1700000, cvr: 0.0145, ctr: 0.0198 },
-            { name: '外部', target_count: 30, upload_count: 27, effective_count: 5, avg_gmv: 1352, total_gmv: 36500, roi: 1.35, cost: 27037, impressions: 1020000, cvr: 0.0092, ctr: 0.0152 },
-            { name: 'AIGC', target_count: 3, upload_count: 3, effective_count: 1, avg_gmv: 2500, total_gmv: 7500, roi: 1.00, cost: 7500, impressions: 280000, cvr: 0.0060, ctr: 0.0110 },
-            { name: '其他', target_count: 0, upload_count: 2, effective_count: 0, avg_gmv: 1500, total_gmv: 3000, roi: 0.50, cost: 6000, impressions: 120000, cvr: 0.0040, ctr: 0.0085 },
-          ],
-          format: [
-            { l1: '原生', l2: '机制', count: 5, gmv: 9500, roi: 1.68, cost: 5655, impressions: 230000, cvr: 0.0088, ctr: 0.0140 },
-            { l1: '原生', l2: '种草', count: 3, gmv: 5200, roi: 1.55, cost: 3355, impressions: 112000, cvr: 0.0078, ctr: 0.0128 },
-            { l1: '原生', l2: '纯展示', count: 3, gmv: 4500, roi: 1.42, cost: 3169, impressions: 98000, cvr: 0.0068, ctr: 0.0115 },
-            { l1: '原生', l2: '混搭', count: 2, gmv: 3300, roi: 1.30, cost: 2538, impressions: 80000, cvr: 0.0058, ctr: 0.0102 },
-            { l1: 'KOL', l2: '种草', count: 20, gmv: 65000, roi: 2.17, cost: 29954, impressions: 980000, cvr: 0.0128, ctr: 0.0185 },
-            { l1: 'KOL', l2: '机制', count: 4, gmv: 12000, roi: 2.00, cost: 6000, impressions: 215000, cvr: 0.0118, ctr: 0.0172 },
-            { l1: 'KOL', l2: '纯展示', count: 3, gmv: 6500, roi: 1.85, cost: 3514, impressions: 140000, cvr: 0.0105, ctr: 0.0158 },
-            { l1: 'KOL', l2: '混搭', count: 2, gmv: 3500, roi: 1.68, cost: 2083, impressions: 92000, cvr: 0.0092, ctr: 0.0145 },
-            { l1: '直播切片', l2: '纯展示', count: 12, gmv: 30000, roi: 2.14, cost: 14019, impressions: 680000, cvr: 0.0152, ctr: 0.0228 },
-            { l1: '直播切片', l2: '机制', count: 2, gmv: 4200, roi: 2.00, cost: 2100, impressions: 125000, cvr: 0.0138, ctr: 0.0208 },
-            { l1: '直播切片', l2: '种草', count: 1, gmv: 2000, roi: 1.88, cost: 1064, impressions: 85000, cvr: 0.0125, ctr: 0.0192 },
-            { l1: '复刻', l2: '混搭', count: 3, gmv: 5500, roi: 1.22, cost: 4508, impressions: 160000, cvr: 0.0068, ctr: 0.0108 },
-            { l1: '复刻', l2: '机制', count: 1, gmv: 1800, roi: 1.10, cost: 1636, impressions: 58000, cvr: 0.0058, ctr: 0.0098 },
-            { l1: '复刻', l2: '种草', count: 1, gmv: 1000, roi: 1.00, cost: 1000, impressions: 40000, cvr: 0.0048, ctr: 0.0088 },
-            { l1: '明星', l2: '种草', count: 1, gmv: 1800, roi: 0.88, cost: 2045, impressions: 78000, cvr: 0.0058, ctr: 0.0128 },
-            { l1: '明星', l2: '纯展示', count: 1, gmv: 700, roi: 0.72, cost: 972, impressions: 42000, cvr: 0.0048, ctr: 0.0120 },
-          ],
-          runner_detail: [
-            { type: 'KOL', belong: '外部', name: 'KOL-商旅达人', gmv: 28000, roi: 2.30 },
-            { type: '原生', belong: '内部', name: '原生-科技商务', gmv: 12000, roi: 2.10 },
-          ]
-        }
-      },
-      runner: {
-        '2026-Q2': { internal: { g50k: 3, g10k: 8, total: 48 }, external: { g50k: 1, g10k: 5, total: 95 } },
-        '2026-Q1': { internal: { g50k: 4, g10k: 12, total: 130 }, external: { g50k: 1, g10k: 8, total: 230 } },
-        '2025-Q4': { internal: { g50k: 3, g10k: 10, total: 115 }, external: { g50k: 1, g10k: 7, total: 210 } },
-      }
-    }
+    yunduan: { name: '云端商务家' } // 保留模拟数据，后续新增
   }
 };
 
 const TREND = {
   modeng: [
-    { week:'W09', video_gmv:325000, live_gmv:3200000 },
-    { week:'W10', video_gmv:348000, live_gmv:3350000 },
-    { week:'W11', video_gmv:385000, live_gmv:3500000 },
-    { week:'W12', video_gmv:402000, live_gmv:3600000 },
-    { week:'W13', video_gmv:398000, live_gmv:3720000 },
-    { week:'W14', video_gmv:412500, live_gmv:3680000 },
-    { week:'W15', video_gmv:478200, live_gmv:3950000 },
-    { week:'W16', video_gmv:523680, live_gmv:4280000 },
+    { week:'W09', video_gmv:199858.0, live_gmv:436022.0 },
+    { week:'W10', video_gmv:237767.0, live_gmv:543236.36 },
+    { week:'W11', video_gmv:109460.0, live_gmv:300982.0 },
+    { week:'W12', video_gmv:426589.2, live_gmv:989791.8 },
+    { week:'W13', video_gmv:237941.0, live_gmv:651275.06 },
+    { week:'W14', video_gmv:177810.0, live_gmv:390329.0 },
+    { week:'W15', video_gmv:241296.0, live_gmv:470536.12 },
+    { week:'W16', video_gmv:296656.0, live_gmv:660041.82 },
   ],
   qingshu: [
-    { week:'W09', video_gmv:142000, live_gmv:1650000 },
-    { week:'W10', video_gmv:158000, live_gmv:1720000 },
-    { week:'W11', video_gmv:175000, live_gmv:1800000 },
-    { week:'W12', video_gmv:182000, live_gmv:1850000 },
-    { week:'W13', video_gmv:178000, live_gmv:1900000 },
-    { week:'W14', video_gmv:185000, live_gmv:1920000 },
-    { week:'W15', video_gmv:198000, live_gmv:2050000 },
-    { week:'W16', video_gmv:234500, live_gmv:2180000 },
+    { week:'W49', video_gmv:239532.0, live_gmv:0.0 },
+    { week:'W50', video_gmv:243330.0, live_gmv:0.0 },
+    { week:'W51', video_gmv:179195.0, live_gmv:0.0 },
+    { week:'W52', video_gmv:227522.0, live_gmv:0.0 },
+    { week:'W01', video_gmv:179096.0, live_gmv:64070.0 },
+    { week:'W02', video_gmv:161004.0, live_gmv:127172.0 },
+    { week:'W03', video_gmv:841513.0, live_gmv:754133.36 },
+    { week:'W04', video_gmv:264050.0, live_gmv:346448.97 },
   ],
   yunduan: [
-    { week:'W09', video_gmv:98000, live_gmv:1150000 },
-    { week:'W10', video_gmv:105000, live_gmv:1200000 },
-    { week:'W11', video_gmv:118000, live_gmv:1280000 },
-    { week:'W12', video_gmv:122000, live_gmv:1300000 },
-    { week:'W13', video_gmv:120000, live_gmv:1320000 },
-    { week:'W14', video_gmv:125000, live_gmv:1350000 },
-    { week:'W15', video_gmv:138000, live_gmv:1420000 },
-    { week:'W16', video_gmv:156800, live_gmv:1520000 },
   ]
 };
+
+
 
 // ═══════════════════════════════════════════════════════════════
 // GLOBALS
@@ -794,7 +858,7 @@ const week = () => brand()?.weeks?.[curWeek];
 // UTILS
 // ═══════════════════════════════════════════════════════════════
 function fmt(n, d=0) { if (n==null||isNaN(n)) return '-'; if (n>=10000) return (n/10000).toFixed(1)+'万'; return n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
-function pct(n) { if (n==null||isNaN(n)) return '-'; return (n*100).toFixed(1)+'%'; }
+function pct(n) { if (n==null||isNaN(n)) return '-'; return (n*100).toFixed(2)+'%'; }
 
 // ═══════════════════════════════════════════════════════════════
 // EVENTS
@@ -810,7 +874,15 @@ function switchTab(tab) {
   el.classList.remove('hidden');
   void el.offsetWidth; // reflow for animation
   el.classList.add('fade-in');
-  render();
+  // Fix: ECharts cannot get correct size in hidden DOM, delay render + resize
+  setTimeout(() => {
+    render();
+    const chartsToResize = [];
+    if (tab === 'source') chartsToResize.push(cSourcePie);
+    if (tab === 'runner') chartsToResize.push(cRunnerBar);
+    if (tab === 'format') chartsToResize.push(cFormatPie, cFormatRadar);
+    chartsToResize.forEach(c => c?.resize());
+  }, 50);
 }
 
 function render() {

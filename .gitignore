@@ -7,3 +7,15 @@ uploads/
 *.db
 .DS_Store
 Thumbs.db
+
+# 临时调试/数据转换脚本
+check_*.py
+debug_*.py
+verify_*.py
+extract_*.py
+generate_*.py
+replace_*.py
+
+# 临时数据文件
+aggregated_data.json
+generated_data.js
