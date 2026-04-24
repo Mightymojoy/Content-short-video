@@ -6,54 +6,119 @@
   <title>短视频数据看板 — Demo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'] },
+          colors: {
+            surface: { 0: '#000000', 1: '#0a0a0a', 2: '#111111', 3: '#1a1a1a', 4: '#222222', 5: '#2a2a2a' },
+            accent: { DEFAULT: '#818cf8', light: '#a5b4fc', dark: '#6366f1' },
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
-    .tab-active { border-bottom: 3px solid #6366f1; color: #6366f1; font-weight: 600; }
-    .card { background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 20px; }
-    .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    .progress-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .badge { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
-    table { width: 100%; border-collapse: collapse; }
-    th { background: #f8fafc; font-weight: 600; font-size: 13px; color: #64748b; text-align: left; padding: 12px 16px; border-bottom: 2px solid #e2e8f0; }
-    td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-    tr:hover td { background: #f8fafc; }
-    .btn { padding: 8px 20px; border-radius: 8px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.15s; }
-    .btn-primary { background: #6366f1; color: white; }
-    .btn-primary:hover { background: #4f46e5; }
-    .fade-in { animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .demo-banner { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; text-align: center; padding: 10px; font-size: 13px; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #0a0a0a; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* Tab */
+    .tab-btn { position: relative; padding: 10px 0; font-size: 13px; font-weight: 500; color: #71717a; transition: color .2s; cursor: pointer; background: none; border: none; }
+    .tab-btn:hover { color: #a1a1aa; }
+    .tab-btn.active { color: #fff; }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #818cf8, #c084fc); border-radius: 1px; }
+
+    /* Card */
+    .card { background: #111111; border: 1px solid #1f1f23; border-radius: 12px; transition: border-color .2s, box-shadow .2s; }
+    .card:hover { border-color: #2f2f35; box-shadow: 0 0 0 1px rgba(129,140,248,.05); }
+
+    /* KPI Card */
+    .kpi-card { padding: 20px; }
+    .kpi-card .label { font-size: 12px; font-weight: 500; color: #71717a; text-transform: uppercase; letter-spacing: .5px; }
+    .kpi-card .value { font-size: 28px; font-weight: 700; color: #fafafa; margin-top: 6px; line-height: 1; }
+    .kpi-card .sub { font-size: 12px; color: #52525b; margin-top: 8px; }
+    .kpi-card .sub span { color: #a1a1aa; }
+
+    /* Table */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: .5px; text-align: left; padding: 10px 14px; border-bottom: 1px solid #1f1f23; white-space: nowrap; }
+    .data-table td { padding: 12px 14px; font-size: 13px; color: #d4d4d8; border-bottom: 1px solid rgba(255,255,255,.03); white-space: nowrap; }
+    .data-table tbody tr { transition: background .15s; }
+    .data-table tbody tr:hover { background: rgba(129,140,248,.04); }
+
+    /* Badge */
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+
+    /* Glow effects */
+    .glow-indigo { box-shadow: 0 0 20px rgba(99,102,241,.15); }
+    .glow-emerald { box-shadow: 0 0 20px rgba(52,211,153,.15); }
+
+    /* Section title */
+    .section-title { font-size: 14px; font-weight: 600; color: #e4e4e7; }
+
+    /* Select */
+    select { background: #111; border: 1px solid #27272a; color: #d4d4d8; border-radius: 8px; padding: 6px 12px; font-size: 13px; outline: none; cursor: pointer; transition: border-color .2s; }
+    select:focus { border-color: #818cf8; }
+    select option { background: #111; }
+
+    /* Fade */
+    .fade-in { animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Progress ring (for circular indicators) */
+    .ring-bg { stroke: #1f1f23; }
+    .ring-fill { transition: stroke-dashoffset .6s ease; }
+
+    /* Format tree */
+    .tree-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; align-items: center; padding: 10px 14px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,.03); transition: background .15s; }
+    .tree-row:hover { background: rgba(129,140,248,.04); }
+    .tree-parent { color: #e4e4e7; font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+    .tree-parent:hover { background: rgba(129,140,248,.06); }
+    .tree-child { color: #a1a1aa; font-size: 12px; padding-left: 20px; }
+    .tree-header { color: #71717a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid #1f1f23; cursor: default; }
+    .tree-header:hover { background: transparent; }
+    .expand-arrow { display: inline-block; width: 16px; height: 16px; margin-right: 6px; transition: transform .2s ease; color: #52525b; font-size: 10px; line-height: 16px; text-align: center; }
+    .expand-arrow.open { transform: rotate(90deg); color: #818cf8; }
+    .tree-children { overflow: hidden; }
+    .tree-children.collapsed { display: none; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen text-white">
 
-  <!-- Demo 提示 -->
-  <div class="demo-banner">
-    📊 这是静态 Demo 页面 — 数据为模拟展示。完整版需要 Node.js 后端服务运行。
-    <a href="https://github.com/Mightymojoy/Content-short-video" target="_blank" class="underline ml-2">查看源码 →</a>
+  <!-- Top Banner -->
+  <div class="bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20 border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="text-xs text-zinc-400">静态 Demo · 模拟数据展示</span>
+      </div>
+      <a href="https://github.com/Mightymojoy/Content-short-video" target="_blank" class="text-xs text-zinc-500 hover:text-zinc-300 transition">GitHub →</a>
+    </div>
   </div>
 
-  <!-- 顶部导航 -->
-  <header class="bg-white shadow-sm sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+  <!-- Header -->
+  <header class="border-b border-white/5 sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         </div>
-        <h1 class="text-lg font-bold text-gray-800">短视频数据看板</h1>
-        <span class="badge bg-indigo-100 text-indigo-700">Demo</span>
+        <h1 class="text-base font-semibold text-zinc-100">短视频数据看板</h1>
+        <span class="badge bg-white/5 text-zinc-500 border border-white/5">v2.0</span>
       </div>
-
-      <div class="flex items-center gap-3 flex-wrap">
-        <select id="brandSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="onBrandChange()">
+      <div class="flex items-center gap-2">
+        <select id="brandSelect" onchange="onBrandChange()">
           <option value="modeng">摩登新贵女</option>
           <option value="qingshu">轻熟质享客</option>
           <option value="yunduan">云端商务家</option>
         </select>
-        <select id="weekSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="onWeekChange()">
+        <select id="weekSelect" onchange="onWeekChange()">
           <option value="2026-W16">2026-W16</option>
           <option value="2026-W15">2026-W15</option>
           <option value="2026-W14">2026-W14</option>
@@ -62,630 +127,1004 @@
     </div>
   </header>
 
-  <!-- Tab 导航 -->
-  <nav class="bg-white border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="flex gap-6" id="tabNav">
-        <button class="tab-btn tab-active py-3 text-sm" data-tab="overview" onclick="switchTab('overview')">📊 周度总览</button>
-        <button class="tab-btn py-3 text-sm text-gray-500 hover:text-gray-700" data-tab="source" onclick="switchTab('source')">🔍 源头分析</button>
-        <button class="tab-btn py-3 text-sm text-gray-500 hover:text-gray-700" data-tab="runner" onclick="switchTab('runner')">🏆 季度跑量</button>
-        <button class="tab-btn py-3 text-sm text-gray-500 hover:text-gray-700" data-tab="format" onclick="switchTab('format')">📈 形式监控</button>
-      </div>
+  <!-- Tab Nav -->
+  <nav class="border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 flex gap-8">
+      <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">周度总览</button>
+      <button class="tab-btn" data-tab="source" onclick="switchTab('source')">源头分析</button>
+      <button class="tab-btn" data-tab="runner" onclick="switchTab('runner')">季度跑量</button>
+      <button class="tab-btn" data-tab="format" onclick="switchTab('format')">形式监控</button>
     </div>
   </nav>
 
-  <!-- 主内容区 -->
-  <main class="max-w-7xl mx-auto px-4 py-6">
-    <div id="tabContent" class="fade-in">
+  <!-- Content -->
+  <main class="max-w-7xl mx-auto px-6 py-6">
 
-      <!-- 周度总览 -->
-      <div id="tab-overview" class="tab-panel fade-in">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">短视频总 GMV</div>
-            <div class="text-2xl font-bold text-gray-800" id="kpi-video-gmv">-</div>
-            <div class="text-xs text-gray-400 mt-1"><span id="kpi-video-count">0</span> 条视频</div>
-          </div>
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">短视频 GMV 占比</div>
-            <div class="text-2xl font-bold text-indigo-600" id="kpi-gmv-ratio">-</div>
-            <div class="text-xs text-gray-400 mt-1">目标: <span id="kpi-target-ratio">-</span></div>
-          </div>
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">当周新视频 GMV</div>
-            <div class="text-2xl font-bold text-emerald-600" id="kpi-new-gmv">-</div>
-            <div class="text-xs text-gray-400 mt-1">贡献率: <span id="kpi-new-ratio">-</span></div>
-          </div>
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">目标达成率</div>
-            <div class="text-2xl font-bold" id="kpi-completion">-</div>
-            <div class="progress-bar mt-2"><div class="progress-fill bg-indigo-500" id="kpi-progress" style="width:0%"></div></div>
-          </div>
-        </div>
+    <!-- ═══ Tab 1: 周度总览 ═══ -->
+    <div id="tab-overview" class="tab-panel fade-in">
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">直播间 GMV</div>
-            <div class="text-xl font-bold text-gray-800" id="kpi-live-gmv">-</div>
-            <div class="text-xs text-gray-400 mt-1"><span id="kpi-live-count">0</span> 场直播</div>
+      <!-- Row 1: 当月短视频核心指标 (6个新增) -->
+      <div class="mb-5">
+        <div class="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-3">当月短视频指标</div>
+        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+          <div class="card kpi-card">
+            <div class="label">当月短视频 GMV</div>
+            <div class="value text-accent" id="kpi-month-gmv">-</div>
+            <div class="sub">当月上传视频累计</div>
           </div>
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">有效视频数</div>
-            <div class="text-xl font-bold text-amber-600" id="kpi-effective">-</div>
-            <div class="text-xs text-gray-400 mt-1">GMV≥1000 且上线≥5天</div>
+          <div class="card kpi-card">
+            <div class="label">占整体比例</div>
+            <div class="value text-emerald-400" id="kpi-month-pct-all">-</div>
+            <div class="sub">占短视频整体</div>
           </div>
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">当周新上传</div>
-            <div class="text-xl font-bold text-blue-600" id="kpi-new-count">-</div>
-            <div class="text-xs text-gray-400 mt-1">条新视频</div>
+          <div class="card kpi-card">
+            <div class="label">内部(含ITO)占比</div>
+            <div class="value text-indigo-400" id="kpi-internal-pct">-</div>
+            <div class="sub">内部视频占当月</div>
           </div>
-          <div class="card stat-card">
-            <div class="text-sm text-gray-500 mb-1">目标 GMV</div>
-            <div class="text-xl font-bold text-gray-600" id="kpi-target-gmv">-</div>
-            <div class="text-xs text-gray-400 mt-1">根据直播间GMV×目标占比</div>
+          <div class="card kpi-card">
+            <div class="label">外部视频占比</div>
+            <div class="value text-orange-400" id="kpi-external-pct">-</div>
+            <div class="sub">外部视频占当月</div>
           </div>
-        </div>
-
-        <div class="card mb-6">
-          <h3 class="font-semibold text-gray-700 mb-4">📈 近 8 周趋势</h3>
-          <div id="trendChart" style="height: 320px;"></div>
+          <div class="card kpi-card">
+            <div class="label">内部(含ITO) GMV</div>
+            <div class="value text-indigo-300" id="kpi-internal-gmv">-</div>
+            <div class="sub">内部累计产出</div>
+          </div>
+          <div class="card kpi-card">
+            <div class="label">外部视频 GMV</div>
+            <div class="value text-orange-300" id="kpi-external-gmv">-</div>
+            <div class="sub">外部累计产出</div>
+          </div>
         </div>
       </div>
 
-      <!-- 源头分析 -->
-      <div id="tab-source" class="tab-panel hidden fade-in">
-        <div class="card mb-6">
-          <h3 class="font-semibold text-gray-700 mb-4">🔍 制作源头分析</h3>
-          <div class="overflow-x-auto">
-            <table>
-              <thead>
-                <tr>
-                  <th>源头</th>
-                  <th>视频数</th>
-                  <th>总 GMV</th>
-                  <th>平均 GMV</th>
-                  <th>GMV 占比</th>
-                  <th>有效视频数</th>
-                  <th>目标制作数</th>
-                  <th>实际制作数</th>
-                </tr>
-              </thead>
-              <tbody id="sourceTable"></tbody>
-            </table>
-          </div>
+      <!-- Row 2: 视频产量 + 直播间 -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
+        <div class="card kpi-card glow-indigo">
+          <div class="label">当周新上传</div>
+          <div class="value text-white" id="kpi-new-count">-</div>
+          <div class="sub">当月目标 <span id="kpi-month-target">-</span> · 累计 <span id="kpi-month-actual">-</span></div>
         </div>
-        <div class="card">
-          <h3 class="font-semibold text-gray-700 mb-4">📊 GMV 占比分布</h3>
-          <div id="sourcePieChart" style="height: 320px;"></div>
+        <div class="card kpi-card">
+          <div class="label">有效视频数 <span class="text-zinc-600">(累计)</span></div>
+          <div class="value text-amber-400" id="kpi-effective">-</div>
+          <div class="sub">GMV≥1000 且上传≥7天</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="label">短视频总 GMV</div>
+          <div class="value text-white" id="kpi-video-gmv">-</div>
+          <div class="sub"><span id="kpi-video-count">0</span> 条视频</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="label">直播间 GMV</div>
+          <div class="value text-white" id="kpi-live-gmv">-</div>
+          <div class="sub"><span id="kpi-live-count">0</span> 场直播</div>
+        </div>
+        <div class="card kpi-card" style="background: linear-gradient(135deg, rgba(129,140,248,0.08) 0%, rgba(192,132,252,0.08) 100%); border-color: rgba(129,140,248,0.2);">
+          <div class="label" style="color:#a5b4fc;">短视频占直播间比例</div>
+          <div class="value" style="background: linear-gradient(90deg,#818cf8,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent;" id="kpi-video-live-ratio">-</div>
+          <div class="sub">短视频 ÷ (短视频 + 直播间)</div>
         </div>
       </div>
 
-      <!-- 季度跑量 -->
-      <div id="tab-runner" class="tab-panel hidden fade-in">
-        <div class="flex items-center gap-4 mb-6">
-          <select id="quarterSelect" class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" onchange="loadRunner()">
-            <option value="2026-Q1">2026-Q1</option>
-            <option value="2026-Q2" selected>2026-Q2</option>
-            <option value="2025-Q4">2025-Q4</option>
-          </select>
-          <h3 class="font-semibold text-gray-700">🏆 跑量视频统计</h3>
-          <span class="text-xs text-gray-400">单条累计 GMV 统计</span>
+      <!-- Trend Chart -->
+      <div class="card p-5">
+        <div class="section-title mb-4">近 8 周趋势</div>
+        <div id="trendChart" style="height:300px;"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Tab 2: 源头分析 ═══ -->
+    <div id="tab-source" class="tab-panel hidden fade-in">
+      <div class="card p-5 mb-5">
+        <div class="section-title mb-4">制作源头分析</div>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>源头</th>
+                <th>目标制作数</th>
+                <th>上传数量</th>
+                <th>有效视频数</th>
+                <th>单条平均GMV</th>
+                <th>整体GMV</th>
+                <th>支付ROI</th>
+                <th>整体消耗</th>
+                <th>展现量</th>
+                <th>转化率</th>
+                <th>点击率</th>
+              </tr>
+            </thead>
+            <tbody id="sourceTable"></tbody>
+          </table>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div class="card">
-            <h4 class="font-medium text-gray-700 mb-4">🏢 内部 (含 ITO)</h4>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div class="text-center p-4 bg-indigo-50 rounded-xl">
-                <div class="text-3xl font-bold text-indigo-600" id="runner-internal-50k">-</div>
-                <div class="text-sm text-gray-500 mt-1">≥ 5万 条数</div>
-              </div>
-              <div class="text-center p-4 bg-emerald-50 rounded-xl">
-                <div class="text-3xl font-bold text-emerald-600" id="runner-internal-10k">-</div>
-                <div class="text-sm text-gray-500 mt-1">≥ 1万 条数</div>
-              </div>
+      </div>
+      <div class="card p-5">
+        <div class="section-title mb-4">GMV 占比分布</div>
+        <div id="sourcePieChart" style="height:300px;"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Tab 3: 季度跑量 ═══ -->
+    <div id="tab-runner" class="tab-panel hidden fade-in">
+      <div class="flex items-center gap-3 mb-5">
+        <select id="quarterSelect" class="select" onchange="loadRunner()">
+          <option value="2026-Q2" selected>2026-Q2</option>
+          <option value="2026-Q1">2026-Q1</option>
+          <option value="2025-Q4">2025-Q4</option>
+        </select>
+        <div class="section-title">跑量视频统计</div>
+        <span class="text-xs text-zinc-600">按视频类型细分</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+        <div class="card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2 h-2 rounded-full bg-indigo-400"></div>
+            <span class="section-title">内部 (含 ITO)</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="bg-surface-2 rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-indigo-400" id="runner-internal-50k">-</div>
+              <div class="text-xs text-zinc-500 mt-1">≥ 5万条数</div>
             </div>
-            <div class="text-sm text-gray-400">总计: <span id="runner-internal-total">0</span> 条视频</div>
-          </div>
-          <div class="card">
-            <h4 class="font-medium text-gray-700 mb-4">🌐 外部</h4>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div class="text-center p-4 bg-purple-50 rounded-xl">
-                <div class="text-3xl font-bold text-purple-600" id="runner-external-50k">-</div>
-                <div class="text-sm text-gray-500 mt-1">≥ 5万 条数</div>
-              </div>
-              <div class="text-center p-4 bg-orange-50 rounded-xl">
-                <div class="text-3xl font-bold text-orange-600" id="runner-external-10k">-</div>
-                <div class="text-sm text-gray-500 mt-1">≥ 1万 条数</div>
-              </div>
+            <div class="bg-surface-2 rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-indigo-300" id="runner-internal-10k">-</div>
+              <div class="text-xs text-zinc-500 mt-1">≥ 1万条数</div>
             </div>
-            <div class="text-sm text-gray-400">总计: <span id="runner-external-total">0</span> 条视频</div>
           </div>
+          <div class="text-xs text-zinc-600">总计 <span id="runner-internal-total" class="text-zinc-400">0</span> 条视频</div>
         </div>
-        <div class="card">
-          <h3 class="font-semibold text-gray-700 mb-4">📊 跑量对比</h3>
-          <div id="runnerBarChart" style="height: 320px;"></div>
+        <div class="card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2 h-2 rounded-full bg-orange-400"></div>
+            <span class="section-title">外部</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="bg-surface-2 rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-orange-400" id="runner-external-50k">-</div>
+              <div class="text-xs text-zinc-500 mt-1">≥ 5万条数</div>
+            </div>
+            <div class="bg-surface-2 rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-orange-300" id="runner-external-10k">-</div>
+              <div class="text-xs text-zinc-500 mt-1">≥ 1万条数</div>
+            </div>
+          </div>
+          <div class="text-xs text-zinc-600">总计 <span id="runner-external-total" class="text-zinc-400">0</span> 条视频</div>
         </div>
       </div>
 
-      <!-- 形式监控 -->
-      <div id="tab-format" class="tab-panel hidden fade-in">
-        <div class="card mb-6">
-          <h3 class="font-semibold text-gray-700 mb-4">📈 视频形式效果对比</h3>
-          <div class="overflow-x-auto">
-            <table>
-              <thead>
-                <tr>
-                  <th>视频形式</th>
-                  <th>数量</th>
-                  <th>总 GMV</th>
-                  <th>展现次数</th>
-                  <th>消耗</th>
-                  <th>ROI</th>
-                  <th>点击率</th>
-                  <th>转化率</th>
-                </tr>
-              </thead>
-              <tbody id="formatTable"></tbody>
-            </table>
-          </div>
+      <!-- Runner detail table with video type -->
+      <div class="card p-5 mb-5">
+        <div class="section-title mb-4">跑量视频明细（含类型）</div>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>视频类型</th>
+                <th>归属</th>
+                <th>视频名称</th>
+                <th>累计GMV</th>
+                <th>ROI</th>
+              </tr>
+            </thead>
+            <tbody id="runnerDetailTable"></tbody>
+          </table>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="card">
-            <h3 class="font-semibold text-gray-700 mb-4">🍩 GMV 分布</h3>
-            <div id="formatPieChart" style="height: 300px;"></div>
+      </div>
+
+      <div class="card p-5">
+        <div class="section-title mb-4">跑量对比</div>
+        <div id="runnerBarChart" style="height:300px;"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Tab 4: 形式监控 ═══ -->
+    <div id="tab-format" class="tab-panel hidden fade-in">
+      <div class="card p-5 mb-5">
+        <div class="section-title mb-4">视频形式效果对比</div>
+        <!-- Tree-style table with 1级/2级 classification -->
+        <div class="overflow-x-auto">
+          <div class="tree-row tree-header">
+            <div>视频形式</div>
+            <div>数量</div>
+            <div>整体GMV</div>
+            <div>支付ROI</div>
+            <div>整体消耗</div>
+            <div>展现量</div>
+            <div>转化率</div>
+            <div>点击率</div>
           </div>
-          <div class="card">
-            <h3 class="font-semibold text-gray-700 mb-4">🎯 效率雷达图</h3>
-            <div id="formatRadarChart" style="height: 300px;"></div>
-          </div>
+          <div id="formatTreeBody"></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="card p-5">
+          <div class="section-title mb-4">GMV 分布</div>
+          <div id="formatPieChart" style="height:280px;"></div>
+        </div>
+        <div class="card p-5">
+          <div class="section-title mb-4">效率雷达图</div>
+          <div id="formatRadarChart" style="height:280px;"></div>
         </div>
       </div>
     </div>
+
   </main>
 
-  <!-- 底部 -->
-  <footer class="text-center py-6 text-sm text-gray-400">
-    短视频数据看板系统 &copy; 2026 · 
-    <a href="https://github.com/Mightymojoy/Content-short-video" class="text-indigo-500 hover:underline">GitHub</a>
+  <!-- Footer -->
+  <footer class="border-t border-white/5 mt-8">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+      <span class="text-xs text-zinc-600">短视频数据看板系统 &copy; 2026</span>
+      <a href="https://github.com/Mightymojoy/Content-short-video" class="text-xs text-zinc-600 hover:text-zinc-400 transition">GitHub</a>
+    </div>
   </footer>
 
-  <script>
-    // ═══════════════════════════════════════
-    // Demo 模拟数据
-    // ═══════════════════════════════════════
-    const DEMO_DATA = {
-      brands: {
-        modeng: {
-          name: '摩登新贵女',
-          weeks: {
-            '2026-W16': {
-              overview: {
-                video: { total_count: 187, total_gmv: 523680, new_count: 42, new_gmv: 86200, effective_count: 63 },
-                livestream: { live_count: 5, total_gmv: 4280000 },
-                target: { gmv_ratio: 0.122, target_gmv_ratio: 0.15, target_gmv: 642000, new_video_gmv_ratio: 0.165, completion_rate: 81.6 }
-              },
-              source: {
-                groups: [
-                  { source: 'internal', name: '内部(含ITO)', video_count: 68, total_gmv: 312500, avg_gmv: 4596, gmv_ratio: 0.597, target: { target_video_count: 60, actual_video_count: 52 }, effective_count: 28 },
-                  { source: 'external', name: '外部', video_count: 105, total_gmv: 195180, avg_gmv: 1859, gmv_ratio: 0.373, target: { target_video_count: 120, actual_video_count: 105 }, effective_count: 31 },
-                ],
-                others: [
-                  { source: 'aigc', name: 'AIGC', video_count: 8, total_gmv: 12000, gmv_ratio: 0.023 },
-                  { source: 'other', name: '其他', video_count: 6, total_gmv: 4000, gmv_ratio: 0.008 },
-                ]
-              },
-              format: {
-                formats: [
-                  { video_format: 'KOL', video_count: 72, total_gmv: 268000, total_impressions: 3820000, total_cost: 95000, avg_roi: 2.82, avg_ctr: 0.0245, avg_cvr: 0.0182 },
-                  { video_format: '直播切片', video_count: 48, total_gmv: 128000, total_impressions: 2150000, total_cost: 42000, avg_roi: 3.05, avg_ctr: 0.0312, avg_cvr: 0.0215 },
-                  { video_format: '原生', video_count: 52, total_gmv: 98680, total_impressions: 1860000, total_cost: 38000, avg_roi: 2.60, avg_ctr: 0.0198, avg_cvr: 0.0147 },
-                  { video_format: '复刻', video_count: 10, total_gmv: 22000, total_impressions: 520000, total_cost: 12000, avg_roi: 1.83, avg_ctr: 0.0156, avg_cvr: 0.0103 },
-                  { video_format: '明星', video_count: 5, total_gmv: 7000, total_impressions: 380000, total_cost: 8000, avg_roi: 0.88, avg_ctr: 0.0189, avg_cvr: 0.0086 },
-                ]
-              }
-            },
-            '2026-W15': {
-              overview: {
-                video: { total_count: 165, total_gmv: 478200, new_count: 38, new_gmv: 72000, effective_count: 55 },
-                livestream: { live_count: 4, total_gmv: 3950000 },
-                target: { gmv_ratio: 0.121, target_gmv_ratio: 0.15, target_gmv: 592500, new_video_gmv_ratio: 0.151, completion_rate: 80.7 }
-              },
-              source: {
-                groups: [
-                  { source: 'internal', name: '内部(含ITO)', video_count: 58, total_gmv: 285000, avg_gmv: 4914, gmv_ratio: 0.596, target: { target_video_count: 55, actual_video_count: 48 }, effective_count: 24 },
-                  { source: 'external', name: '外部', video_count: 95, total_gmv: 172500, avg_gmv: 1816, gmv_ratio: 0.361, target: { target_video_count: 110, actual_video_count: 95 }, effective_count: 27 },
-                ],
-                others: [
-                  { source: 'aigc', name: 'AIGC', video_count: 7, total_gmv: 14200, gmv_ratio: 0.030 },
-                  { source: 'other', name: '其他', video_count: 5, total_gmv: 6500, gmv_ratio: 0.014 },
-                ]
-              },
-              format: {
-                formats: [
-                  { video_format: 'KOL', video_count: 65, total_gmv: 245000, total_impressions: 3500000, total_cost: 88000, avg_roi: 2.78, avg_ctr: 0.0238, avg_cvr: 0.0175 },
-                  { video_format: '直播切片', video_count: 42, total_gmv: 115000, total_impressions: 1980000, total_cost: 38000, avg_roi: 3.03, avg_ctr: 0.0305, avg_cvr: 0.0208 },
-                  { video_format: '原生', video_count: 45, total_gmv: 95000, total_impressions: 1720000, total_cost: 35000, avg_roi: 2.71, avg_ctr: 0.0192, avg_cvr: 0.0141 },
-                  { video_format: '复刻', video_count: 8, total_gmv: 18000, total_impressions: 480000, total_cost: 10500, avg_roi: 1.71, avg_ctr: 0.0148, avg_cvr: 0.0097 },
-                  { video_format: '明星', video_count: 5, total_gmv: 5200, total_impressions: 350000, total_cost: 7000, avg_roi: 0.74, avg_ctr: 0.0175, avg_cvr: 0.0078 },
-                ]
-              }
-            },
-            '2026-W14': {
-              overview: {
-                video: { total_count: 152, total_gmv: 412500, new_count: 35, new_gmv: 65800, effective_count: 48 },
-                livestream: { live_count: 4, total_gmv: 3680000 },
-                target: { gmv_ratio: 0.112, target_gmv_ratio: 0.15, target_gmv: 552000, new_video_gmv_ratio: 0.160, completion_rate: 74.7 }
-              },
-              source: {
-                groups: [
-                  { source: 'internal', name: '内部(含ITO)', video_count: 52, total_gmv: 248000, avg_gmv: 4769, gmv_ratio: 0.601, target: { target_video_count: 50, actual_video_count: 44 }, effective_count: 21 },
-                  { source: 'external', name: '外部', video_count: 88, total_gmv: 142500, avg_gmv: 1619, gmv_ratio: 0.345, target: { target_video_count: 100, actual_video_count: 88 }, effective_count: 23 },
-                ],
-                others: [
-                  { source: 'aigc', name: 'AIGC', video_count: 7, total_gmv: 15000, gmv_ratio: 0.036 },
-                  { source: 'other', name: '其他', video_count: 5, total_gmv: 7000, gmv_ratio: 0.017 },
-                ]
-              },
-              format: {
-                formats: [
-                  { video_format: 'KOL', video_count: 58, total_gmv: 218000, total_impressions: 3200000, total_cost: 82000, avg_roi: 2.66, avg_ctr: 0.0225, avg_cvr: 0.0168 },
-                  { video_format: '直播切片', video_count: 38, total_gmv: 98000, total_impressions: 1780000, total_cost: 35000, avg_roi: 2.80, avg_ctr: 0.0292, avg_cvr: 0.0195 },
-                  { video_format: '原生', video_count: 42, total_gmv: 78000, total_impressions: 1580000, total_cost: 32000, avg_roi: 2.44, avg_ctr: 0.0182, avg_cvr: 0.0132 },
-                  { video_format: '复刻', video_count: 9, total_gmv: 15500, total_impressions: 420000, total_cost: 9800, avg_roi: 1.58, avg_ctr: 0.0139, avg_cvr: 0.0091 },
-                  { video_format: '明星', video_count: 5, total_gmv: 3000, total_impressions: 320000, total_cost: 6500, avg_roi: 0.46, avg_ctr: 0.0162, avg_cvr: 0.0068 },
-                ]
-              }
-            }
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DEMO DATA (v2 — with new dimensions)
+// ═══════════════════════════════════════════════════════════════
+const DEMO = {
+  brands: {
+    modeng: {
+      name: '摩登新贵女',
+      weeks: {
+        '2026-W16': {
+          overview: {
+            video: { total_count: 187, total_gmv: 523680, new_count: 42, effective_count: 63 },
+            livestream: { live_count: 5, total_gmv: 4280000 },
+            month_video: { gmv: 386000, pct_of_all: 0.737, internal_pct: 0.597, external_pct: 0.403, internal_gmv: 230542, external_gmv: 155458 },
+            production: { month_target: 120, month_actual_cum: 95 }
           },
-          runner: {
-            '2026-Q2': { internal: { count_g50k: 8, count_g10k: 22, total_count: 142 }, external: { count_g50k: 3, count_g10k: 15, total_count: 258 }, total: { count_g50k: 11, count_g10k: 37, total_count: 400 } },
-            '2026-Q1': { internal: { count_g50k: 12, count_g10k: 35, total_count: 380 }, external: { count_g50k: 5, count_g10k: 28, total_count: 620 }, total: { count_g50k: 17, count_g10k: 63, total_count: 1000 } },
-            '2025-Q4': { internal: { count_g50k: 10, count_g10k: 30, total_count: 350 }, external: { count_g50k: 4, count_g10k: 22, total_count: 580 }, total: { count_g50k: 14, count_g10k: 52, total_count: 930 } },
-          }
+          source: [
+            { name: '内部(含ITO)', target_count: 60, upload_count: 68, effective_count: 28, avg_gmv: 4596, total_gmv: 312500, roi: 2.85, cost: 109649, impressions: 5820000, cvr: 0.0192, ctr: 0.0248 },
+            { name: '外部', target_count: 120, upload_count: 105, effective_count: 31, avg_gmv: 1859, total_gmv: 195180, roi: 1.82, cost: 107245, impressions: 4150000, cvr: 0.0138, ctr: 0.0192 },
+            { name: 'AIGC', target_count: 10, upload_count: 8, effective_count: 1, avg_gmv: 1500, total_gmv: 12000, roi: 1.20, cost: 10000, impressions: 680000, cvr: 0.0085, ctr: 0.0142 },
+            { name: '其他', target_count: 0, upload_count: 6, effective_count: 0, avg_gmv: 667, total_gmv: 4000, roi: 0.67, cost: 5971, impressions: 350000, cvr: 0.0052, ctr: 0.0118 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 28, gmv: 53800, roi: 2.70, cost: 19926, impressions: 1010000, cvr: 0.0156, ctr: 0.0205 },
+            { l1: '原生', l2: '种草', count: 12, gmv: 22500, roi: 2.45, cost: 9184, impressions: 430000, cvr: 0.0138, ctr: 0.0188 },
+            { l1: '原生', l2: '纯展示', count: 8, gmv: 14800, roi: 2.32, cost: 6379, impressions: 280000, cvr: 0.0122, ctr: 0.0172 },
+            { l1: '原生', l2: '混搭', count: 4, gmv: 7580, roi: 2.15, cost: 3526, impressions: 140000, cvr: 0.0105, ctr: 0.0155 },
+            { l1: 'KOL', l2: '种草', count: 72, gmv: 268000, roi: 2.82, cost: 95000, impressions: 3820000, cvr: 0.0182, ctr: 0.0245 },
+            { l1: 'KOL', l2: '机制', count: 15, gmv: 48000, roi: 2.65, cost: 18113, impressions: 820000, cvr: 0.0168, ctr: 0.0228 },
+            { l1: 'KOL', l2: '纯展示', count: 10, gmv: 28000, roi: 2.48, cost: 11290, impressions: 580000, cvr: 0.0145, ctr: 0.0210 },
+            { l1: 'KOL', l2: '混搭', count: 5, gmv: 12000, roi: 2.20, cost: 5455, impressions: 320000, cvr: 0.0128, ctr: 0.0195 },
+            { l1: '直播切片', l2: '纯展示', count: 48, gmv: 128000, roi: 3.05, cost: 41967, impressions: 2150000, cvr: 0.0215, ctr: 0.0312 },
+            { l1: '直播切片', l2: '机制', count: 8, gmv: 18500, roi: 2.88, cost: 6424, impressions: 380000, cvr: 0.0195, ctr: 0.0285 },
+            { l1: '直播切片', l2: '种草', count: 5, gmv: 10200, roi: 2.72, cost: 3750, impressions: 220000, cvr: 0.0178, ctr: 0.0265 },
+            { l1: '直播切片', l2: '混搭', count: 3, gmv: 5800, roi: 2.55, cost: 2275, impressions: 150000, cvr: 0.0162, ctr: 0.0248 },
+            { l1: '复刻', l2: '混搭', count: 10, gmv: 22000, roi: 1.83, cost: 12022, impressions: 520000, cvr: 0.0103, ctr: 0.0156 },
+            { l1: '复刻', l2: '机制', count: 4, gmv: 7500, roi: 1.68, cost: 4464, impressions: 180000, cvr: 0.0092, ctr: 0.0142 },
+            { l1: '复刻', l2: '种草', count: 3, gmv: 5200, roi: 1.55, cost: 3355, impressions: 140000, cvr: 0.0082, ctr: 0.0128 },
+            { l1: '复刻', l2: '纯展示', count: 2, gmv: 3100, roi: 1.42, cost: 2183, impressions: 95000, cvr: 0.0072, ctr: 0.0115 },
+            { l1: '明星', l2: '种草', count: 3, gmv: 4500, roi: 0.92, cost: 4891, impressions: 235000, cvr: 0.0088, ctr: 0.0192 },
+            { l1: '明星', l2: '机制', count: 1, gmv: 1500, roi: 0.82, cost: 1829, impressions: 85000, cvr: 0.0080, ctr: 0.0185 },
+            { l1: '明星', l2: '纯展示', count: 1, gmv: 1000, roi: 0.78, cost: 1282, impressions: 60000, cvr: 0.0073, ctr: 0.0178 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-达人A行李箱测评', gmv: 86000, roi: 3.42 },
+            { type: 'KOL', belong: '外部', name: 'KOL-达人B差旅开箱', gmv: 72000, roi: 3.15 },
+            { type: '直播切片', belong: '内部', name: '直播切片-W16热卖款', gmv: 58000, roi: 3.80 },
+            { type: '原生', belong: '内部', name: '原生-功能展示机甲款', gmv: 32000, roi: 2.95 },
+            { type: 'KOL', belong: '内部', name: 'ITO-品牌自播KOL', gmv: 28000, roi: 2.60 },
+            { type: '直播切片', belong: '内部', name: '直播切片-经典热销', gmv: 25000, roi: 2.85 },
+          ]
         },
-        qingshu: {
-          name: '轻熟质享客',
-          weeks: {
-            '2026-W16': {
-              overview: { video: { total_count: 95, total_gmv: 234500, new_count: 22, new_gmv: 42000, effective_count: 32 }, livestream: { live_count: 3, total_gmv: 2180000 }, target: { gmv_ratio: 0.108, target_gmv_ratio: 0.12, target_gmv: 261600, new_video_gmv_ratio: 0.179, completion_rate: 89.6 } },
-              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 35, total_gmv: 145000, avg_gmv: 4143, gmv_ratio: 0.618, target: { target_video_count: 30, actual_video_count: 28 }, effective_count: 15 }, { source: 'external', name: '外部', video_count: 52, total_gmv: 75500, avg_gmv: 1452, gmv_ratio: 0.322, target: { target_video_count: 65, actual_video_count: 52 }, effective_count: 14 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 5, total_gmv: 9000, gmv_ratio: 0.038 }, { source: 'other', name: '其他', video_count: 3, total_gmv: 5000, gmv_ratio: 0.021 }] },
-              format: { formats: [{ video_format: 'KOL', video_count: 38, total_gmv: 125000, total_impressions: 1800000, total_cost: 52000, avg_roi: 2.40, avg_ctr: 0.0218, avg_cvr: 0.0156 }, { video_format: '直播切片', video_count: 25, total_gmv: 58000, total_impressions: 1250000, total_cost: 25000, avg_roi: 2.32, avg_ctr: 0.0275, avg_cvr: 0.0188 }, { video_format: '原生', video_count: 25, total_gmv: 38500, total_impressions: 980000, total_cost: 22000, avg_roi: 1.75, avg_ctr: 0.0172, avg_cvr: 0.0121 }, { video_format: '复刻', video_count: 5, total_gmv: 10500, total_impressions: 280000, total_cost: 7000, avg_roi: 1.50, avg_ctr: 0.0135, avg_cvr: 0.0089 }, { video_format: '明星', video_count: 2, total_gmv: 2500, total_impressions: 180000, total_cost: 4000, avg_roi: 0.63, avg_ctr: 0.0152, avg_cvr: 0.0065 }] }
-            },
-            '2026-W15': {
-              overview: { video: { total_count: 82, total_gmv: 198000, new_count: 18, new_gmv: 35000, effective_count: 26 }, livestream: { live_count: 3, total_gmv: 2050000 }, target: { gmv_ratio: 0.097, target_gmv_ratio: 0.12, target_gmv: 246000, new_video_gmv_ratio: 0.177, completion_rate: 80.5 } },
-              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 30, total_gmv: 122000, avg_gmv: 4067, gmv_ratio: 0.616, target: { target_video_count: 28, actual_video_count: 25 }, effective_count: 12 }, { source: 'external', name: '外部', video_count: 44, total_gmv: 62000, avg_gmv: 1409, gmv_ratio: 0.313, target: { target_video_count: 55, actual_video_count: 44 }, effective_count: 11 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 5, total_gmv: 10000, gmv_ratio: 0.051 }, { source: 'other', name: '其他', video_count: 3, total_gmv: 4000, gmv_ratio: 0.020 }] },
-              format: { formats: [{ video_format: 'KOL', video_count: 32, total_gmv: 108000, total_impressions: 1580000, total_cost: 46000, avg_roi: 2.35, avg_ctr: 0.0205, avg_cvr: 0.0148 }, { video_format: '直播切片', video_count: 22, total_gmv: 48000, total_impressions: 1100000, total_cost: 22000, avg_roi: 2.18, avg_ctr: 0.0262, avg_cvr: 0.0175 }, { video_format: '原生', video_count: 21, total_gmv: 32000, total_impressions: 850000, total_cost: 18000, avg_roi: 1.78, avg_ctr: 0.0165, avg_cvr: 0.0112 }, { video_format: '复刻', video_count: 4, total_gmv: 8000, total_impressions: 240000, total_cost: 6000, avg_roi: 1.33, avg_ctr: 0.0125, avg_cvr: 0.0082 }, { video_format: '明星', video_count: 3, total_gmv: 2000, total_impressions: 190000, total_cost: 4500, avg_roi: 0.44, avg_ctr: 0.0142, avg_cvr: 0.0058 }] }
-            },
-            '2026-W14': {
-              overview: { video: { total_count: 78, total_gmv: 185000, new_count: 16, new_gmv: 31000, effective_count: 24 }, livestream: { live_count: 3, total_gmv: 1920000 }, target: { gmv_ratio: 0.096, target_gmv_ratio: 0.12, target_gmv: 230400, new_video_gmv_ratio: 0.168, completion_rate: 80.3 } },
-              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 28, total_gmv: 115000, avg_gmv: 4107, gmv_ratio: 0.622, target: { target_video_count: 25, actual_video_count: 22 }, effective_count: 11 }, { source: 'external', name: '外部', video_count: 42, total_gmv: 55000, avg_gmv: 1310, gmv_ratio: 0.297, target: { target_video_count: 50, actual_video_count: 42 }, effective_count: 10 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 5, total_gmv: 11000, gmv_ratio: 0.059 }, { source: 'other', name: '其他', video_count: 3, total_gmv: 4000, gmv_ratio: 0.022 }] },
-              format: { formats: [{ video_format: 'KOL', video_count: 30, total_gmv: 98000, total_impressions: 1420000, total_cost: 42000, avg_roi: 2.33, avg_ctr: 0.0198, avg_cvr: 0.0142 }, { video_format: '直播切片', video_count: 20, total_gmv: 44000, total_impressions: 1000000, total_cost: 20000, avg_roi: 2.20, avg_ctr: 0.0252, avg_cvr: 0.0168 }, { video_format: '原生', video_count: 22, total_gmv: 31000, total_impressions: 800000, total_cost: 17000, avg_roi: 1.82, avg_ctr: 0.0158, avg_cvr: 0.0105 }, { video_format: '复刻', video_count: 3, total_gmv: 9000, total_impressions: 220000, total_cost: 5500, avg_roi: 1.64, avg_ctr: 0.0118, avg_cvr: 0.0078 }, { video_format: '明星', video_count: 3, total_gmv: 3000, total_impressions: 180000, total_cost: 4200, avg_roi: 0.71, avg_ctr: 0.0138, avg_cvr: 0.0062 }] }
-            }
+        '2026-W15': {
+          overview: {
+            video: { total_count: 165, total_gmv: 478200, new_count: 38, effective_count: 55 },
+            livestream: { live_count: 4, total_gmv: 3950000 },
+            month_video: { gmv: 348000, pct_of_all: 0.728, internal_pct: 0.596, external_pct: 0.404, internal_gmv: 207408, external_gmv: 140592 },
+            production: { month_target: 120, month_actual_cum: 53 }
           },
-          runner: {
-            '2026-Q2': { internal: { count_g50k: 4, count_g10k: 12, total_count: 75 }, external: { count_g50k: 1, count_g10k: 8, total_count: 140 }, total: { count_g50k: 5, count_g10k: 20, total_count: 215 } },
-            '2026-Q1': { internal: { count_g50k: 6, count_g10k: 18, total_count: 200 }, external: { count_g50k: 2, count_g10k: 14, total_count: 350 }, total: { count_g50k: 8, count_g10k: 32, total_count: 550 } },
-            '2025-Q4': { internal: { count_g50k: 5, count_g10k: 15, total_count: 180 }, external: { count_g50k: 2, count_g10k: 11, total_count: 320 }, total: { count_g50k: 7, count_g10k: 26, total_count: 500 } },
-          }
+          source: [
+            { name: '内部(含ITO)', target_count: 55, upload_count: 58, effective_count: 24, avg_gmv: 4914, total_gmv: 285000, roi: 2.92, cost: 97603, impressions: 5200000, cvr: 0.0188, ctr: 0.0255 },
+            { name: '外部', target_count: 110, upload_count: 95, effective_count: 27, avg_gmv: 1816, total_gmv: 172500, roi: 1.75, cost: 98571, impressions: 3850000, cvr: 0.0132, ctr: 0.0185 },
+            { name: 'AIGC', target_count: 8, upload_count: 7, effective_count: 1, avg_gmv: 2029, total_gmv: 14200, roi: 1.35, cost: 10519, impressions: 620000, cvr: 0.0092, ctr: 0.0135 },
+            { name: '其他', target_count: 0, upload_count: 5, effective_count: 0, avg_gmv: 1300, total_gmv: 6500, roi: 0.72, cost: 9028, impressions: 320000, cvr: 0.0061, ctr: 0.0108 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 23, gmv: 48500, roi: 2.65, cost: 18302, impressions: 880000, cvr: 0.0145, ctr: 0.0192 },
+            { l1: '原生', l2: '种草', count: 10, gmv: 20500, roi: 2.42, cost: 8471, impressions: 385000, cvr: 0.0132, ctr: 0.0178 },
+            { l1: '原生', l2: '纯展示', count: 7, gmv: 13800, roi: 2.28, cost: 6053, impressions: 255000, cvr: 0.0118, ctr: 0.0165 },
+            { l1: '原生', l2: '混搭', count: 5, gmv: 12200, roi: 2.12, cost: 5755, impressions: 200000, cvr: 0.0102, ctr: 0.0148 },
+            { l1: 'KOL', l2: '种草', count: 65, gmv: 245000, roi: 2.78, cost: 88129, impressions: 3500000, cvr: 0.0175, ctr: 0.0238 },
+            { l1: 'KOL', l2: '机制', count: 13, gmv: 44000, roi: 2.58, cost: 17054, impressions: 740000, cvr: 0.0162, ctr: 0.0222 },
+            { l1: 'KOL', l2: '纯展示', count: 8, gmv: 25000, roi: 2.40, cost: 10417, impressions: 530000, cvr: 0.0142, ctr: 0.0205 },
+            { l1: 'KOL', l2: '混搭', count: 4, gmv: 10000, roi: 2.15, cost: 4651, impressions: 285000, cvr: 0.0125, ctr: 0.0188 },
+            { l1: '直播切片', l2: '纯展示', count: 42, gmv: 115000, roi: 3.03, cost: 37954, impressions: 1980000, cvr: 0.0208, ctr: 0.0305 },
+            { l1: '直播切片', l2: '机制', count: 7, gmv: 16500, roi: 2.85, cost: 5789, impressions: 345000, cvr: 0.0188, ctr: 0.0278 },
+            { l1: '直播切片', l2: '种草', count: 4, gmv: 9200, roi: 2.68, cost: 3433, impressions: 198000, cvr: 0.0170, ctr: 0.0258 },
+            { l1: '直播切片', l2: '混搭', count: 3, gmv: 5300, roi: 2.50, cost: 2120, impressions: 138000, cvr: 0.0155, ctr: 0.0240 },
+            { l1: '复刻', l2: '混搭', count: 8, gmv: 18000, roi: 1.71, cost: 10526, impressions: 480000, cvr: 0.0097, ctr: 0.0148 },
+            { l1: '复刻', l2: '机制', count: 3, gmv: 6500, roi: 1.58, cost: 4114, impressions: 165000, cvr: 0.0088, ctr: 0.0135 },
+            { l1: '复刻', l2: '种草', count: 2, gmv: 4200, roi: 1.45, cost: 2897, impressions: 125000, cvr: 0.0078, ctr: 0.0122 },
+            { l1: '复刻', l2: '纯展示', count: 1, gmv: 2000, roi: 1.32, cost: 1515, impressions: 80000, cvr: 0.0068, ctr: 0.0110 },
+            { l1: '明星', l2: '种草', count: 3, gmv: 3500, roi: 0.78, cost: 4487, impressions: 218000, cvr: 0.0080, ctr: 0.0178 },
+            { l1: '明星', l2: '机制', count: 1, gmv: 1000, roi: 0.65, cost: 1538, impressions: 80000, cvr: 0.0072, ctr: 0.0170 },
+            { l1: '明星', l2: '纯展示', count: 1, gmv: 700, roi: 0.55, cost: 1273, impressions: 52000, cvr: 0.0062, ctr: 0.0162 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-达人A测评', gmv: 78000, roi: 3.20 },
+            { type: '直播切片', belong: '内部', name: '直播切片-热销回顾', gmv: 52000, roi: 3.50 },
+            { type: 'KOL', belong: '外部', name: 'KOL-达人B开箱', gmv: 65000, roi: 2.98 },
+            { type: '原生', belong: '内部', name: '原生-功能展示', gmv: 28000, roi: 2.72 },
+            { type: '复刻', belong: '外部', name: '复刻-混搭爆款', gmv: 15000, roi: 1.90 },
+          ]
         },
-        yunduan: {
-          name: '云端商务家',
-          weeks: {
-            '2026-W16': {
-              overview: { video: { total_count: 62, total_gmv: 156800, new_count: 15, new_gmv: 28000, effective_count: 20 }, livestream: { live_count: 2, total_gmv: 1520000 }, target: { gmv_ratio: 0.103, target_gmv_ratio: 0.10, target_gmv: 152000, new_video_gmv_ratio: 0.179, completion_rate: 103.2 } },
-              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 22, total_gmv: 98000, avg_gmv: 4455, gmv_ratio: 0.625, target: { target_video_count: 20, actual_video_count: 18 }, effective_count: 10 }, { source: 'external', name: '外部', video_count: 34, total_gmv: 46800, avg_gmv: 1376, gmv_ratio: 0.298, target: { target_video_count: 40, actual_video_count: 34 }, effective_count: 8 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 4, total_gmv: 8500, gmv_ratio: 0.054 }, { source: 'other', name: '其他', video_count: 2, total_gmv: 3500, gmv_ratio: 0.022 }] },
-              format: { formats: [{ video_format: 'KOL', video_count: 25, total_gmv: 82000, total_impressions: 1250000, total_cost: 38000, avg_roi: 2.16, avg_ctr: 0.0205, avg_cvr: 0.0142 }, { video_format: '直播切片', video_count: 16, total_gmv: 38000, total_impressions: 850000, total_cost: 18000, avg_roi: 2.11, avg_ctr: 0.0248, avg_cvr: 0.0165 }, { video_format: '原生', video_count: 15, total_gmv: 28000, total_impressions: 650000, total_cost: 15000, avg_roi: 1.87, avg_ctr: 0.0165, avg_cvr: 0.0112 }, { video_format: '复刻', video_count: 4, total_gmv: 6500, total_impressions: 200000, total_cost: 5200, avg_roi: 1.25, avg_ctr: 0.0122, avg_cvr: 0.0078 }, { video_format: '明星', video_count: 2, total_gmv: 2300, total_impressions: 150000, total_cost: 3500, avg_roi: 0.66, avg_ctr: 0.0142, avg_cvr: 0.0058 }] }
-            },
-            '2026-W15': {
-              overview: { video: { total_count: 55, total_gmv: 138000, new_count: 12, new_gmv: 22000, effective_count: 17 }, livestream: { live_count: 2, total_gmv: 1420000 }, target: { gmv_ratio: 0.097, target_gmv_ratio: 0.10, target_gmv: 142000, new_video_gmv_ratio: 0.159, completion_rate: 97.2 } },
-              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 20, total_gmv: 86000, avg_gmv: 4300, gmv_ratio: 0.623, target: { target_video_count: 18, actual_video_count: 16 }, effective_count: 9 }, { source: 'external', name: '外部', video_count: 30, total_gmv: 40500, avg_gmv: 1350, gmv_ratio: 0.293, target: { target_video_count: 35, actual_video_count: 30 }, effective_count: 6 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 3, total_gmv: 8000, gmv_ratio: 0.058 }, { source: 'other', name: '其他', video_count: 2, total_gmv: 3500, gmv_ratio: 0.025 }] },
-              format: { formats: [{ video_format: 'KOL', video_count: 22, total_gmv: 72000, total_impressions: 1100000, total_cost: 34000, avg_roi: 2.12, avg_ctr: 0.0192, avg_cvr: 0.0135 }, { video_format: '直播切片', video_count: 14, total_gmv: 34000, total_impressions: 750000, total_cost: 16000, avg_roi: 2.13, avg_ctr: 0.0235, avg_cvr: 0.0158 }, { video_format: '原生', video_count: 14, total_gmv: 25000, total_impressions: 580000, total_cost: 13500, avg_roi: 1.85, avg_ctr: 0.0155, avg_cvr: 0.0105 }, { video_format: '复刻', video_count: 3, total_gmv: 5500, total_impressions: 170000, total_cost: 4800, avg_roi: 1.15, avg_ctr: 0.0112, avg_cvr: 0.0072 }, { video_format: '明星', video_count: 2, total_gmv: 1500, total_impressions: 130000, total_cost: 3200, avg_roi: 0.47, avg_ctr: 0.0132, avg_cvr: 0.0052 }] }
-            },
-            '2026-W14': {
-              overview: { video: { total_count: 50, total_gmv: 125000, new_count: 10, new_gmv: 18000, effective_count: 15 }, livestream: { live_count: 2, total_gmv: 1350000 }, target: { gmv_ratio: 0.093, target_gmv_ratio: 0.10, target_gmv: 135000, new_video_gmv_ratio: 0.144, completion_rate: 92.6 } },
-              source: { groups: [{ source: 'internal', name: '内部(含ITO)', video_count: 18, total_gmv: 78000, avg_gmv: 4333, gmv_ratio: 0.624, target: { target_video_count: 16, actual_video_count: 14 }, effective_count: 8 }, { source: 'external', name: '外部', video_count: 27, total_gmv: 36500, avg_gmv: 1352, gmv_ratio: 0.292, target: { target_video_count: 30, actual_video_count: 27 }, effective_count: 5 }], others: [{ source: 'aigc', name: 'AIGC', video_count: 3, total_gmv: 7500, gmv_ratio: 0.060 }, { source: 'other', name: '其他', video_count: 2, total_gmv: 3000, gmv_ratio: 0.024 }] },
-              format: { formats: [{ video_format: 'KOL', video_count: 20, total_gmv: 65000, total_impressions: 980000, total_cost: 30000, avg_roi: 2.17, avg_ctr: 0.0185, avg_cvr: 0.0128 }, { video_format: '直播切片', video_count: 12, total_gmv: 30000, total_impressions: 680000, total_cost: 14000, avg_roi: 2.14, avg_ctr: 0.0228, avg_cvr: 0.0152 }, { video_format: '原生', video_count: 13, total_gmv: 22000, total_impressions: 520000, total_cost: 12000, avg_roi: 1.83, avg_ctr: 0.0148, avg_cvr: 0.0098 }, { video_format: '复刻', video_count: 3, total_gmv: 5500, total_impressions: 160000, total_cost: 4500, avg_roi: 1.22, avg_ctr: 0.0108, avg_cvr: 0.0068 }, { video_format: '明星', video_count: 2, total_gmv: 2500, total_impressions: 120000, total_cost: 3000, avg_roi: 0.83, avg_ctr: 0.0125, avg_cvr: 0.0055 }] }
-            }
+        '2026-W14': {
+          overview: {
+            video: { total_count: 152, total_gmv: 412500, new_count: 35, effective_count: 48 },
+            livestream: { live_count: 4, total_gmv: 3680000 },
+            month_video: { gmv: 295000, pct_of_all: 0.715, internal_pct: 0.601, external_pct: 0.399, internal_gmv: 177295, external_gmv: 117705 },
+            production: { month_target: 120, month_actual_cum: 15 }
           },
-          runner: {
-            '2026-Q2': { internal: { count_g50k: 3, count_g10k: 8, total_count: 48 }, external: { count_g50k: 1, count_g10k: 5, total_count: 95 }, total: { count_g50k: 4, count_g10k: 13, total_count: 143 } },
-            '2026-Q1': { internal: { count_g50k: 4, count_g10k: 12, total_count: 130 }, external: { count_g50k: 1, count_g10k: 8, total_count: 230 }, total: { count_g50k: 5, count_g10k: 20, total_count: 360 } },
-            '2025-Q4': { internal: { count_g50k: 3, count_g10k: 10, total_count: 115 }, external: { count_g50k: 1, count_g10k: 7, total_count: 210 }, total: { count_g50k: 4, count_g10k: 17, total_count: 325 } },
-          }
+          source: [
+            { name: '内部(含ITO)', target_count: 50, upload_count: 52, effective_count: 21, avg_gmv: 4769, total_gmv: 248000, roi: 2.88, cost: 86111, impressions: 4650000, cvr: 0.0182, ctr: 0.0242 },
+            { name: '外部', target_count: 100, upload_count: 88, effective_count: 23, avg_gmv: 1619, total_gmv: 142500, roi: 1.68, cost: 84821, impressions: 3450000, cvr: 0.0125, ctr: 0.0178 },
+            { name: 'AIGC', target_count: 8, upload_count: 7, effective_count: 1, avg_gmv: 2143, total_gmv: 15000, roi: 1.30, cost: 11538, impressions: 580000, cvr: 0.0088, ctr: 0.0128 },
+            { name: '其他', target_count: 0, upload_count: 5, effective_count: 0, avg_gmv: 1400, total_gmv: 7000, roi: 0.65, cost: 10769, impressions: 280000, cvr: 0.0055, ctr: 0.0102 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 22, gmv: 40500, roi: 2.48, cost: 16331, impressions: 780000, cvr: 0.0138, ctr: 0.0182 },
+            { l1: '原生', l2: '种草', count: 9, gmv: 16800, roi: 2.28, cost: 7368, impressions: 325000, cvr: 0.0125, ctr: 0.0168 },
+            { l1: '原生', l2: '纯展示', count: 6, gmv: 10500, roi: 2.12, cost: 4953, impressions: 220000, cvr: 0.0110, ctr: 0.0152 },
+            { l1: '原生', l2: '混搭', count: 5, gmv: 10200, roi: 1.98, cost: 5152, impressions: 255000, cvr: 0.0098, ctr: 0.0138 },
+            { l1: 'KOL', l2: '种草', count: 58, gmv: 218000, roi: 2.66, cost: 81955, impressions: 3200000, cvr: 0.0168, ctr: 0.0225 },
+            { l1: 'KOL', l2: '机制', count: 12, gmv: 40000, roi: 2.48, cost: 16129, impressions: 698000, cvr: 0.0155, ctr: 0.0210 },
+            { l1: 'KOL', l2: '纯展示', count: 7, gmv: 22000, roi: 2.32, cost: 9483, impressions: 498000, cvr: 0.0135, ctr: 0.0195 },
+            { l1: 'KOL', l2: '混搭', count: 3, gmv: 8500, roi: 2.05, cost: 4146, impressions: 268000, cvr: 0.0118, ctr: 0.0178 },
+            { l1: '直播切片', l2: '纯展示', count: 38, gmv: 98000, roi: 2.80, cost: 35000, impressions: 1780000, cvr: 0.0195, ctr: 0.0292 },
+            { l1: '直播切片', l2: '机制', count: 6, gmv: 14500, roi: 2.62, cost: 5534, impressions: 310000, cvr: 0.0178, ctr: 0.0265 },
+            { l1: '直播切片', l2: '种草', count: 4, gmv: 8800, roi: 2.45, cost: 3592, impressions: 188000, cvr: 0.0162, ctr: 0.0248 },
+            { l1: '直播切片', l2: '混搭', count: 2, gmv: 4200, roi: 2.28, cost: 1842, impressions: 125000, cvr: 0.0148, ctr: 0.0232 },
+            { l1: '复刻', l2: '混搭', count: 9, gmv: 15500, roi: 1.58, cost: 9810, impressions: 420000, cvr: 0.0091, ctr: 0.0139 },
+            { l1: '复刻', l2: '机制', count: 3, gmv: 5200, roi: 1.45, cost: 3586, impressions: 145000, cvr: 0.0082, ctr: 0.0126 },
+            { l1: '复刻', l2: '种草', count: 2, gmv: 3200, roi: 1.32, cost: 2424, impressions: 110000, cvr: 0.0072, ctr: 0.0114 },
+            { l1: '复刻', l2: '纯展示', count: 1, gmv: 1600, roi: 1.20, cost: 1333, impressions: 72000, cvr: 0.0062, ctr: 0.0102 },
+            { l1: '明星', l2: '种草', count: 3, gmv: 2200, roi: 0.52, cost: 4231, impressions: 198000, cvr: 0.0072, ctr: 0.0165 },
+            { l1: '明星', l2: '机制', count: 1, gmv: 500, roi: 0.38, cost: 1316, impressions: 72000, cvr: 0.0062, ctr: 0.0158 },
+            { l1: '明星', l2: '纯展示', count: 1, gmv: 300, roi: 0.30, cost: 1000, impressions: 50000, cvr: 0.0055, ctr: 0.0150 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-达人C评测', gmv: 68000, roi: 3.05 },
+            { type: '直播切片', belong: '内部', name: '直播切片-经典款', gmv: 45000, roi: 3.20 },
+            { type: '原生', belong: '内部', name: '原生-机制类', gmv: 25000, roi: 2.55 },
+          ]
         }
+      },
+      runner: {
+        '2026-Q2': { internal: { g50k: 8, g10k: 22, total: 142 }, external: { g50k: 3, g10k: 15, total: 258 } },
+        '2026-Q1': { internal: { g50k: 12, g10k: 35, total: 380 }, external: { g50k: 5, g10k: 28, total: 620 } },
+        '2025-Q4': { internal: { g50k: 10, g10k: 30, total: 350 }, external: { g50k: 4, g10k: 22, total: 580 } },
       }
-    };
-
-    // 趋势模拟数据
-    const DEMO_TREND = {
-      modeng: [
-        { week: '2026-W09', video_gmv: 325000, live_gmv: 3200000, gmv_ratio: 0.102 },
-        { week: '2026-W10', video_gmv: 348000, live_gmv: 3350000, gmv_ratio: 0.104 },
-        { week: '2026-W11', video_gmv: 385000, live_gmv: 3500000, gmv_ratio: 0.110 },
-        { week: '2026-W12', video_gmv: 402000, live_gmv: 3600000, gmv_ratio: 0.112 },
-        { week: '2026-W13', video_gmv: 398000, live_gmv: 3720000, gmv_ratio: 0.107 },
-        { week: '2026-W14', video_gmv: 412500, live_gmv: 3680000, gmv_ratio: 0.112 },
-        { week: '2026-W15', video_gmv: 478200, live_gmv: 3950000, gmv_ratio: 0.121 },
-        { week: '2026-W16', video_gmv: 523680, live_gmv: 4280000, gmv_ratio: 0.122 },
-      ],
-      qingshu: [
-        { week: '2026-W09', video_gmv: 142000, live_gmv: 1650000, gmv_ratio: 0.086 },
-        { week: '2026-W10', video_gmv: 158000, live_gmv: 1720000, gmv_ratio: 0.092 },
-        { week: '2026-W11', video_gmv: 175000, live_gmv: 1800000, gmv_ratio: 0.097 },
-        { week: '2026-W12', video_gmv: 182000, live_gmv: 1850000, gmv_ratio: 0.098 },
-        { week: '2026-W13', video_gmv: 178000, live_gmv: 1900000, gmv_ratio: 0.094 },
-        { week: '2026-W14', video_gmv: 185000, live_gmv: 1920000, gmv_ratio: 0.096 },
-        { week: '2026-W15', video_gmv: 198000, live_gmv: 2050000, gmv_ratio: 0.097 },
-        { week: '2026-W16', video_gmv: 234500, live_gmv: 2180000, gmv_ratio: 0.108 },
-      ],
-      yunduan: [
-        { week: '2026-W09', video_gmv: 98000, live_gmv: 1150000, gmv_ratio: 0.085 },
-        { week: '2026-W10', video_gmv: 105000, live_gmv: 1200000, gmv_ratio: 0.088 },
-        { week: '2026-W11', video_gmv: 118000, live_gmv: 1280000, gmv_ratio: 0.092 },
-        { week: '2026-W12', video_gmv: 122000, live_gmv: 1300000, gmv_ratio: 0.094 },
-        { week: '2026-W13', video_gmv: 120000, live_gmv: 1320000, gmv_ratio: 0.091 },
-        { week: '2026-W14', video_gmv: 125000, live_gmv: 1350000, gmv_ratio: 0.093 },
-        { week: '2026-W15', video_gmv: 138000, live_gmv: 1420000, gmv_ratio: 0.097 },
-        { week: '2026-W16', video_gmv: 156800, live_gmv: 1520000, gmv_ratio: 0.103 },
-      ]
-    };
-
-    // ═══════════════════════════════════════
-    // 全局状态
-    // ═══════════════════════════════════════
-    let currentBrand = 'modeng';
-    let currentWeek = '2026-W16';
-    let currentTab = 'overview';
-
-    function getBrandData() { return DEMO_DATA.brands[currentBrand]; }
-    function getWeekData() { return getBrandData()?.weeks?.[currentWeek]; }
-
-    // ═══════════════════════════════════════
-    // 工具函数
-    // ═══════════════════════════════════════
-    function fmt(n, decimals = 0) {
-      if (n === null || n === undefined || isNaN(n)) return '-';
-      if (n >= 10000) return (n / 10000).toFixed(1) + '万';
-      return n.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    function fmtPercent(n) {
-      if (n === null || n === undefined || isNaN(n)) return '-';
-      return (n * 100).toFixed(1) + '%';
-    }
-
-    // ═══════════════════════════════════════
-    // 事件
-    // ═══════════════════════════════════════
-    function onBrandChange() { currentBrand = document.getElementById('brandSelect').value; loadCurrentTab(); }
-    function onWeekChange() { currentWeek = document.getElementById('weekSelect').value; loadCurrentTab(); }
-
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-gray-500'); });
-      document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
-      document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-      document.getElementById(`tab-${tab}`).classList.remove('hidden');
-      loadCurrentTab();
-    }
-
-    function loadCurrentTab() {
-      switch (currentTab) {
-        case 'overview': loadOverview(); break;
-        case 'source': loadSource(); break;
-        case 'runner': loadRunner(); break;
-        case 'format': loadFormat(); break;
+    },
+    qingshu: {
+      name: '轻熟质享客',
+      weeks: {
+        '2026-W16': {
+          overview: {
+            video: { total_count: 95, total_gmv: 234500, new_count: 22, effective_count: 32 },
+            livestream: { live_count: 3, total_gmv: 2180000 },
+            month_video: { gmv: 172000, pct_of_all: 0.733, internal_pct: 0.618, external_pct: 0.382, internal_gmv: 106296, external_gmv: 65704 },
+            production: { month_target: 80, month_actual_cum: 60 }
+          },
+          source: [
+            { name: '内部(含ITO)', target_count: 30, upload_count: 35, effective_count: 15, avg_gmv: 4143, total_gmv: 145000, roi: 2.62, cost: 55344, impressions: 2980000, cvr: 0.0168, ctr: 0.0225 },
+            { name: '外部', target_count: 65, upload_count: 52, effective_count: 14, avg_gmv: 1452, total_gmv: 75500, roi: 1.58, cost: 47785, impressions: 1920000, cvr: 0.0118, ctr: 0.0175 },
+            { name: 'AIGC', target_count: 5, upload_count: 5, effective_count: 1, avg_gmv: 1800, total_gmv: 9000, roi: 1.15, cost: 7826, impressions: 520000, cvr: 0.0075, ctr: 0.0128 },
+            { name: '其他', target_count: 0, upload_count: 3, effective_count: 0, avg_gmv: 1667, total_gmv: 5000, roi: 0.60, cost: 8333, impressions: 180000, cvr: 0.0048, ctr: 0.0098 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 12, gmv: 19800, roi: 1.80, cost: 11000, impressions: 480000, cvr: 0.0118, ctr: 0.0168 },
+            { l1: '原生', l2: '种草', count: 6, gmv: 9200, roi: 1.65, cost: 5576, impressions: 220000, cvr: 0.0105, ctr: 0.0155 },
+            { l1: '原生', l2: '纯展示', count: 4, gmv: 5800, roi: 1.52, cost: 3816, impressions: 148000, cvr: 0.0092, ctr: 0.0142 },
+            { l1: '原生', l2: '混搭', count: 3, gmv: 3700, roi: 1.40, cost: 2643, impressions: 112000, cvr: 0.0080, ctr: 0.0130 },
+            { l1: 'KOL', l2: '种草', count: 38, gmv: 125000, roi: 2.40, cost: 52083, impressions: 1800000, cvr: 0.0156, ctr: 0.0218 },
+            { l1: 'KOL', l2: '机制', count: 8, gmv: 22000, roi: 2.22, cost: 9910, impressions: 385000, cvr: 0.0142, ctr: 0.0202 },
+            { l1: 'KOL', l2: '纯展示', count: 5, gmv: 12500, roi: 2.05, cost: 6098, impressions: 245000, cvr: 0.0128, ctr: 0.0188 },
+            { l1: 'KOL', l2: '混搭', count: 3, gmv: 6500, roi: 1.88, cost: 3457, impressions: 158000, cvr: 0.0112, ctr: 0.0172 },
+            { l1: '直播切片', l2: '纯展示', count: 25, gmv: 58000, roi: 2.32, cost: 25000, impressions: 1250000, cvr: 0.0188, ctr: 0.0275 },
+            { l1: '直播切片', l2: '机制', count: 4, gmv: 8500, roi: 2.18, cost: 3899, impressions: 215000, cvr: 0.0172, ctr: 0.0252 },
+            { l1: '直播切片', l2: '种草', count: 3, gmv: 5500, roi: 2.05, cost: 2683, impressions: 158000, cvr: 0.0158, ctr: 0.0238 },
+            { l1: '直播切片', l2: '混搭', count: 2, gmv: 3000, roi: 1.92, cost: 1563, impressions: 108000, cvr: 0.0145, ctr: 0.0222 },
+            { l1: '复刻', l2: '混搭', count: 5, gmv: 10500, roi: 1.50, cost: 7000, impressions: 280000, cvr: 0.0089, ctr: 0.0135 },
+            { l1: '复刻', l2: '机制', count: 2, gmv: 3800, roi: 1.38, cost: 2754, impressions: 102000, cvr: 0.0080, ctr: 0.0122 },
+            { l1: '复刻', l2: '种草', count: 1, gmv: 1800, roi: 1.25, cost: 1440, impressions: 68000, cvr: 0.0070, ctr: 0.0110 },
+            { l1: '复刻', l2: '纯展示', count: 1, gmv: 900, roi: 1.12, cost: 804, impressions: 48000, cvr: 0.0060, ctr: 0.0098 },
+            { l1: '明星', l2: '种草', count: 2, gmv: 2000, roi: 0.68, cost: 2941, impressions: 115000, cvr: 0.0068, ctr: 0.0155 },
+            { l1: '明星', l2: '机制', count: 1, gmv: 500, roi: 0.55, cost: 909, impressions: 45000, cvr: 0.0058, ctr: 0.0148 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-轻熟风达人', gmv: 52000, roi: 2.85 },
+            { type: '直播切片', belong: '内部', name: '直播切片-品质款', gmv: 35000, roi: 3.10 },
+            { type: 'KOL', belong: '外部', name: 'KOL-生活方式', gmv: 38000, roi: 2.60 },
+          ]
+        },
+        '2026-W15': {
+          overview: {
+            video: { total_count: 82, total_gmv: 198000, new_count: 18, effective_count: 26 },
+            livestream: { live_count: 3, total_gmv: 2050000 },
+            month_video: { gmv: 148000, pct_of_all: 0.747, internal_pct: 0.616, external_pct: 0.384, internal_gmv: 91168, external_gmv: 56832 },
+            production: { month_target: 80, month_actual_cum: 38 }
+          },
+          source: [
+            { name: '内部(含ITO)', target_count: 28, upload_count: 30, effective_count: 12, avg_gmv: 4067, total_gmv: 122000, roi: 2.55, cost: 47843, impressions: 2620000, cvr: 0.0162, ctr: 0.0218 },
+            { name: '外部', target_count: 55, upload_count: 44, effective_count: 11, avg_gmv: 1409, total_gmv: 62000, roi: 1.52, cost: 40789, impressions: 1680000, cvr: 0.0112, ctr: 0.0168 },
+            { name: 'AIGC', target_count: 5, upload_count: 5, effective_count: 1, avg_gmv: 2000, total_gmv: 10000, roi: 1.10, cost: 9091, impressions: 480000, cvr: 0.0070, ctr: 0.0122 },
+            { name: '其他', target_count: 0, upload_count: 3, effective_count: 0, avg_gmv: 1333, total_gmv: 4000, roi: 0.55, cost: 7273, impressions: 150000, cvr: 0.0042, ctr: 0.0092 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 10, gmv: 16500, roi: 1.72, cost: 9593, impressions: 420000, cvr: 0.0108, ctr: 0.0160 },
+            { l1: '原生', l2: '种草', count: 5, gmv: 7500, roi: 1.58, cost: 4747, impressions: 195000, cvr: 0.0095, ctr: 0.0148 },
+            { l1: '原生', l2: '纯展示', count: 4, gmv: 5200, roi: 1.45, cost: 3586, impressions: 152000, cvr: 0.0082, ctr: 0.0135 },
+            { l1: '原生', l2: '混搭', count: 2, gmv: 2800, roi: 1.32, cost: 2121, impressions: 83000, cvr: 0.0070, ctr: 0.0122 },
+            { l1: 'KOL', l2: '种草', count: 32, gmv: 108000, roi: 2.35, cost: 45957, impressions: 1580000, cvr: 0.0148, ctr: 0.0205 },
+            { l1: 'KOL', l2: '机制', count: 7, gmv: 19500, roi: 2.18, cost: 8945, impressions: 345000, cvr: 0.0135, ctr: 0.0192 },
+            { l1: 'KOL', l2: '纯展示', count: 4, gmv: 10500, roi: 2.02, cost: 5198, impressions: 220000, cvr: 0.0122, ctr: 0.0178 },
+            { l1: 'KOL', l2: '混搭', count: 2, gmv: 4500, roi: 1.80, cost: 2500, impressions: 135000, cvr: 0.0108, ctr: 0.0162 },
+            { l1: '直播切片', l2: '纯展示', count: 22, gmv: 48000, roi: 2.18, cost: 22018, impressions: 1100000, cvr: 0.0175, ctr: 0.0262 },
+            { l1: '直播切片', l2: '机制', count: 4, gmv: 7500, roi: 2.05, cost: 3659, impressions: 198000, cvr: 0.0160, ctr: 0.0240 },
+            { l1: '直播切片', l2: '种草', count: 2, gmv: 3800, roi: 1.92, cost: 1979, impressions: 128000, cvr: 0.0148, ctr: 0.0225 },
+            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1700, roi: 1.78, cost: 955, impressions: 82000, cvr: 0.0135, ctr: 0.0210 },
+            { l1: '复刻', l2: '混搭', count: 4, gmv: 8000, roi: 1.33, cost: 6015, impressions: 240000, cvr: 0.0082, ctr: 0.0125 },
+            { l1: '复刻', l2: '机制', count: 2, gmv: 3200, roi: 1.22, cost: 2623, impressions: 88000, cvr: 0.0072, ctr: 0.0112 },
+            { l1: '复刻', l2: '种草', count: 1, gmv: 1500, roi: 1.10, cost: 1364, impressions: 58000, cvr: 0.0062, ctr: 0.0100 },
+            { l1: '明星', l2: '种草', count: 2, gmv: 1800, roi: 0.50, cost: 3600, impressions: 108000, cvr: 0.0060, ctr: 0.0145 },
+            { l1: '明星', l2: '机制', count: 1, gmv: 200, roi: 0.35, cost: 571, impressions: 42000, cvr: 0.0050, ctr: 0.0138 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-穿搭种草', gmv: 45000, roi: 2.70 },
+            { type: '直播切片', belong: '内部', name: '直播切片-热款', gmv: 30000, roi: 2.90 },
+          ]
+        },
+        '2026-W14': {
+          overview: {
+            video: { total_count: 78, total_gmv: 185000, new_count: 16, effective_count: 24 },
+            livestream: { live_count: 3, total_gmv: 1920000 },
+            month_video: { gmv: 132000, pct_of_all: 0.714, internal_pct: 0.622, external_pct: 0.378, internal_gmv: 82104, external_gmv: 49896 },
+            production: { month_target: 80, month_actual_cum: 20 }
+          },
+          source: [
+            { name: '内部(含ITO)', target_count: 25, upload_count: 28, effective_count: 11, avg_gmv: 4107, total_gmv: 115000, roi: 2.58, cost: 44574, impressions: 2480000, cvr: 0.0158, ctr: 0.0212 },
+            { name: '外部', target_count: 50, upload_count: 42, effective_count: 10, avg_gmv: 1310, total_gmv: 55000, roi: 1.48, cost: 37162, impressions: 1520000, cvr: 0.0105, ctr: 0.0162 },
+            { name: 'AIGC', target_count: 5, upload_count: 5, effective_count: 1, avg_gmv: 2200, total_gmv: 11000, roi: 1.20, cost: 9167, impressions: 450000, cvr: 0.0078, ctr: 0.0125 },
+            { name: '其他', target_count: 0, upload_count: 3, effective_count: 0, avg_gmv: 1333, total_gmv: 4000, roi: 0.58, cost: 6897, impressions: 140000, cvr: 0.0042, ctr: 0.0090 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 10, gmv: 14200, roi: 1.68, cost: 8452, impressions: 380000, cvr: 0.0098, ctr: 0.0148 },
+            { l1: '原生', l2: '种草', count: 5, gmv: 6800, roi: 1.55, cost: 4387, impressions: 175000, cvr: 0.0088, ctr: 0.0135 },
+            { l1: '原生', l2: '纯展示', count: 4, gmv: 5200, roi: 1.42, cost: 3662, impressions: 145000, cvr: 0.0078, ctr: 0.0122 },
+            { l1: '原生', l2: '混搭', count: 3, gmv: 4800, roi: 1.30, cost: 3692, impressions: 100000, cvr: 0.0068, ctr: 0.0110 },
+            { l1: 'KOL', l2: '种草', count: 30, gmv: 98000, roi: 2.33, cost: 42060, impressions: 1420000, cvr: 0.0142, ctr: 0.0198 },
+            { l1: 'KOL', l2: '机制', count: 6, gmv: 17500, roi: 2.15, cost: 8140, impressions: 312000, cvr: 0.0130, ctr: 0.0185 },
+            { l1: 'KOL', l2: '纯展示', count: 4, gmv: 9500, roi: 2.00, cost: 4750, impressions: 200000, cvr: 0.0118, ctr: 0.0172 },
+            { l1: 'KOL', l2: '混搭', count: 2, gmv: 4000, roi: 1.78, cost: 2247, impressions: 128000, cvr: 0.0105, ctr: 0.0158 },
+            { l1: '直播切片', l2: '纯展示', count: 20, gmv: 44000, roi: 2.20, cost: 20000, impressions: 1000000, cvr: 0.0168, ctr: 0.0252 },
+            { l1: '直播切片', l2: '机制', count: 3, gmv: 6000, roi: 2.05, cost: 2927, impressions: 180000, cvr: 0.0152, ctr: 0.0232 },
+            { l1: '直播切片', l2: '种草', count: 2, gmv: 3500, roi: 1.92, cost: 1823, impressions: 118000, cvr: 0.0138, ctr: 0.0215 },
+            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1500, roi: 1.78, cost: 843, impressions: 75000, cvr: 0.0125, ctr: 0.0198 },
+            { l1: '复刻', l2: '混搭', count: 3, gmv: 9000, roi: 1.64, cost: 5488, impressions: 220000, cvr: 0.0078, ctr: 0.0118 },
+            { l1: '复刻', l2: '机制', count: 2, gmv: 4200, roi: 1.50, cost: 2800, impressions: 82000, cvr: 0.0068, ctr: 0.0105 },
+            { l1: '复刻', l2: '种草', count: 1, gmv: 2000, roi: 1.38, cost: 1449, impressions: 55000, cvr: 0.0058, ctr: 0.0095 },
+            { l1: '明星', l2: '种草', count: 2, gmv: 2200, roi: 0.75, cost: 2933, impressions: 112000, cvr: 0.0065, ctr: 0.0140 },
+            { l1: '明星', l2: '机制', count: 1, gmv: 800, roi: 0.62, cost: 1290, impressions: 48000, cvr: 0.0055, ctr: 0.0132 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-品质测评', gmv: 42000, roi: 2.65 },
+            { type: '原生', belong: '内部', name: '原生-轻奢风', gmv: 18000, roi: 2.40 },
+          ]
+        }
+      },
+      runner: {
+        '2026-Q2': { internal: { g50k: 4, g10k: 12, total: 75 }, external: { g50k: 1, g10k: 8, total: 140 } },
+        '2026-Q1': { internal: { g50k: 6, g10k: 18, total: 200 }, external: { g50k: 2, g10k: 14, total: 350 } },
+        '2025-Q4': { internal: { g50k: 5, g10k: 15, total: 180 }, external: { g50k: 2, g10k: 11, total: 320 } },
       }
-    }
-
-    // ═══════════════════════════════════════
-    // 周度总览
-    // ═══════════════════════════════════════
-    function loadOverview() {
-      const d = getWeekData()?.overview;
-      if (!d) return;
-
-      document.getElementById('kpi-video-gmv').textContent = fmt(d.video.total_gmv);
-      document.getElementById('kpi-video-count').textContent = d.video.total_count;
-      document.getElementById('kpi-gmv-ratio').textContent = fmtPercent(d.target.gmv_ratio);
-      document.getElementById('kpi-target-ratio').textContent = fmtPercent(d.target.target_gmv_ratio);
-      document.getElementById('kpi-new-gmv').textContent = fmt(d.video.new_gmv);
-      document.getElementById('kpi-new-ratio').textContent = fmtPercent(d.target.new_video_gmv_ratio);
-      document.getElementById('kpi-new-count').textContent = d.video.new_count;
-
-      const rate = d.target.completion_rate || 0;
-      const el = document.getElementById('kpi-completion');
-      el.textContent = rate.toFixed(1) + '%';
-      el.className = `text-2xl font-bold ${rate >= 100 ? 'text-emerald-600' : rate >= 70 ? 'text-amber-600' : 'text-red-500'}`;
-      document.getElementById('kpi-progress').style.width = Math.min(rate, 100) + '%';
-      document.getElementById('kpi-progress').className = `progress-fill ${rate >= 100 ? 'bg-emerald-500' : rate >= 70 ? 'bg-amber-500' : 'bg-red-400'}`;
-
-      document.getElementById('kpi-live-gmv').textContent = fmt(d.livestream.total_gmv);
-      document.getElementById('kpi-live-count').textContent = d.livestream.live_count;
-      document.getElementById('kpi-effective').textContent = d.video.effective_count;
-      document.getElementById('kpi-target-gmv').textContent = fmt(d.target.target_gmv);
-
-      loadTrend();
-    }
-
-    function loadTrend() {
-      const trend = DEMO_TREND[currentBrand] || [];
-      updateTrendChart(trend);
-    }
-
-    // ═══════════════════════════════════════
-    // 源头分析
-    // ═══════════════════════════════════════
-    function loadSource() {
-      const d = getWeekData()?.source;
-      if (!d) return;
-
-      const allSources = [...d.groups, ...d.others];
-      const tbody = document.getElementById('sourceTable');
-      tbody.innerHTML = allSources.map(s => `
-        <tr>
-          <td><span class="badge ${s.source === 'internal' ? 'bg-indigo-100 text-indigo-700' : s.source === 'external' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}">${s.name}</span></td>
-          <td>${s.video_count}</td>
-          <td>${fmt(s.total_gmv)}</td>
-          <td>${fmt(s.avg_gmv)}</td>
-          <td>${fmtPercent(s.gmv_ratio)}</td>
-          <td>${s.effective_count || '-'}</td>
-          <td>${s.target?.target_video_count || '-'}</td>
-          <td>${s.target?.actual_video_count || '-'}</td>
-        </tr>
-      `).join('');
-
-      updateSourcePieChart(allSources);
-    }
-
-    // ═══════════════════════════════════════
-    // 季度跑量
-    // ═══════════════════════════════════════
-    function loadRunner() {
-      const quarter = document.getElementById('quarterSelect').value;
-      const d = getBrandData()?.runner?.[quarter];
-      if (!d) return;
-
-      document.getElementById('runner-internal-50k').textContent = d.internal.count_g50k;
-      document.getElementById('runner-internal-10k').textContent = d.internal.count_g10k;
-      document.getElementById('runner-internal-total').textContent = d.internal.total_count;
-      document.getElementById('runner-external-50k').textContent = d.external.count_g50k;
-      document.getElementById('runner-external-10k').textContent = d.external.count_g10k;
-      document.getElementById('runner-external-total').textContent = d.external.total_count;
-
-      updateRunnerBarChart({ internal: { ...d.internal, name: '内部(含ITO)' }, external: { ...d.external, name: '外部' }, total: d.total });
-    }
-
-    // ═══════════════════════════════════════
-    // 形式监控
-    // ═══════════════════════════════════════
-    function loadFormat() {
-      const d = getWeekData()?.format;
-      if (!d) return;
-
-      const tbody = document.getElementById('formatTable');
-      tbody.innerHTML = d.formats.map(f => `
-        <tr>
-          <td><span class="badge bg-blue-100 text-blue-700">${f.video_format}</span></td>
-          <td>${f.video_count}</td>
-          <td>${fmt(f.total_gmv)}</td>
-          <td>${fmt(f.total_impressions)}</td>
-          <td>${fmt(f.total_cost)}</td>
-          <td>${f.avg_roi ? f.avg_roi.toFixed(2) : '-'}</td>
-          <td>${fmtPercent(f.avg_ctr)}</td>
-          <td>${fmtPercent(f.avg_cvr)}</td>
-        </tr>
-      `).join('');
-
-      updateFormatCharts(d.formats);
-    }
-
-    // ═══════════════════════════════════════
-    // 图表
-    // ═══════════════════════════════════════
-    let trendChart, sourcePieChart, runnerBarChart, formatPieChart, formatRadarChart;
-
-    function initCharts() {
-      trendChart = echarts.init(document.getElementById('trendChart'));
-      sourcePieChart = echarts.init(document.getElementById('sourcePieChart'));
-      runnerBarChart = echarts.init(document.getElementById('runnerBarChart'));
-      formatPieChart = echarts.init(document.getElementById('formatPieChart'));
-      formatRadarChart = echarts.init(document.getElementById('formatRadarChart'));
-
-      window.addEventListener('resize', () => {
-        trendChart?.resize();
-        sourcePieChart?.resize();
-        runnerBarChart?.resize();
-        formatPieChart?.resize();
-        formatRadarChart?.resize();
-      });
-    }
-
-    function updateTrendChart(data) {
-      trendChart.setOption({
-        tooltip: { trigger: 'axis' },
-        legend: { data: ['短视频GMV', '直播间GMV', '占比'], bottom: 0 },
-        grid: { top: 20, right: 60, bottom: 40 },
-        xAxis: { type: 'category', data: data.map(d => d.week) },
-        yAxis: [
-          { type: 'value', name: 'GMV' },
-          { type: 'value', name: '占比', max: 0.2, axisLabel: { formatter: v => (v * 100) + '%' } },
-        ],
-        series: [
-          { name: '短视频GMV', type: 'bar', data: data.map(d => d.video_gmv), itemStyle: { color: '#6366f1' } },
-          { name: '直播间GMV', type: 'bar', data: data.map(d => d.live_gmv), itemStyle: { color: '#a5b4fc' } },
-          { name: '占比', type: 'line', yAxisIndex: 1, data: data.map(d => d.gmv_ratio), smooth: true, lineStyle: { color: '#f59e0b' }, itemStyle: { color: '#f59e0b' } },
-        ],
-      });
-    }
-
-    function updateSourcePieChart(sources) {
-      sourcePieChart.setOption({
-        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-        series: [{
-          type: 'pie', radius: ['40%', '70%'],
-          data: sources.filter(s => s.total_gmv > 0).map(s => ({ name: s.name, value: Math.round(s.total_gmv) })),
-          label: { formatter: '{b}\n{d}%' },
-        }],
-      });
-    }
-
-    function updateRunnerBarChart(data) {
-      runnerBarChart.setOption({
-        tooltip: { trigger: 'axis' },
-        legend: { data: ['≥5万', '≥1万'], bottom: 0 },
-        grid: { top: 20, right: 20, bottom: 40 },
-        xAxis: { type: 'category', data: ['内部(含ITO)', '外部', '合计'] },
-        yAxis: { type: 'value', name: '视频数量' },
-        series: [
-          { name: '≥5万', type: 'bar', data: [data.internal.count_g50k, data.external.count_g50k, data.total.count_g50k], itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] } },
-          { name: '≥1万', type: 'bar', data: [data.internal.count_g10k, data.external.count_g10k, data.total.count_g10k], itemStyle: { color: '#a5b4fc', borderRadius: [4, 4, 0, 0] } },
-        ],
-      });
-    }
-
-    function updateFormatCharts(formats) {
-      const colors = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4'];
-      const validFormats = formats.filter(f => f.total_gmv > 0);
-
-      formatPieChart.setOption({
-        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-        series: [{
-          type: 'pie', radius: '65%',
-          data: validFormats.map((f, i) => ({ name: f.video_format, value: Math.round(f.total_gmv), itemStyle: { color: colors[i % colors.length] } })),
-        }],
-      });
-
-      if (validFormats.length >= 2) {
-        formatRadarChart.setOption({
-          tooltip: {},
-          radar: { indicator: validFormats.map(f => ({ name: f.video_format, max: 10 })) },
-          series: [{
-            type: 'radar',
-            data: validFormats.map((f, i) => ({
-              name: f.video_format,
-              value: [
-                Math.min(f.total_gmv / 50000, 10),
-                Math.min((f.avg_roi || 0) * 5, 10),
-                Math.min((f.avg_ctr || 0) * 100, 10),
-                Math.min((f.avg_cvr || 0) * 100, 10),
-                Math.min(f.total_cost / 10000, 10),
-                Math.min(f.video_count / 10, 10),
-              ],
-              lineStyle: { color: colors[i % colors.length] },
-              areaStyle: { color: colors[i % colors.length] + '20' },
-            })),
-          }],
-        });
+    },
+    yunduan: {
+      name: '云端商务家',
+      weeks: {
+        '2026-W16': {
+          overview: {
+            video: { total_count: 62, total_gmv: 156800, new_count: 15, effective_count: 20 },
+            livestream: { live_count: 2, total_gmv: 1520000 },
+            month_video: { gmv: 115000, pct_of_all: 0.733, internal_pct: 0.625, external_pct: 0.375, internal_gmv: 71875, external_gmv: 43125 },
+            production: { month_target: 60, month_actual_cum: 42 }
+          },
+          source: [
+            { name: '内部(含ITO)', target_count: 20, upload_count: 22, effective_count: 10, avg_gmv: 4455, total_gmv: 98000, roi: 2.48, cost: 39516, impressions: 2050000, cvr: 0.0155, ctr: 0.0208 },
+            { name: '外部', target_count: 40, upload_count: 34, effective_count: 8, avg_gmv: 1376, total_gmv: 46800, roi: 1.42, cost: 32958, impressions: 1280000, cvr: 0.0105, ctr: 0.0165 },
+            { name: 'AIGC', target_count: 5, upload_count: 4, effective_count: 1, avg_gmv: 2125, total_gmv: 8500, roi: 1.10, cost: 7727, impressions: 380000, cvr: 0.0072, ctr: 0.0125 },
+            { name: '其他', target_count: 0, upload_count: 2, effective_count: 0, avg_gmv: 1750, total_gmv: 3500, roi: 0.55, cost: 6364, impressions: 150000, cvr: 0.0045, ctr: 0.0092 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 7, gmv: 13000, roi: 1.85, cost: 7027, impressions: 320000, cvr: 0.0108, ctr: 0.0160 },
+            { l1: '原生', l2: '种草', count: 4, gmv: 7200, roi: 1.72, cost: 4186, impressions: 148000, cvr: 0.0095, ctr: 0.0148 },
+            { l1: '原生', l2: '纯展示', count: 3, gmv: 4800, roi: 1.60, cost: 3000, impressions: 112000, cvr: 0.0082, ctr: 0.0135 },
+            { l1: '原生', l2: '混搭', count: 2, gmv: 3000, roi: 1.48, cost: 2027, impressions: 70000, cvr: 0.0070, ctr: 0.0122 },
+            { l1: 'KOL', l2: '种草', count: 25, gmv: 82000, roi: 2.16, cost: 37963, impressions: 1250000, cvr: 0.0142, ctr: 0.0205 },
+            { l1: 'KOL', l2: '机制', count: 5, gmv: 15000, roi: 2.00, cost: 7500, impressions: 268000, cvr: 0.0130, ctr: 0.0192 },
+            { l1: 'KOL', l2: '纯展示', count: 3, gmv: 8200, roi: 1.85, cost: 4432, impressions: 172000, cvr: 0.0118, ctr: 0.0178 },
+            { l1: 'KOL', l2: '混搭', count: 2, gmv: 4500, roi: 1.68, cost: 2679, impressions: 112000, cvr: 0.0105, ctr: 0.0162 },
+            { l1: '直播切片', l2: '纯展示', count: 16, gmv: 38000, roi: 2.11, cost: 18009, impressions: 850000, cvr: 0.0165, ctr: 0.0248 },
+            { l1: '直播切片', l2: '机制', count: 3, gmv: 6500, roi: 1.98, cost: 3283, impressions: 158000, cvr: 0.0150, ctr: 0.0228 },
+            { l1: '直播切片', l2: '种草', count: 2, gmv: 3800, roi: 1.85, cost: 2054, impressions: 108000, cvr: 0.0138, ctr: 0.0212 },
+            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1700, roi: 1.72, cost: 988, impressions: 72000, cvr: 0.0125, ctr: 0.0198 },
+            { l1: '复刻', l2: '混搭', count: 4, gmv: 6500, roi: 1.25, cost: 5200, impressions: 200000, cvr: 0.0078, ctr: 0.0122 },
+            { l1: '复刻', l2: '机制', count: 2, gmv: 2800, roi: 1.15, cost: 2435, impressions: 78000, cvr: 0.0068, ctr: 0.0110 },
+            { l1: '复刻', l2: '种草', count: 1, gmv: 1200, roi: 1.05, cost: 1143, impressions: 52000, cvr: 0.0058, ctr: 0.0098 },
+            { l1: '明星', l2: '种草', count: 1, gmv: 1500, roi: 0.70, cost: 2143, impressions: 95000, cvr: 0.0060, ctr: 0.0145 },
+            { l1: '明星', l2: '纯展示', count: 1, gmv: 800, roi: 0.58, cost: 1379, impressions: 55000, cvr: 0.0052, ctr: 0.0138 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-商务达人', gmv: 35000, roi: 2.50 },
+            { type: '直播切片', belong: '内部', name: '直播切片-商务款', gmv: 22000, roi: 2.80 },
+            { type: '原生', belong: '内部', name: '原生-商务场景', gmv: 15000, roi: 2.20 },
+          ]
+        },
+        '2026-W15': {
+          overview: {
+            video: { total_count: 55, total_gmv: 138000, new_count: 12, effective_count: 17 },
+            livestream: { live_count: 2, total_gmv: 1420000 },
+            month_video: { gmv: 101000, pct_of_all: 0.732, internal_pct: 0.623, external_pct: 0.377, internal_gmv: 62923, external_gmv: 38077 },
+            production: { month_target: 60, month_actual_cum: 27 }
+          },
+          source: [
+            { name: '内部(含ITO)', target_count: 18, upload_count: 20, effective_count: 9, avg_gmv: 4300, total_gmv: 86000, roi: 2.45, cost: 35102, impressions: 1880000, cvr: 0.0150, ctr: 0.0202 },
+            { name: '外部', target_count: 35, upload_count: 30, effective_count: 6, avg_gmv: 1350, total_gmv: 40500, roi: 1.38, cost: 29348, impressions: 1120000, cvr: 0.0098, ctr: 0.0158 },
+            { name: 'AIGC', target_count: 3, upload_count: 3, effective_count: 1, avg_gmv: 2667, total_gmv: 8000, roi: 1.05, cost: 7619, impressions: 320000, cvr: 0.0065, ctr: 0.0115 },
+            { name: '其他', target_count: 0, upload_count: 2, effective_count: 0, avg_gmv: 1750, total_gmv: 3500, roi: 0.55, cost: 6364, impressions: 130000, cvr: 0.0045, ctr: 0.0090 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 6, gmv: 11200, roi: 1.78, cost: 6292, impressions: 270000, cvr: 0.0098, ctr: 0.0150 },
+            { l1: '原生', l2: '种草', count: 3, gmv: 5200, roi: 1.65, cost: 3152, impressions: 125000, cvr: 0.0088, ctr: 0.0138 },
+            { l1: '原生', l2: '纯展示', count: 3, gmv: 4800, roi: 1.52, cost: 3158, impressions: 105000, cvr: 0.0078, ctr: 0.0125 },
+            { l1: '原生', l2: '混搭', count: 2, gmv: 3800, roi: 1.40, cost: 2714, impressions: 80000, cvr: 0.0068, ctr: 0.0112 },
+            { l1: 'KOL', l2: '种草', count: 22, gmv: 72000, roi: 2.12, cost: 33962, impressions: 1100000, cvr: 0.0135, ctr: 0.0192 },
+            { l1: 'KOL', l2: '机制', count: 5, gmv: 13500, roi: 1.98, cost: 6818, impressions: 242000, cvr: 0.0122, ctr: 0.0178 },
+            { l1: 'KOL', l2: '纯展示', count: 3, gmv: 7200, roi: 1.82, cost: 3956, impressions: 155000, cvr: 0.0110, ctr: 0.0165 },
+            { l1: 'KOL', l2: '混搭', count: 2, gmv: 3800, roi: 1.65, cost: 2303, impressions: 102000, cvr: 0.0098, ctr: 0.0152 },
+            { l1: '直播切片', l2: '纯展示', count: 14, gmv: 34000, roi: 2.13, cost: 15963, impressions: 750000, cvr: 0.0158, ctr: 0.0235 },
+            { l1: '直播切片', l2: '机制', count: 2, gmv: 4800, roi: 2.00, cost: 2400, impressions: 138000, cvr: 0.0142, ctr: 0.0215 },
+            { l1: '直播切片', l2: '种草', count: 2, gmv: 3200, roi: 1.88, cost: 1702, impressions: 95000, cvr: 0.0130, ctr: 0.0200 },
+            { l1: '直播切片', l2: '混搭', count: 1, gmv: 1000, roi: 1.75, cost: 571, impressions: 62000, cvr: 0.0118, ctr: 0.0185 },
+            { l1: '复刻', l2: '混搭', count: 3, gmv: 5500, roi: 1.15, cost: 4783, impressions: 170000, cvr: 0.0072, ctr: 0.0112 },
+            { l1: '复刻', l2: '机制', count: 1, gmv: 1800, roi: 1.05, cost: 1714, impressions: 62000, cvr: 0.0062, ctr: 0.0100 },
+            { l1: '复刻', l2: '种草', count: 1, gmv: 1200, roi: 0.95, cost: 1263, impressions: 42000, cvr: 0.0052, ctr: 0.0090 },
+            { l1: '明星', l2: '种草', count: 1, gmv: 1000, roi: 0.52, cost: 1923, impressions: 82000, cvr: 0.0055, ctr: 0.0135 },
+            { l1: '明星', l2: '纯展示', count: 1, gmv: 500, roi: 0.40, cost: 1250, impressions: 48000, cvr: 0.0045, ctr: 0.0128 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-差旅场景', gmv: 30000, roi: 2.35 },
+            { type: '直播切片', belong: '内部', name: '直播切片-经典商务', gmv: 20000, roi: 2.60 },
+          ]
+        },
+        '2026-W14': {
+          overview: {
+            video: { total_count: 50, total_gmv: 125000, new_count: 10, effective_count: 15 },
+            livestream: { live_count: 2, total_gmv: 1350000 },
+            month_video: { gmv: 89000, pct_of_all: 0.712, internal_pct: 0.624, external_pct: 0.376, internal_gmv: 55536, external_gmv: 33464 },
+            production: { month_target: 60, month_actual_cum: 15 }
+          },
+          source: [
+            { name: '内部(含ITO)', target_count: 16, upload_count: 18, effective_count: 8, avg_gmv: 4333, total_gmv: 78000, roi: 2.42, cost: 32231, impressions: 1700000, cvr: 0.0145, ctr: 0.0198 },
+            { name: '外部', target_count: 30, upload_count: 27, effective_count: 5, avg_gmv: 1352, total_gmv: 36500, roi: 1.35, cost: 27037, impressions: 1020000, cvr: 0.0092, ctr: 0.0152 },
+            { name: 'AIGC', target_count: 3, upload_count: 3, effective_count: 1, avg_gmv: 2500, total_gmv: 7500, roi: 1.00, cost: 7500, impressions: 280000, cvr: 0.0060, ctr: 0.0110 },
+            { name: '其他', target_count: 0, upload_count: 2, effective_count: 0, avg_gmv: 1500, total_gmv: 3000, roi: 0.50, cost: 6000, impressions: 120000, cvr: 0.0040, ctr: 0.0085 },
+          ],
+          format: [
+            { l1: '原生', l2: '机制', count: 5, gmv: 9500, roi: 1.68, cost: 5655, impressions: 230000, cvr: 0.0088, ctr: 0.0140 },
+            { l1: '原生', l2: '种草', count: 3, gmv: 5200, roi: 1.55, cost: 3355, impressions: 112000, cvr: 0.0078, ctr: 0.0128 },
+            { l1: '原生', l2: '纯展示', count: 3, gmv: 4500, roi: 1.42, cost: 3169, impressions: 98000, cvr: 0.0068, ctr: 0.0115 },
+            { l1: '原生', l2: '混搭', count: 2, gmv: 3300, roi: 1.30, cost: 2538, impressions: 80000, cvr: 0.0058, ctr: 0.0102 },
+            { l1: 'KOL', l2: '种草', count: 20, gmv: 65000, roi: 2.17, cost: 29954, impressions: 980000, cvr: 0.0128, ctr: 0.0185 },
+            { l1: 'KOL', l2: '机制', count: 4, gmv: 12000, roi: 2.00, cost: 6000, impressions: 215000, cvr: 0.0118, ctr: 0.0172 },
+            { l1: 'KOL', l2: '纯展示', count: 3, gmv: 6500, roi: 1.85, cost: 3514, impressions: 140000, cvr: 0.0105, ctr: 0.0158 },
+            { l1: 'KOL', l2: '混搭', count: 2, gmv: 3500, roi: 1.68, cost: 2083, impressions: 92000, cvr: 0.0092, ctr: 0.0145 },
+            { l1: '直播切片', l2: '纯展示', count: 12, gmv: 30000, roi: 2.14, cost: 14019, impressions: 680000, cvr: 0.0152, ctr: 0.0228 },
+            { l1: '直播切片', l2: '机制', count: 2, gmv: 4200, roi: 2.00, cost: 2100, impressions: 125000, cvr: 0.0138, ctr: 0.0208 },
+            { l1: '直播切片', l2: '种草', count: 1, gmv: 2000, roi: 1.88, cost: 1064, impressions: 85000, cvr: 0.0125, ctr: 0.0192 },
+            { l1: '复刻', l2: '混搭', count: 3, gmv: 5500, roi: 1.22, cost: 4508, impressions: 160000, cvr: 0.0068, ctr: 0.0108 },
+            { l1: '复刻', l2: '机制', count: 1, gmv: 1800, roi: 1.10, cost: 1636, impressions: 58000, cvr: 0.0058, ctr: 0.0098 },
+            { l1: '复刻', l2: '种草', count: 1, gmv: 1000, roi: 1.00, cost: 1000, impressions: 40000, cvr: 0.0048, ctr: 0.0088 },
+            { l1: '明星', l2: '种草', count: 1, gmv: 1800, roi: 0.88, cost: 2045, impressions: 78000, cvr: 0.0058, ctr: 0.0128 },
+            { l1: '明星', l2: '纯展示', count: 1, gmv: 700, roi: 0.72, cost: 972, impressions: 42000, cvr: 0.0048, ctr: 0.0120 },
+          ],
+          runner_detail: [
+            { type: 'KOL', belong: '外部', name: 'KOL-商旅达人', gmv: 28000, roi: 2.30 },
+            { type: '原生', belong: '内部', name: '原生-科技商务', gmv: 12000, roi: 2.10 },
+          ]
+        }
+      },
+      runner: {
+        '2026-Q2': { internal: { g50k: 3, g10k: 8, total: 48 }, external: { g50k: 1, g10k: 5, total: 95 } },
+        '2026-Q1': { internal: { g50k: 4, g10k: 12, total: 130 }, external: { g50k: 1, g10k: 8, total: 230 } },
+        '2025-Q4': { internal: { g50k: 3, g10k: 10, total: 115 }, external: { g50k: 1, g10k: 7, total: 210 } },
       }
     }
+  }
+};
 
-    // ═══════════════════════════════════════
-    // 启动
-    // ═══════════════════════════════════════
-    initCharts();
-    loadOverview();
-  </script>
+const TREND = {
+  modeng: [
+    { week:'W09', video_gmv:325000, live_gmv:3200000 },
+    { week:'W10', video_gmv:348000, live_gmv:3350000 },
+    { week:'W11', video_gmv:385000, live_gmv:3500000 },
+    { week:'W12', video_gmv:402000, live_gmv:3600000 },
+    { week:'W13', video_gmv:398000, live_gmv:3720000 },
+    { week:'W14', video_gmv:412500, live_gmv:3680000 },
+    { week:'W15', video_gmv:478200, live_gmv:3950000 },
+    { week:'W16', video_gmv:523680, live_gmv:4280000 },
+  ],
+  qingshu: [
+    { week:'W09', video_gmv:142000, live_gmv:1650000 },
+    { week:'W10', video_gmv:158000, live_gmv:1720000 },
+    { week:'W11', video_gmv:175000, live_gmv:1800000 },
+    { week:'W12', video_gmv:182000, live_gmv:1850000 },
+    { week:'W13', video_gmv:178000, live_gmv:1900000 },
+    { week:'W14', video_gmv:185000, live_gmv:1920000 },
+    { week:'W15', video_gmv:198000, live_gmv:2050000 },
+    { week:'W16', video_gmv:234500, live_gmv:2180000 },
+  ],
+  yunduan: [
+    { week:'W09', video_gmv:98000, live_gmv:1150000 },
+    { week:'W10', video_gmv:105000, live_gmv:1200000 },
+    { week:'W11', video_gmv:118000, live_gmv:1280000 },
+    { week:'W12', video_gmv:122000, live_gmv:1300000 },
+    { week:'W13', video_gmv:120000, live_gmv:1320000 },
+    { week:'W14', video_gmv:125000, live_gmv:1350000 },
+    { week:'W15', video_gmv:138000, live_gmv:1420000 },
+    { week:'W16', video_gmv:156800, live_gmv:1520000 },
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════
+// GLOBALS
+// ═══════════════════════════════════════════════════════════════
+let curBrand = 'modeng', curWeek = '2026-W16', curTab = 'overview';
+const brand = () => DEMO.brands[curBrand];
+const week = () => brand()?.weeks?.[curWeek];
+
+// ═══════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════
+function fmt(n, d=0) { if (n==null||isNaN(n)) return '-'; if (n>=10000) return (n/10000).toFixed(1)+'万'; return n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function pct(n) { if (n==null||isNaN(n)) return '-'; return (n*100).toFixed(1)+'%'; }
+
+// ═══════════════════════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════════════════════
+function onBrandChange() { curBrand = document.getElementById('brandSelect').value; render(); }
+function onWeekChange() { curWeek = document.getElementById('weekSelect').value; render(); }
+
+function switchTab(tab) {
+  curTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => { p.classList.add('hidden'); p.classList.remove('fade-in'); });
+  const el = document.getElementById('tab-'+tab);
+  el.classList.remove('hidden');
+  void el.offsetWidth; // reflow for animation
+  el.classList.add('fade-in');
+  render();
+}
+
+function render() {
+  switch(curTab) {
+    case 'overview': renderOverview(); break;
+    case 'source': renderSource(); break;
+    case 'runner': renderRunner(); break;
+    case 'format': renderFormat(); break;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB 1: OVERVIEW
+// ═══════════════════════════════════════════════════════════════
+function renderOverview() {
+  const d = week()?.overview;
+  if (!d) return;
+
+  // Row 1: 当月短视频指标
+  document.getElementById('kpi-month-gmv').textContent = fmt(d.month_video.gmv);
+  document.getElementById('kpi-month-pct-all').textContent = pct(d.month_video.pct_of_all);
+  document.getElementById('kpi-internal-pct').textContent = pct(d.month_video.internal_pct);
+  document.getElementById('kpi-external-pct').textContent = pct(d.month_video.external_pct);
+  document.getElementById('kpi-internal-gmv').textContent = fmt(d.month_video.internal_gmv);
+  document.getElementById('kpi-external-gmv').textContent = fmt(d.month_video.external_gmv);
+
+  // Row 2: 产量 + 直播间
+  document.getElementById('kpi-new-count').textContent = d.video.new_count;
+  document.getElementById('kpi-month-target').textContent = d.production.month_target;
+  document.getElementById('kpi-month-actual').textContent = d.production.month_actual_cum;
+  document.getElementById('kpi-effective').textContent = d.video.effective_count;
+  document.getElementById('kpi-video-gmv').textContent = fmt(d.video.total_gmv);
+  document.getElementById('kpi-video-count').textContent = d.video.total_count;
+  document.getElementById('kpi-live-gmv').textContent = fmt(d.livestream.total_gmv);
+  document.getElementById('kpi-live-count').textContent = d.livestream.live_count;
+  const totalGmv = (d.video.total_gmv || 0) + (d.livestream.total_gmv || 0);
+  document.getElementById('kpi-video-live-ratio').textContent = totalGmv > 0 ? ((d.video.total_gmv / totalGmv) * 100).toFixed(1) + '%' : '-';
+
+  renderTrend();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB 2: SOURCE
+// ═══════════════════════════════════════════════════════════════
+function renderSource() {
+  const d = week()?.source;
+  if (!d) return;
+
+  const tbody = document.getElementById('sourceTable');
+  tbody.innerHTML = d.map(s => {
+    const isInt = s.name.includes('内部');
+    const isExt = s.name === '外部';
+    const cls = isInt ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20' : isExt ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-400 border border-zinc-700';
+    return `<tr>
+      <td><span class="badge ${cls}">${s.name}</span></td>
+      <td>${s.target_count||'-'}</td>
+      <td>${s.upload_count}</td>
+      <td>${s.effective_count||'-'}</td>
+      <td>${fmt(s.avg_gmv)}</td>
+      <td>${fmt(s.total_gmv)}</td>
+      <td>${s.roi?s.roi.toFixed(2):'-'}</td>
+      <td>${fmt(s.cost)}</td>
+      <td>${fmt(s.impressions)}</td>
+      <td>${pct(s.cvr)}</td>
+      <td>${pct(s.ctr)}</td>
+    </tr>`;
+  }).join('');
+
+  renderSourcePie(d);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB 3: RUNNER
+// ═══════════════════════════════════════════════════════════════
+function renderRunner() {
+  const q = document.getElementById('quarterSelect').value;
+  const d = brand()?.runner?.[q];
+  if (!d) return;
+
+  document.getElementById('runner-internal-50k').textContent = d.internal.g50k;
+  document.getElementById('runner-internal-10k').textContent = d.internal.g10k;
+  document.getElementById('runner-internal-total').textContent = d.internal.total;
+  document.getElementById('runner-external-50k').textContent = d.external.g50k;
+  document.getElementById('runner-external-10k').textContent = d.external.g10k;
+  document.getElementById('runner-external-total').textContent = d.external.total;
+
+  // Detail table
+  const details = week()?.runner_detail || [];
+  const tbody = document.getElementById('runnerDetailTable');
+  tbody.innerHTML = details.map(r => {
+    const belongCls = r.belong.includes('内部') ? 'text-indigo-300' : 'text-emerald-300';
+    return `<tr>
+      <td><span class="badge bg-zinc-800 text-zinc-300 border border-zinc-700">${r.type}</span></td>
+      <td class="${belongCls}">${r.belong}</td>
+      <td class="text-zinc-300">${r.name}</td>
+      <td class="font-medium text-white">${fmt(r.gmv)}</td>
+      <td>${r.roi ? r.roi.toFixed(2) : '-'}</td>
+    </tr>`;
+  }).join('');
+
+  renderRunnerBar(d);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB 4: FORMAT (Tree structure with collapse/expand)
+// ═══════════════════════════════════════════════════════════════
+// 记住展开状态，默认全部展开
+const formatExpandState = {};
+
+function toggleFormatGroup(l1) {
+  formatExpandState[l1] = !formatExpandState[l1];
+  const childrenEl = document.getElementById('format-children-' + l1.replace(/\s/g,'_'));
+  const arrowEl = document.getElementById('format-arrow-' + l1.replace(/\s/g,'_'));
+  if (childrenEl) {
+    childrenEl.classList.toggle('collapsed', formatExpandState[l1] === false);
+  }
+  if (arrowEl) {
+    arrowEl.classList.toggle('open', formatExpandState[l1] !== false);
+  }
+}
+
+function renderFormat() {
+  const data = week()?.format;
+  if (!data) return;
+
+  // Group by L1, preserve order: 原生 > KOL > 直播切片 > 复刻 > 明星
+  const L1_ORDER = ['原生', 'KOL', '直播切片', '复刻', '明星'];
+  const groups = {};
+  data.forEach(f => {
+    if (!groups[f.l1]) groups[f.l1] = { items: [], total: { count:0, gmv:0, roi:0, cost:0, impressions:0, cvr:0, ctr:0, _roiCount:0, _cvrCount:0, _ctrCount:0 } };
+    groups[f.l1].items.push(f);
+    const t = groups[f.l1].total;
+    t.count += f.count;
+    t.gmv += f.gmv;
+    t.cost += f.cost;
+    t.impressions += f.impressions;
+    if (f.roi) { t.roi += f.roi; t._roiCount++; }
+    if (f.cvr) { t.cvr += f.cvr; t._cvrCount++; }
+    if (f.ctr) { t.ctr += f.ctr; t._ctrCount++; }
+  });
+
+  const container = document.getElementById('formatTreeBody');
+  let html = '';
+  const l1Colors = { '原生': 'text-blue-400', 'KOL': 'text-amber-400', '直播切片': 'text-emerald-400', '复刻': 'text-purple-400', '明星': 'text-pink-400' };
+  const l1BgColors = { '原生': 'bg-blue-400', 'KOL': 'bg-amber-400', '直播切片': 'bg-emerald-400', '复刻': 'bg-purple-400', '明星': 'bg-pink-400' };
+  const l2Colors = { '机制': 'text-sky-300', '种草': 'text-lime-300', '纯展示': 'text-orange-300', '混搭': 'text-violet-300' };
+  const l2DotColors = { '机制': 'bg-sky-400', '种草': 'bg-lime-400', '纯展示': 'bg-orange-400', '混搭': 'bg-violet-400' };
+
+  const orderedL1 = L1_ORDER.filter(k => groups[k]);
+
+  for (const l1 of orderedL1) {
+    const g = groups[l1];
+    const t = g.total;
+    const avgRoi = t._roiCount ? (t.roi/t._roiCount) : 0;
+    const avgCvr = t._cvrCount ? (t.cvr/t._cvrCount) : 0;
+    const avgCtr = t._ctrCount ? (t.ctr/t._ctrCount) : 0;
+    const color = l1Colors[l1] || 'text-zinc-300';
+    const bgColor = l1BgColors[l1] || 'bg-zinc-400';
+    const safeId = l1.replace(/\s/g,'_');
+    const isExpanded = formatExpandState[l1] !== false; // default expanded
+    const arrowClass = isExpanded ? 'expand-arrow open' : 'expand-arrow';
+    const childrenClass = isExpanded ? 'tree-children' : 'tree-children collapsed';
+
+    html += `<div class="tree-row tree-parent" onclick="toggleFormatGroup('${l1}')">
+      <div class="flex items-center">
+        <span id="format-arrow-${safeId}" class="${arrowClass}">▶</span>
+        <span class="w-1.5 h-4 rounded ${bgColor} mr-2"></span>
+        <span class="${color} font-semibold">${l1}</span>
+        <span class="ml-2 text-xs text-zinc-600">${g.items.length}种</span>
+      </div>
+      <div class="font-medium text-zinc-200">${t.count}</div>
+      <div class="font-medium text-zinc-200">${fmt(t.gmv)}</div>
+      <div class="font-medium" style="color:${avgRoi>=2.5?'#34d399':avgRoi>=1.5?'#fbbf24':'#f87171'}">${avgRoi.toFixed(2)}</div>
+      <div>${fmt(t.cost)}</div>
+      <div>${fmt(t.impressions)}</div>
+      <div>${pct(avgCvr)}</div>
+      <div>${pct(avgCtr)}</div>
+    </div>
+    <div id="format-children-${safeId}" class="${childrenClass}">`;
+
+    g.items.forEach(item => {
+      const l2Color = l2Colors[item.l2] || 'text-zinc-400';
+      const l2Dot = l2DotColors[item.l2] || 'bg-zinc-500';
+      html += `<div class="tree-row tree-child">
+        <div class="flex items-center pl-6">
+          <span class="w-1.5 h-1.5 rounded-full ${l2Dot} mr-2 flex-shrink-0"></span>
+          <span class="${l2Color}">${item.l2 || '-'}</span>
+        </div>
+        <div>${item.count}</div>
+        <div>${fmt(item.gmv)}</div>
+        <div style="color:${item.roi>=2.5?'#34d399':item.roi>=1.5?'#fbbf24':'#f87171'}">${item.roi ? item.roi.toFixed(2) : '-'}</div>
+        <div>${fmt(item.cost)}</div>
+        <div>${fmt(item.impressions)}</div>
+        <div>${pct(item.cvr)}</div>
+        <div>${pct(item.ctr)}</div>
+      </div>`;
+    });
+
+    html += `</div>`;
+  }
+  container.innerHTML = html;
+
+  renderFormatCharts(data);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════════════════
+let cTrend, cSourcePie, cRunnerBar, cFormatPie, cFormatRadar;
+
+const darkAxis = { axisLine: { lineStyle: { color: '#27272a' } }, axisTick: { show: false }, axisLabel: { color: '#71717a', fontSize: 11 } };
+const darkSplit = { splitLine: { lineStyle: { color: '#1f1f23' } } };
+
+function initCharts() {
+  cTrend = echarts.init(document.getElementById('trendChart'));
+  cSourcePie = echarts.init(document.getElementById('sourcePieChart'));
+  cRunnerBar = echarts.init(document.getElementById('runnerBarChart'));
+  cFormatPie = echarts.init(document.getElementById('formatPieChart'));
+  cFormatRadar = echarts.init(document.getElementById('formatRadarChart'));
+  window.addEventListener('resize', () => [cTrend,cSourcePie,cRunnerBar,cFormatPie,cFormatRadar].forEach(c=>c?.resize()));
+}
+
+function renderTrend() {
+  const data = TREND[curBrand] || [];
+  cTrend.setOption({
+    tooltip: { trigger:'axis', backgroundColor:'#1a1a1a', borderColor:'#27272a', textStyle:{color:'#d4d4d8',fontSize:12} },
+    legend: { data:['短视频GMV','直播间GMV'], bottom:0, textStyle:{color:'#71717a',fontSize:11}, itemWidth:12, itemHeight:3 },
+    grid: { top:20, right:20, bottom:36, left:60 },
+    xAxis: { type:'category', data: data.map(d=>d.week), ...darkAxis },
+    yAxis: { type:'value', ...darkAxis, ...darkSplit, axisLabel:{...darkAxis.axisLabel, formatter:v=>v>=10000?(v/10000)+'万':v} },
+    series: [
+      { name:'短视频GMV', type:'bar', data:data.map(d=>d.video_gmv), itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#818cf8'},{offset:1,color:'#4f46e5'}]), borderRadius:[3,3,0,0]}, barWidth:24 },
+      { name:'直播间GMV', type:'bar', data:data.map(d=>d.live_gmv), itemStyle:{color:'#27272a', borderRadius:[3,3,0,0]}, barWidth:24 },
+    ],
+  }, true);
+}
+
+function renderSourcePie(sources) {
+  cSourcePie.setOption({
+    tooltip: { trigger:'item', formatter:'{b}: ¥{c} ({d}%)', backgroundColor:'#1a1a1a', borderColor:'#27272a', textStyle:{color:'#d4d4d8'} },
+    series: [{
+      type:'pie', radius:['45%','72%'], center:['50%','50%'],
+      data: sources.filter(s=>s.total_gmv>0).map((s,i) => ({ name:s.name, value:Math.round(s.total_gmv), itemStyle:{color:['#818cf8','#34d399','#fbbf24','#f87171','#a78bfa'][i%5]} })),
+      label: { color:'#a1a1aa', fontSize:11, formatter:'{b}\n{d}%' },
+      labelLine: { lineStyle:{color:'#3f3f46'} },
+      emphasis: { scaleSize: 6 },
+    }],
+  }, true);
+}
+
+function renderRunnerBar(d) {
+  cRunnerBar.setOption({
+    tooltip: { trigger:'axis', backgroundColor:'#1a1a1a', borderColor:'#27272a', textStyle:{color:'#d4d4d8'} },
+    legend: { data:['≥5万','≥1万'], bottom:0, textStyle:{color:'#71717a',fontSize:11}, itemWidth:12, itemHeight:3 },
+    grid: { top:20, right:20, bottom:36, left:50 },
+    xAxis: { type:'category', data:['内部(含ITO)','外部'], ...darkAxis },
+    yAxis: { type:'value', ...darkAxis, ...darkSplit },
+    series: [
+      { name:'≥5万', type:'bar', data:[d.internal.g50k,d.external.g50k], itemStyle:{color:'#818cf8', borderRadius:[3,3,0,0]}, barWidth:32 },
+      { name:'≥1万', type:'bar', data:[d.internal.g10k,d.external.g10k], itemStyle:{color:'#4f46e5', borderRadius:[3,3,0,0]}, barWidth:32 },
+    ],
+  }, true);
+}
+
+function renderFormatCharts(formats) {
+  const colors = ['#818cf8','#fbbf24','#34d399','#f87171','#a78bfa','#22d3ee'];
+  const l1groups = {};
+  formats.forEach(f => {
+    if (!l1groups[f.l1]) l1groups[f.l1] = { count:0, gmv:0 };
+    l1groups[f.l1].count += f.count;
+    l1groups[f.l1].gmv += f.gmv;
+  });
+  const pieData = Object.entries(l1groups).map(([k,v],i) => ({ name:k, value:Math.round(v.gmv), itemStyle:{color:colors[i%colors.length]} }));
+
+  cFormatPie.setOption({
+    tooltip: { trigger:'item', formatter:'{b}: ¥{c} ({d}%)', backgroundColor:'#1a1a1a', borderColor:'#27272a', textStyle:{color:'#d4d4d8'} },
+    series: [{ type:'pie', radius:'68%', data:pieData, label:{color:'#a1a1aa',fontSize:11}, labelLine:{lineStyle:{color:'#3f3f46'}} }],
+  }, true);
+
+  const valid = Object.entries(l1groups).filter(([,v])=>v.gmv>0);
+  if (valid.length >= 2) {
+    cFormatRadar.setOption({
+      tooltip: { backgroundColor:'#1a1a1a', borderColor:'#27272a', textStyle:{color:'#d4d4d8'} },
+      radar: {
+        indicator: valid.map(([k])=>({name:k,max:10})),
+        axisName: { color:'#71717a', fontSize:11 },
+        splitArea: { areaStyle:{color:['rgba(129,140,248,.02)','rgba(129,140,248,.04)']} },
+        splitLine: { lineStyle:{color:'#1f1f23'} },
+        axisLine: { lineStyle:{color:'#27272a'} },
+      },
+      series: [{
+        type:'radar',
+        data: valid.map(([k,v],i) => ({
+          name:k,
+          value: [
+            Math.min(v.gmv/100000,10),
+            Math.min(v.count/15,10),
+            Math.min(formats.filter(f=>f.l1===k).reduce((s,f)=>s+(f.roi||0),0)/Math.max(formats.filter(f=>f.l1===k).length,1)*3,10),
+            Math.min(formats.filter(f=>f.l1===k).reduce((s,f)=>s+(f.ctr||0),0)/Math.max(formats.filter(f=>f.l1===k).length,1)*100,10),
+          ],
+          lineStyle:{color:colors[i%colors.length],width:2},
+          areaStyle:{color:colors[i%colors.length]+'25'},
+          symbol:'circle', symbolSize:4,
+        })),
+      }],
+    }, true);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+initCharts();
+render();
+</script>
 </body>
 </html>
